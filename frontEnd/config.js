@@ -9,7 +9,7 @@ const getApiUrl = () => {
 
     // Production API URL - UPDATE THIS after deploying backend
     // Example: 'https://hi-math-backend.onrender.com'
-    return 'https://hi-math-backend.onrender.com';
+    return 'https://test1-be.onrender.com';
 };
 
 const API_URL = getApiUrl();
