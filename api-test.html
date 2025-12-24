@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi Math - API Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .test-group {
+            margin-bottom: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            border-left-color: #4CAF50;
+            background: #f1f8f4;
+        }
+
+        .error {
+            border-left-color: #f44336;
+            background: #fef1f0;
+        }
+
+        .info {
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status.online {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status.offline {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎮 Hi Math - API Testing Dashboard</h1>
+
+        <div class="info">
+            <strong>Backend Status:</strong>
+            <span class="status" id="backendStatus">Checking...</span>
+            <br><br>
+            <strong>Hướng dẫn:</strong> Nhấn các nút bên dưới để test các API endpoints
+        </div>
+
+        <!-- Health Check -->
+        <div class="section">
+            <h2>🏥 Health Check</h2>
+            <div class="test-group">
+                <button onclick="testHealthCheck()">Test Health Check</button>
+                <div id="healthResult" class="result" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- Authentication -->
+        <div class="section">
+            <h2>🔐 Authentication</h2>
+            <div class="test-group">
+                <button onclick="testRegister()">Test Register</button>
+                <button onclick="testLogin()">Test Login</button>
+                <button onclick="testGetMe()">Test Get Me (cần login)</button>
+                <div id="authResult" class="result" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- Game Levels -->
+        <div class="section">
+            <h2>🎯 Game Levels</h2>
+            <div class="test-group">
+                <button onclick="testGetLevels('hoc-so')">Học Số</button>
+                <button onclick="testGetLevels('ghep-so')">Ghép Số</button>
+                <button onclick="testGetLevels('chan-le')">Chẵn Lẻ</button>
+                <button onclick="testGetLevels('so-sanh')">So Sánh</button>
+                <button onclick="testGetLevels('xep-so')">Xếp Số</button>
+                <div id="levelsResult" class="result" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- Game Results -->
+        <div class="section">
+            <h2>📊 Game Results</h2>
+            <div class="test-group">
+                <button onclick="testSaveResult()">Save Game Result (cần login)</button>
+                <button onclick="testGetProgress()">Get Progress (cần login)</button>
+                <button onclick="testGetResults()">Get Results (cần login)</button>
+                <div id="resultsResult" class="result" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+        let authToken = null;
+        let studentId = null;
+
+        // Check backend status on load
+        window.addEventListener('load', async () => {
+            await checkBackendStatus();
+        });
+
+        async function checkBackendStatus() {
+            const statusEl = document.getElementById('backendStatus');
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                if (response.ok) {
+                    statusEl.textContent = 'Online';
+                    statusEl.className = 'status online';
+                } else {
+                    statusEl.textContent = 'Offline';
+                    statusEl.className = 'status offline';
+                }
+            } catch (error) {
+                statusEl.textContent = 'Offline';
+                statusEl.className = 'status offline';
+            }
+        }
+
+        function showResult(elementId, data, isError = false) {
+            const el = document.getElementById(elementId);
+            el.style.display = 'block';
+            el.className = `result ${isError ? 'error' : 'success'}`;
+            el.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testHealthCheck() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                showResult('healthResult', data);
+            } catch (error) {
+                showResult('healthResult', { error: error.message }, true);
+            }
+        }
+
+        async function testRegister() {
+            try {
+                const username = 'testuser_' + Date.now();
+                const response = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: username,
+                        password: '123456',
+                        full_name: 'Test User',
+                        role: 'student'
+                    })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    authToken = data.token;
+                    studentId = data.user.user_id;
+                    showResult('authResult', { ...data, note: 'Token và studentId đã được lưu!' });
+                } else {
+                    showResult('authResult', data, true);
+                }
+            } catch (error) {
+                showResult('authResult', { error: error.message }, true);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: 'hocsinh',
+                        password: '123'
+                    })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    authToken = data.token;
+                    studentId = data.studentId || data.user.user_id;
+                    showResult('authResult', { ...data, note: 'Token và studentId đã được lưu!' });
+                } else {
+                    showResult('authResult', data, true);
+                }
+            } catch (error) {
+                showResult('authResult', { error: error.message }, true);
+            }
+        }
+
+        async function testGetMe() {
+            if (!authToken) {
+                showResult('authResult', { error: 'Vui lòng login trước!' }, true);
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                showResult('authResult', data, !response.ok);
+            } catch (error) {
+                showResult('authResult', { error: error.message }, true);
+            }
+        }
+
+        async function testGetLevels(gameType) {
+            try {
+                const response = await fetch(`${API_URL}/api/games/levels/${gameType}`);
+                const data = await response.json();
+                showResult('levelsResult', data, !response.ok);
+            } catch (error) {
+                showResult('levelsResult', { error: error.message }, true);
+            }
+        }
+
+        async function testSaveResult() {
+            if (!authToken || !studentId) {
+                showResult('resultsResult', { error: 'Vui lòng login trước!' }, true);
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/games/result`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: studentId,
+                        levelId: 1,
+                        score: 85,
+                        timeSpent: 120
+                    })
+                });
+                const data = await response.json();
+                showResult('resultsResult', data, !response.ok);
+            } catch (error) {
+                showResult('resultsResult', { error: error.message }, true);
+            }
+        }
+
+        async function testGetProgress() {
+            if (!authToken || !studentId) {
+                showResult('resultsResult', { error: 'Vui lòng login trước!' }, true);
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/games/progress/${studentId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                showResult('resultsResult', data, !response.ok);
+            } catch (error) {
+                showResult('resultsResult', { error: error.message }, true);
+            }
+        }
+
+        async function testGetResults() {
+            if (!authToken || !studentId) {
+                showResult('resultsResult', { error: 'Vui lòng login trước!' }, true);
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/games/results/${studentId}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                showResult('resultsResult', data, !response.ok);
+            } catch (error) {
+                showResult('resultsResult', { error: error.message }, true);
+            }
+        }
+    </script>
+</body>
+
+</html>
