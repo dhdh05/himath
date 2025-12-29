@@ -7,7 +7,7 @@
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:3000'
       : (window.location.hostname.includes('render.com')
-        ? 'https://himath-backend.onrender.com'  // Thay bằng backend URL thực tế của bạn
+        ? 'https://himath-be.onrender.com'  // Thay bằng backend URL thực tế của bạn
         : 'https://your-backend-domain.com'));
 
   // Export ra window object để các file khác có thể dùng
