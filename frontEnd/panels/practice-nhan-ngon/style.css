@@ -1,0 +1,138 @@
+/* Scoped styles for AI Fingers panel (practice-nhan-ngon) */
+.practice-nhan-panel * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.practice-nhan-panel { display:flex; justify-content:center; margin-top: 3rem;}
+.practice-nhan-panel .ai-container {
+	position: relative; width: 100%; max-width: 920px; height: 560px; background:#000; border-radius:10px; overflow:hidden; box-shadow:0 0 20px rgba(0,255,255,0.08);
+	display: flex;
+	flex-direction: column;
+}
+
+/* Phần trên: Câu hỏi */
+.practice-nhan-panel .question-section {
+	flex: 0 0 auto;
+	background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	min-height: 180px;
+}
+
+/* Phần dưới: Khung nhận diện tay */
+.practice-nhan-panel .camera-section {
+	flex: 1 1 auto;
+	position: relative;
+	overflow: hidden;
+	min-height: 0; /* Quan trọng để flex hoạt động đúng */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #000;
+}
+
+/* Canvas covers the camera section and is mirrored for natural view */
+.practice-nhan-panel .camera-section #output_canvas { 
+	width: 100%; 
+	height: 100%; 
+	object-fit: cover; /* Scale để khớp khung */
+	transform: scaleX(-1); 
+	display: block;
+}
+
+/* HUD - trong question section */
+.practice-nhan-panel .question-section .hud { 
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 16px;
+	background: rgba(255,255,255,0.1);
+	padding: 10px 16px;
+	border-radius: 10px;
+	color: #fff;
+	gap: 15px;
+}
+
+.practice-nhan-panel .question-section .stats-group {
+	display: flex;
+	gap: 20px;
+}
+
+.practice-nhan-panel .question-section .status {
+	font-size: 16px;
+}
+
+/* Question box - trong question section */
+.practice-nhan-panel .question-section .question-box { 
+	background: rgba(255,255,255,0.95); 
+	color:#111; 
+	padding: 15px 25px; 
+	border-radius: 40px; 
+	font-size: 40px; /* Tăng 125% từ 32px (32 * 1.25 = 40px) */
+	font-weight: 700; 
+	box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 15px;
+	text-align: center;
+}
+
+.practice-nhan-panel .question-section .speak-btn {
+	background: #4CAF50;
+	border: none;
+	border-radius: 50%;
+	width: 45px;
+	height: 45px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: white;
+	font-size: 18px;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+	flex-shrink: 0; /* Không bị co lại */
+	position: relative;
+}
+
+/* Icon loa - dùng emoji để đảm bảo luôn hiển thị */
+.practice-nhan-panel .question-section .speak-btn .speak-icon {
+	display: inline-block;
+	font-size: 22px;
+	line-height: 1;
+	font-style: normal;
+}
+
+/* Ẩn nút speak nếu không cần thiết (có thể bật lại nếu muốn) */
+/* .practice-nhan-panel .question-section .speak-btn { display: none; } */
+
+.practice-nhan-panel .question-section .speak-btn:hover {
+	background: #45a049;
+	transform: scale(1.1);
+	box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.practice-nhan-panel .question-section .speak-btn:active {
+	transform: scale(0.95);
+}
+
+.practice-nhan-panel .camera-section .progress-bar { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); width:300px; height:18px; background:#333; border-radius:10px; border:2px solid white; z-index:20; overflow:hidden; display:none }
+.practice-nhan-panel .camera-section #progress-fill { width:0%; height:100%; background:#00ff00; transition:width 0.1s linear }
+
+/* Loading overlay */
+.practice-nhan-panel #loading { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#0b0b0b; z-index:50 }
+.practice-nhan-panel .loader { border:8px solid #222; border-top:8px solid #00ffcc; border-radius:50%; width:64px; height:64px; animation: spin 1s linear infinite; margin-bottom:16px }
+@keyframes spin { 0% { transform:rotate(0deg) } 100% { transform:rotate(360deg) } }
+
+/* .practice-nhan-panel .status { margin-left:12px } */
+
+/* small tweaks for mobile / narrow content */
+@media (max-width: 600px) {
+	.practice-nhan-panel .ai-container { height: 500px; }
+	.practice-nhan-panel .question-section { min-height: 140px; padding: 15px; }
+	.practice-nhan-panel .question-section .question-box { font-size: 28px; padding: 12px 18px; } /* Tăng 125% từ 22px */
+	.practice-nhan-panel .question-section .hud { font-size: 14px; flex-direction: column; gap: 8px; }
+	.practice-nhan-panel .question-section .speak-btn { width: 38px; height: 38px; font-size: 16px; }
+	.practice-nhan-panel .question-section .speak-btn i { font-size: 16px; }
+}
+
