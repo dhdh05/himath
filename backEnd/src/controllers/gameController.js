@@ -44,6 +44,7 @@ exports.submitScore = async (req, res) => {
         // Check if level_id is provided. Default to NULL to avoid FK error on 0.
         // For 'learning', level_id is often irrelevant so NULL is safer.
         let finalLevelId = (level_id && level_id != 0 && level_id != '0') ? level_id : null;
+        console.log(finalLevelId);
         
         // Cố gắng Insert (try to insert with NULL first)
         // Nếu DB không cho phép NULL, nó sẽ lỗi. Nhưng thường level_id nên là nullable.
