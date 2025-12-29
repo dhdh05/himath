@@ -1,0 +1,314 @@
+.achievements-panel {
+  padding: 32px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 25%, #c44569 50%, #f8b500 75%, #ffa502 100%);
+  background-attachment: fixed;
+  position: relative;
+  font-family: 'Lato', 'Nunito', sans-serif;
+}
+
+.achievements-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.achievements-header {
+  text-align: center;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.achievements-header h2 {
+  margin: 0 0 24px 0;
+  font-size: 52px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.5px;
+  font-family: 'Lato', 'Nunito', sans-serif;
+  text-transform: uppercase;
+}
+
+.achievements-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 20px 32px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.stat-value {
+  display: block;
+  font-size: 56px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-family: 'Lato', 'Nunito', sans-serif;
+}
+
+.stat-label {
+  display: block;
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.95);
+  margin-top: 8px;
+  font-weight: 700;
+  font-family: 'Lato', 'Nunito', sans-serif;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.achievement-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.achievement-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.achievement-icon {
+  font-size: 64px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #f8b500 100%);
+  border-radius: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.achievement-info {
+  flex: 1;
+}
+
+.achievement-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  font-family: 'Lato', 'Nunito', sans-serif;
+}
+
+.achievement-description {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  font-weight: 600;
+  font-family: 'Lato', 'Nunito', sans-serif;
+}
+
+.achievement-date {
+  font-size: 16px;
+  color: #888;
+  font-weight: 600;
+  font-family: 'Lato', 'Nunito', sans-serif;
+}
+
+.loading,
+.error,
+.empty {
+  padding: 60px 40px;
+  text-align: center;
+  color: white;
+  grid-column: 1 / -1;
+  font-size: 20px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.empty {
+  font-size: 22px;
+  line-height: 1.6;
+}
+
+/* Achievement Popup */
+.achievement-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  animation: popupSlideIn 0.3s ease-out;
+}
+
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.popup-content {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  min-width: 380px;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+}
+
+.popup-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.popup-title {
+  font-size: 36px;
+  font-weight: 900;
+  color: #333;
+  margin-bottom: 24px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Lato', 'Nunito', sans-serif;
+}
+
+.popup-achievements {
+  margin-bottom: 28px;
+}
+
+.popup-achievement-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #ff6b6b15 0%, #f8b50015 100%);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 2px solid rgba(255, 107, 107, 0.2);
+}
+
+.popup-ach-icon {
+  font-size: 40px;
+}
+
+.popup-ach-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  font-family: 'Lato', 'Nunito', sans-serif;
+}
+
+.popup-close {
+  padding: 12px 28px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Lato', 'Nunito', sans-serif;
+}
+
+.popup-close:hover {
+  background: #5568d3;
+}
+
+@media (max-width: 768px) {
+  .achievements-panel {
+    padding: 20px 16px;
+  }
+
+  .achievements-header h2 {
+    font-size: 32px;
+  }
+
+  .stat-value {
+    font-size: 36px;
+  }
+
+  .stat-label {
+    font-size: 16px;
+  }
+
+  .achievements-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .achievement-card {
+    padding: 20px;
+  }
+
+  .achievement-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 48px;
+  }
+
+  .achievement-title {
+    font-size: 20px;
+  }
+
+  .achievement-description {
+    font-size: 15px;
+  }
+
+  .popup-content {
+    min-width: 280px;
+    padding: 24px;
+  }
+}

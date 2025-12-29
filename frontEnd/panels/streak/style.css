@@ -1,0 +1,135 @@
+/* --- STREAK WIDGET (Horizontal Layout) --- */
+.streak-widget {
+  background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+  border: none;
+  border-radius: 0;
+  /* Bo border của modal rồi */
+  padding: 0;
+  display: flex;
+  /* Horizontal Layout */
+  width: 100%;
+  max-width: none;
+  position: relative;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+/* Background trang trí */
+.streak-widget::before {
+  content: '🔥';
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  font-size: 180px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Cột Trái (Số ngày) --- */
+.streak-left {
+  flex: 0 0 45%;
+  /* Chiếm 45% chiều rộng */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 193, 7, 0.15);
+  /* Nền vàng nhạt */
+  padding: 20px;
+  position: relative;
+  border-right: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.streak-days-container {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.streak-number {
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #ff6f00;
+  /* Cam đậm */
+  text-shadow: 2px 2px 0px white, 4px 4px 0px rgba(0, 0, 0, 0.1);
+  margin-bottom: 5px;
+}
+
+.streak-label {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- Cột Phải (Thông tin) --- */
+.streak-right {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  /* Căn trái nội dung */
+  text-align: left;
+}
+
+.streak-header h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.4rem;
+  /* To hơn chút */
+  color: #333;
+  text-transform: uppercase;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.streak-stats {
+  margin-bottom: 15px;
+}
+
+.streak-total {
+  background: #f0f0f0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.streak-message {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  line-height: 1.5;
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eee;
+  width: 100%;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 600px) {
+  .streak-widget {
+    flex-direction: column;
+  }
+
+  .streak-left {
+    padding: 30px 20px;
+    border-right: none;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+  }
+
+  .streak-right {
+    padding: 20px;
+    align-items: center;
+    text-align: center;
+  }
+}

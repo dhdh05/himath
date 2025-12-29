@@ -1,0 +1,273 @@
+/* Viet So Panel Styles */
+.viet-so-panel {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.viet-so-header {
+    margin-bottom: 20px;
+}
+
+.viet-so-header h1 {
+    color: #2c3e50;
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+.viet-so-header p {
+    color: #2d3436;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+/* --- MODE SELECTION (NEW) --- */
+.mode-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.mode-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    /* Bóng nhẹ đẹp */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 3px solid transparent;
+    text-align: left;
+}
+
+.mode-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    border-color: #74b9ff;
+}
+
+.mode-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5em;
+    color: white;
+    flex-shrink: 0;
+}
+
+/* Màu sắc từng icon */
+.icon-add-vi {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+}
+
+.icon-add-en {
+    background: linear-gradient(135deg, #0984e3, #74b9ff);
+    box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4);
+}
+
+.icon-sub-vi {
+    background: linear-gradient(135deg, #e17055, #fab1a0);
+    box-shadow: 0 5px 15px rgba(225, 112, 85, 0.4);
+}
+
+.icon-sub-en {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+}
+
+.icon-mix-vi {
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
+}
+
+.icon-mix-en {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+    box-shadow: 0 5px 15px rgba(142, 68, 173, 0.4);
+}
+
+.mode-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.4em;
+    color: #2d3436;
+}
+
+.mode-info p {
+    margin: 0;
+    color: #636e72;
+    font-size: 0.95em;
+}
+
+/* --- GAME AREA (Ẩn/Hiện) --- */
+.game-area {
+    display: none;
+    /* Mặc định ẩn */
+}
+
+.game-area.active {
+    display: block;
+    animation: slideUp 0.4s ease-out;
+}
+
+.btn-back {
+    background: #dfe6e9;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #636e72;
+    margin-bottom: 15px;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-back:hover {
+    background: #b2bec3;
+    color: #2d3436;
+}
+
+/* CANVAS CONTAINER */
+.canvas-container {
+    position: relative;
+    width: 280px;
+    /* Thu nhỏ lại để vừa màn hình */
+    height: 280px;
+    margin: 10px auto 20px;
+    /* Giảm margin */
+    background-color: #000;
+    border-radius: 20px;
+    border: 8px solid #FFC107;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    cursor: crosshair;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+/* MATH PROBLEM DISPLAY */
+.math-question {
+    font-size: 3em;
+    /* Giảm font nhẹ */
+    font-weight: 900;
+    color: #2d3436;
+    margin: 5px 0 15px;
+    /* Giảm margin */
+    background: white;
+    padding: 10px 30px;
+    border-radius: 15px;
+    box-shadow: 0 6px 0 #e17055;
+    border: 4px solid #fab1a0;
+    display: inline-block;
+    letter-spacing: 3px;
+}
+
+/* CONTROLS */
+.controls-area {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    /* Giảm margin dưới */
+}
+
+.btn-game {
+    padding: 10px 25px;
+    /* Nút gọn hơn */
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-game:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-clear {
+    background-color: #ff7675;
+    color: white;
+}
+
+.btn-check {
+    background-color: #00b894;
+    color: white;
+}
+
+/* RESULT AREA */
+.result-area {
+    min-height: 80px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #2d3436;
+}
+
+.prediction-score {
+    font-size: 0.8em;
+    color: #b2bec3;
+    margin-top: 5px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    60% {
+        transform: translateY(-5px);
+    }
+}

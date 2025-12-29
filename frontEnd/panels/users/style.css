@@ -1,0 +1,322 @@
+/* Users Panel Styles */
+.users-panel {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #333;
+}
+
+/* PIN SCREEN */
+.pin-screen {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.pin-input {
+    font-size: 30px;
+    letter-spacing: 10px;
+    width: 200px;
+    text-align: center;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.pin-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    font-size: 18px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.pin-error {
+    color: red;
+    margin-top: 10px;
+    display: none;
+}
+
+/* DASHBOARD */
+.dashboard {
+    animation: fadeIn 0.5s;
+}
+
+/* CARD: INFO */
+.user-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.avatar-circle {
+    width: 60px;
+    height: 60px;
+    background: #FFC107;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: white;
+    margin-right: 20px;
+}
+
+.user-details h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.user-details p {
+    margin: 5px 0 0;
+    color: #666;
+}
+
+/* CARD: TIME STATUS BAR */
+.status-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.status-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.progress-bg {
+    height: 20px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 1s ease, background 0.5s;
+}
+
+.status-message {
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Colors */
+.color-low {
+    background: #FF9800;
+}
+
+.color-good {
+    background: #4CAF50;
+}
+
+.color-high {
+    background: #F44336;
+}
+
+/* TABLE: HISTORY */
+.history-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.history-table th {
+    text-align: left;
+    color: #888;
+    padding: 10px;
+    border-bottom: 2px solid #eee;
+}
+
+.history-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.tag-game {
+    background: #E3F2FD;
+    color: #2196F3;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* NEW STYLES FOR TABS */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #666;
+    font-weight: bold;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.tab-btn.active {
+    background: #E3F2FD;
+    color: #2196F3;
+}
+
+.tab-btn:hover {
+    background: #f0f0f0;
+}
+
+.card-section {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.badge {
+    background: #F44336;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.small-btn {
+    background: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* NOTIFICATIONS */
+.notif-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    gap: 15px;
+    align-items: start;
+    transition: 0.2s;
+}
+
+.notif-item.unread {
+    background: #f9fbfd;
+    border-left: 3px solid #2196F3;
+}
+
+.notif-icon {
+    width: 40px;
+    height: 40px;
+    background: #E3F2FD;
+    color: #2196F3;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.notif-content h4 {
+    margin: 0 0 5px;
+    font-size: 14px;
+}
+
+.notif-content p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.notif-time {
+    font-size: 11px;
+    color: #999;
+    margin-top: 5px;
+}
+
+/* GOALS */
+.goal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.goal-progress {
+    width: 100px;
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.goal-fill {
+    height: 100%;
+    background: #4CAF50;
+    width: 0%;
+}
+
+.add-goal-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.action-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
