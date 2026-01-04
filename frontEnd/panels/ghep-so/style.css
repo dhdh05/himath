@@ -107,6 +107,39 @@
   color: #4a6bff;
   font-size: 1rem;
   margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Arrow slide animation: move arrow from right edge to left edge across the H2 */
+.ghepso-game .numbers-section h2 .fa-arrow-right,
+.ghepso-game .icons-section h2 .fa-arrow-right {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%) translateX(120%);
+  font-size: 1.1rem;
+  color: #4a6bff;
+  opacity: 0.95;
+  pointer-events: none;
+  animation: ghep-arrow-slide 2.8s linear infinite;
+}
+
+@keyframes ghep-arrow-slide {
+  0% {
+    transform: translateY(-50%) translateX(120%);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50%) translateX(-120%);
+    opacity: 0;
+  }
 }
 
 .ghepso-game .numbers-container {

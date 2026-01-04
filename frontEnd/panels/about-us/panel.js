@@ -111,7 +111,7 @@ export function mount(container) {
 
         <div class="member featured">
           <div class="member-avatar"><img src="./assets/images/mr_hqh.jpg" alt="Thầy Hoàng Quang Huy"></div>
-          <div class="member-name">Thầy Hoàng Quang Huy</div>
+          <div class="member-name"><a href="https://www.facebook.com/hqhuy.bk" target="_blank">Thầy Hoàng Quang Huy</a></div>
         </div>
 
         <div class="member">
