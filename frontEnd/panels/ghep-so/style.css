@@ -116,18 +116,18 @@
 .ghepso-game .icons-section h2 .fa-arrow-right {
   position: absolute;
   top: 50%;
-  right: 0;
-  transform: translateY(-50%) translateX(120%);
-  font-size: 1.1rem;
+  left: 0;
+  transform: translateY(-50%) translateX(-120%);
+  font-size: 1.5rem;
   color: #4a6bff;
   opacity: 0.95;
   pointer-events: none;
-  animation: ghep-arrow-slide 2.8s linear infinite;
+  animation: ghep-arrow-slide-ltr 2.6s linear infinite;
 }
 
-@keyframes ghep-arrow-slide {
+@keyframes ghep-arrow-slide-ltr {
   0% {
-    transform: translateY(-50%) translateX(120%);
+    transform: translateY(-50%) translateX(-120%);
     opacity: 0;
   }
   8% {
@@ -137,7 +137,7 @@
     opacity: 1;
   }
   100% {
-    transform: translateY(-50%) translateX(-120%);
+    transform: translateY(-50%) translateX(120%);
     opacity: 0;
   }
 }

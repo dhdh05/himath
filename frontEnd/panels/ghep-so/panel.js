@@ -36,12 +36,12 @@ export function mount(container) {
 
         <div class="game-main">
           <div class="numbers-section">
-            <h2><i class="fa-solid fa-arrow-right"></i></h2>
+            <h2><i class="fas fa-arrow-right"></i></h2>
             <div class="numbers-container ghep-numbers-container"></div>
           </div>
 
           <div class="icons-section">
-            <h2><i class="fa-solid fa-arrow-right"></i></h2>
+            <h2><i class="fas fa-arrow-right"></i></h2>
             <div class="icons-container ghep-icons-container"></div>
           </div>
         </div>
