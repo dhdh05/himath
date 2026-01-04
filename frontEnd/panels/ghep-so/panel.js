@@ -36,12 +36,12 @@ export function mount(container) {
 
         <div class="game-main">
           <div class="numbers-section">
-            <h2><i class="fas fa-sort-numeric-up"></i> Kéo số từ đây</h2>
+            <h2><i class="fa-solid fa-hand-back-fist"></i> Kéo số từ đây</h2>
             <div class="numbers-container ghep-numbers-container"></div>
           </div>
 
           <div class="icons-section">
-            <h2><i class="fas fa-icons"></i> Kéo sang đây với số lượng tương ứng</h2>
+            <h2><i class="fa-solid fa-hand"></i> Kéo sang đây với số lượng tương ứng</h2>
             <div class="icons-container ghep-icons-container"></div>
           </div>
         </div>

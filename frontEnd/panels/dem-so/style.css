@@ -85,15 +85,15 @@
     background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
     border-radius: 10px;
     padding: 12px;
-    display: grid;
-    grid-template-columns: repeat(5, auto);
+    display: flex;
     gap: 14px;
-    justify-content: center;
-    align-items: start;
+    justify-content: space-evenly;
+    align-items: center;
     min-height: 160px;
     border: 1px solid #e6e9ff;
     overflow: auto;
     height: 15.2rem;
+    flex-wrap: wrap;
 }
 
 .demso-container .icon-item {
@@ -101,7 +101,7 @@
     align-items: center;
     justify-content: center;
     animation: float 3s ease-in-out infinite;
-    width: 44px;
+    width: calc(18% - 10px);
     height: 44px;
 }
 

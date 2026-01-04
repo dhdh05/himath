@@ -88,14 +88,14 @@ export function mount(container) {
         overflow: hidden;
       }
       .member-avatar i { font-size: 32px; color: #2196F3; }
-      .member-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .member-avatar img { height: 100%; object-fit: cover; display: block; }
       .member-name {
         font-weight: 700;
         font-size: 1.1rem;
         color: #333;
       }
       /* Featured (the new member) — larger, positioned higher */
-      .member.featured .member-avatar { width: 120px; height: 120px; margin-top: -18px; }
+      .member.featured .member-avatar { width: 180px; height: 180px; margin-top: -18px; background-color: #454545;}
       .member.featured .member-name { font-size: 1.25rem; }
     `;
 
@@ -110,7 +110,7 @@ export function mount(container) {
         </div>
 
         <div class="member featured">
-          <div class="member-avatar"><img src="assets/images/team/thay_hoang_quang_huy.png" alt="Thầy Hoàng Quang Huy"></div>
+          <div class="member-avatar"><img src="./assets/images/mr_hqh.jpg" alt="Thầy Hoàng Quang Huy"></div>
           <div class="member-name">Thầy Hoàng Quang Huy</div>
         </div>
 
