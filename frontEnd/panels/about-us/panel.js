@@ -69,7 +69,8 @@ export function mount(container) {
       .team-members {
         display: flex;
         justify-content: center;
-        gap: 60px;
+        align-items: flex-start;
+        gap: 48px;
         margin: 20px 0;
       }
       .member {
@@ -84,14 +85,18 @@ export function mount(container) {
         align-items: center;
         justify-content: center;
         margin: 0 auto 10px;
-        font-size: 32px;
-        color: #2196F3;
+        overflow: hidden;
       }
+      .member-avatar i { font-size: 32px; color: #2196F3; }
+      .member-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
       .member-name {
         font-weight: 700;
         font-size: 1.1rem;
         color: #333;
       }
+      /* Featured (the new member) — larger, positioned higher */
+      .member.featured .member-avatar { width: 120px; height: 120px; margin-top: -18px; }
+      .member.featured .member-name { font-size: 1.25rem; }
     `;
 
   container.innerHTML = `
@@ -103,6 +108,12 @@ export function mount(container) {
           <div class="member-avatar"><i class="fas fa-user-tie"></i></div>
           <div class="member-name">Đỗ Đức Huy</div>
         </div>
+
+        <div class="member featured">
+          <div class="member-avatar"><img src="assets/images/team/thay_hoang_quang_huy.png" alt="Thầy Hoàng Quang Huy"></div>
+          <div class="member-name">Thầy Hoàng Quang Huy</div>
+        </div>
+
         <div class="member">
           <div class="member-avatar"><i class="fas fa-user-graduate"></i></div>
           <div class="member-name">Phan Công Trung</div>

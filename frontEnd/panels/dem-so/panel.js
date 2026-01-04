@@ -178,7 +178,7 @@ export function mount(container) {
     
     // Logic tạo câu hỏi
     currentIconType = iconTypes[getRandomNumber(0, iconTypes.length - 1)];
-    currentCorrectAnswer = getRandomNumber(1, 10); // Đếm số lượng nhỏ 1-10 cho dễ trước
+    currentCorrectAnswer = getRandomNumber(0, 10); // Đếm số lượng 0-10
     currentIconsData = [];
     for (let i = 0; i < currentCorrectAnswer; i++) {
       currentIconsData.push({ icon: currentIconType.icon, color: currentIconType.color, index: i });
@@ -210,7 +210,7 @@ export function mount(container) {
       const offset = getRandomNumber(1, 3);
       const shouldAdd = Math.random() > 0.5;
       wrongAnswer = shouldAdd ? currentCorrectAnswer + offset : currentCorrectAnswer - offset;
-      if (wrongAnswer >= 1 && wrongAnswer <= 20 && !answers.includes(wrongAnswer)) answers.push(wrongAnswer);
+      if (wrongAnswer >= 0 && wrongAnswer <= 20 && !answers.includes(wrongAnswer)) answers.push(wrongAnswer);
     }
     const shuffled = shuffleArray([...answers]);
     shuffled.forEach(ans => {

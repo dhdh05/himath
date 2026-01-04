@@ -277,15 +277,15 @@ export function mount(container) {
 				
                 setTimeout(() => { canvasElement.style.filter = 'none'; }, 300);
 				
-                // Chuyển câu hoặc kết thúc (delay một chút để voice kịp đọc)
-                setTimeout(() => {
-                if (questionCount < GAME_CONFIG.totalQuestions) {
-                    questionCount++;
-                    newQuestion();
-                } else {
-                    finishGame();
-                }
-				}, 600); // Delay 600ms để voice kịp đọc
+				// Chuyển câu hoặc kết thúc (cho thời gian hiển thị/âm thanh) — tăng lên 5s
+				setTimeout(() => {
+				if (questionCount < GAME_CONFIG.totalQuestions) {
+					questionCount++;
+					newQuestion();
+				} else {
+					finishGame();
+				}
+				}, 5000); // Delay 5000ms để voice/hiệu ứng kịp đọc
 			}
 		} else {
 			holdTimer = 0;

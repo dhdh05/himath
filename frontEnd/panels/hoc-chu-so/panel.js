@@ -12,7 +12,7 @@ export function mount(container) {
   container.innerHTML = `
     <div class="hoc-chu-so-container">
       <header>
-        <h1>Học Số 0-9</h1>
+        <h1>Học Số 0-10</h1>
       </header>
 
       <main>
@@ -71,7 +71,8 @@ export function mount(container) {
     { number: 6, name: "Số Sáu", imageUrl: "https://cdn.pixabay.com/photo/2017/06/09/12/59/dice-2386810_1280.jpg", audioUrl: "assets/sound/so_sau.mp3" },
     { number: 7, name: "Số Bảy", imageUrl: "https://cdn.pixabay.com/photo/2013/04/01/21/31/rainbow-99180_1280.jpg", audioUrl: "assets/sound/so_bay.mp3" },
     { number: 8, name: "Số Tám", imageUrl: "https://cdn.pixabay.com/photo/2015/06/08/15/02/octopus-801125_1280.jpg", audioUrl: "assets/sound/so_tam.mp3" },
-    { number: 9, name: "Số Chín", imageUrl: "https://cdn.pixabay.com/photo/2015/10/12/15/11/baseball-984444_1280.jpg", audioUrl: "assets/sound/so_chin.mp3" }
+    { number: 9, name: "Số Chín", imageUrl: "https://cdn.pixabay.com/photo/2015/10/12/15/11/baseball-984444_1280.jpg", audioUrl: "assets/sound/so_chin.mp3" },
+    { number: 10, name: "Số Mười", imageUrl: "https://cdn.pixabay.com/photo/2016/11/29/13/55/balloons-1869796_1280.jpg", audioUrl: "assets/sound/so_muoi/so_muoi.mp3" }
   ];
 
   let currentNumberIndex = 0;

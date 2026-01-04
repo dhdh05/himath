@@ -84,13 +84,13 @@
 .demso-container .icons-display {
     background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
     border-radius: 10px;
-    padding: 18px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 26px;
-    justify-content: space-evenly;
-    align-items: center;
-    min-height: 220px;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+    gap: 14px;
+    justify-content: center;
+    align-items: start;
+    min-height: 160px;
     border: 1px solid #e6e9ff;
     overflow: auto;
     height: 15.2rem;
@@ -101,12 +101,12 @@
     align-items: center;
     justify-content: center;
     animation: float 3s ease-in-out infinite;
-    width: 56px;
-    height: 56px;
+    width: 44px;
+    height: 44px;
 }
 
 .demso-container .icon-item i {
-    font-size: 4.8rem !important;
+    font-size: 3.2rem !important;
     filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.12));
     transition: all .28s ease;
 }
