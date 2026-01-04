@@ -32,6 +32,8 @@
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
+  margin-top: 0;
+  margin-bottom: 2px;
 }
 
 .sosanh-container .game-stats {
@@ -68,7 +70,7 @@
   align-items: center;
   gap: 20px;
   flex: 1;
-  margin: 10px 0;
+  margin: 0 0;
 }
 
 .sosanh-container .number-box {
@@ -149,6 +151,7 @@
   font-size: 1.2rem;
   font-weight: 700;
   color: #333;
+  margin: 0 0 0 0;
 }
 
 .sosanh-container .highlight {
@@ -169,7 +172,7 @@
 
 .sosanh-container .answer-btn {
   flex: 1;
-  max-width: 200px;
+  /* max-width: 200px; */
   background-color: rgb(139, 187, 238);
   border: none;
   border-radius: 12px;
@@ -182,6 +185,7 @@
   justify-content: center;
   gap: 12px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  height: 14rem;
 }
 
 .sosanh-container .answer-btn i {
