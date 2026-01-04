@@ -28,7 +28,7 @@
 }
 
 .xepso-container .game-header h1 {
-  font-family: 'Lato', sans-serif;
+  /* font-family: 'Lato', sans-serif; */
   color: #2575fc;
   font-size: 1.6rem;
   display: flex;
@@ -42,7 +42,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  margin-bottom: 14px;
+  /* margin-bottom: 14px; */
 }
 
 .xepso-container .stat {
