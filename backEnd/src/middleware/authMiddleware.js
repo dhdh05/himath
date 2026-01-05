@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
 
-// Đổi từ exports.verifyToken thành khai báo biến const
+// Doi tu exports.verifyToken thanh khai bao bien const
 const verifyToken = (req, res, next) => {
-    // Lấy token từ header gửi lên (Dạng: Bearer abcxyz...)
+    // Lay token tu header gui len (Dang: Bearer abcxyz...)
     const authHeader = req.headers['authorization'];
 
     // --- DEBUG LOG ---
-    console.log(`🛡️  [Auth] ${req.method} ${req.url} | Header: ${authHeader ? 'Có' : 'Không'}`);
+    console.log(`🛡️  [Auth] ${req.method} ${req.url} | Header: ${authHeader ? 'Co' : 'Khong'}`);
     // -----------------
 
     const token = authHeader && authHeader.split(' ')[1];
@@ -18,13 +18,13 @@ const verifyToken = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key_cua_huy');
         console.log("✅ Token Valid for User:", decoded.id || decoded.user_id);
-        req.user = decoded; // Lưu thông tin user vào biến req
-        next(); // Cho phép đi tiếp
+        req.user = decoded; // Luu thong tin user vao bien req
+        next(); // Cho phep di tiep
     } catch (error) {
         console.error("❌ Token Verification Failed:", error.message);
         return res.status(401).json({ success: false, message: 'Token không hợp lệ hoặc hết hạn!' });
     }
 };
 
-// QUAN TRỌNG: Xuất trực tiếp hàm này ra
+// QUAN TRONG: Xuat truc tiep ham nay ra
 module.exports = verifyToken;

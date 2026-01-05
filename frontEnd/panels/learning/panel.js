@@ -34,7 +34,7 @@ export function mount(container) {
                     <!-- Player cho Youtube/Drive (Fallback) -->
                     <iframe id="iframePlayer" src="" allowfullscreen allow="autoplay"></iframe>
                     
-                    <!-- Player cho file MP4 trực tiếp & Drive Stream (Main) -->
+                    <!-- Player cho file MP4 truc tiep & Drive Stream (Main) -->
                     <video id="nativePlayer" controls playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background:black;"></video>
                 </div>
                 
@@ -157,7 +157,7 @@ export function mount(container) {
         nativePlayer.pause();
         nativePlayer.src = '';
 
-        // --- CHECK LOẠI VIDEO ---
+        // --- CHECK LOAI VIDEO ---
 
         // 1. MP4 direct
         if (url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov')) {
@@ -210,7 +210,7 @@ export function mount(container) {
             }
 
             if (videoId) {
-                // Thêm origin để tránh lỗi chặn nhúng domain
+                // Them origin de tranh loi chan nhung domain
                 const origin = window.location.origin;
                 embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1&origin=${origin}`;
             }
@@ -229,9 +229,9 @@ export function mount(container) {
         if (videoStartTime) {
             const duration = Math.round((Date.now() - videoStartTime) / 1000);
 
-            // Giảm threshold xuống 3 giây để dễ test
+            // Giam threshold xuong 3 giay de de test
             if (duration > 3) {
-                console.log(`⏱️ Đã xem video trong ${duration} giây. Đang lưu kết quả...`);
+                console.log(`⏱️ Da xem video trong ${duration} giay. Dang luu ket qua...`);
                 try {
                     const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
 

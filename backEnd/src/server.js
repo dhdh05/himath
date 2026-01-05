@@ -20,15 +20,14 @@ dotenv.config();
 const app = express();
 
 // Middleware
-// CORS Configuration - cho phép frontend gọi API
-// Development: Cho phép nhiều origin, Production: Chỉ cho phép domain cụ thể
+// CORS Configuration - cau hinh CORS cho phep frontend goi API
 const corsOptions = {
   origin: function (origin, callback) {
-    // Cho phép requests không có origin (mobile apps, Postman, etc.) trong development
+    // Cho phep requests khong co origin (mobile apps, Postman) trong moi truong development
     if (!origin || process.env.NODE_ENV !== 'production') {
       return callback(null, true);
     }
-    // Production: Kiểm tra whitelist
+    // Production: Kiem tra whitelist
     const allowedOrigins = [
       process.env.FRONTEND_URL,
       'http://localhost:5500',
@@ -65,7 +64,7 @@ app.use('/api/lessons', require('./routes/lessonRoutes'));
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`✅ Server đang chạy tại http://localhost:${PORT}`);
+  console.log(`✅ Server dang chay tai http://localhost:${PORT}`);
   console.log(`📡 API Endpoints:`);
   console.log(`   - Auth: /api/auth/login, /api/auth/register`);
   console.log(`   - Games: /api/games/levels/:gameType, /api/games/submit`);
@@ -78,7 +77,7 @@ app.listen(PORT, () => {
   console.log(`   - Lessons: /api/lessons`);
   console.log(`   - Notifications: /api/notifications`);
   console.log(`   - Goals: /api/goals`);
-  console.log(`\n💡 Frontend cần mở bằng http://localhost:5500 hoặc Live Server`);
+  console.log(`\n💡 Frontend can mo bang http://localhost:5500 hoac Live Server`);
 });
 
 

@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 
-// Lấy danh sách Level
+// Lay danh sach Level
 exports.getLevels = async (req, res) => {
     try {
         const { gameType } = req.params;
@@ -24,12 +24,12 @@ exports.getLevels = async (req, res) => {
 
         res.json({ success: true, data: levels });
     } catch (error) {
-        console.error("Lỗi lấy level:", error);
+        console.error("Loi lay level:", error);
         res.status(500).json({ success: false, message: 'Lỗi server' });
     }
 };
 
-// Lưu kết quả chơi
+// Luu ket qua choi
 exports.submitScore = async (req, res) => {
     try {
         const student_id = req.user.id;
@@ -38,53 +38,53 @@ exports.submitScore = async (req, res) => {
 
         console.log(`📝 Submit: User ${student_id} | Game ${dbType} | Score ${score}`);
 
-        // Xử lý level_id:
-        // Nếu game_type là 'learning', level_id nên là NULL (hoặc 0 nếu DB bắt buộc nhưng không có FK)
+        // Xu ly level_id:
+        // Neu game_type la 'learning', level_id nen la NULL (hoac 0 neu DB bat buoc nhung khong co FK)
         // Check if level_id is provided, otherwise default to NULL if allowed, or handling FK issues
         // Check if level_id is provided. Default to NULL to avoid FK error on 0.
         // For 'learning', level_id is often irrelevant so NULL is safer.
         let finalLevelId = (level_id && level_id != 0 && level_id != '0') ? level_id : null;
         console.log(finalLevelId);
-        
-        // Cố gắng Insert (try to insert with NULL first)
-        // Nếu DB không cho phép NULL, nó sẽ lỗi. Nhưng thường level_id nên là nullable.
+
+        // Co gang Insert (try to insert with NULL first)
+        // Neu DB khong cho phep NULL, no se loi. Nhung thuong level_id nen la nullable.
         try {
-             await pool.execute(
+            await pool.execute(
                 `INSERT INTO game_results (student_id, level_id, game_type, score, stars, is_passed, time_spent, completed_at) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
                 [student_id, finalLevelId, dbType, score, stars, is_passed ? 1 : 0, time_spent || 0]
             );
         } catch (err) {
-            // Fallback: Nếu lỗi (có thể do level_id không được NULL), thử set về 1 (hoặc tìm level min)
-            // Hoặc log lỗi để debug
+            // Fallback: Neu loi (co the do level_id khong duoc NULL), thu set ve 1 (hoac tim level min)
+            // Hoac log loi de debug
             console.warn("⚠️ Insert game_result failed with level_id=NULL. Retrying/Logging:", err.message);
-            // Nếu lỗi FK, ta không thể làm gì nhiều ngoài việc đảm bảo DB có data chuẩn.
-            // Tạm thời throw tiếp để catch ở ngoài handle
+            // Neu loi FK, ta khong the lam gi nhieu ngoai viec dam bao DB co data chuan.
+            // Tam thoi throw tiep de catch o ngoai handle
             throw err;
         }
 
-        // 🚀 TỐI ƯU: Cập nhật tiến độ tổng hợp vào bảng student_game_progress
+        // 🚀 TOI UU: Cap nhat tien do tong hop vao bang student_game_progress
         if (is_passed) {
-             // Logic: Nếu level này cao hơn level đã lưu thì update, cộng dồn sao, v.v.
-             // Tuy nhiên level_id ở đây đang là ID trong DB, còn logic game thường dùng level_number.
-             // Ta sẽ đơn giản hóa: Luôn cập nhật/tạo mới dòng progress cho loại game này.
-             
-             // 1. Tìm level_number tương ứng với level_id (nếu có)
-             let currentLevelNum = 1;
-             if (finalLevelId > 0) {
-                 try {
-                     const [lvlRows] = await pool.execute('SELECT level_number FROM game_levels WHERE level_id = ?', [finalLevelId]);
-                     if (lvlRows.length > 0) currentLevelNum = lvlRows[0].level_number;
-                 } catch (e) { /* Ignore */ }
-             }
+            // Logic: Neu level nay cao hon level da luu thi update, cong don sao, v.v.
+            // Tuy nhien level_id o day dang la ID trong DB, con logic game thuong dung level_number.
+            // Ta se don gian hoa: Luon cap nhat/tao moi dong progress cho loai game nay.
 
-             // 2. Upsert vào student_game_progress
-             // Cập nhật:
-             // - highest_level_passed: Lấy MAX của mức cũ và mức mới
-             // - total_stars: Cộng thêm sao vừa đạt được
-             // - total_attempts: Cộng thêm 1
-             // - last_played_at: Cập nhật thời gian
-             const sqlUpsert = `
+            // 1. Tim level_number tuong ung voi level_id (neu co)
+            let currentLevelNum = 1;
+            if (finalLevelId > 0) {
+                try {
+                    const [lvlRows] = await pool.execute('SELECT level_number FROM game_levels WHERE level_id = ?', [finalLevelId]);
+                    if (lvlRows.length > 0) currentLevelNum = lvlRows[0].level_number;
+                } catch (e) { /* Ignore */ }
+            }
+
+            // 2. Upsert vao student_game_progress
+            // Cap nhat:
+            // - highest_level_passed: Lay MAX cua muc cu va muc moi
+            // - total_stars: Cong them sao vua dat duoc
+            // - total_attempts: Cong them 1
+            // - last_played_at: Cap nhat thoi gian
+            const sqlUpsert = `
                 INSERT INTO student_game_progress 
                     (student_id, game_type, current_level, highest_level_passed, total_stars, total_attempts, last_played_at, last_updated_at)
                 VALUES 
@@ -96,16 +96,16 @@ exports.submitScore = async (req, res) => {
                     last_played_at = NOW(),
                     last_updated_at = NOW();
              `;
-             
-             // Lưu ý: current_level có thể hiểu là "level tiếp theo phải chơi".
-             // Ở đây ta tạm để bằng currentLevelNum + 1 (mở khóa màn sau)
-             await pool.execute(sqlUpsert, [
-                 student_id, dbType, currentLevelNum + 1, currentLevelNum, stars, // Values cho Insert
-                 currentLevelNum, stars // Values cho Update
-             ]);
+
+            // Luu y: current_level co the hieu la "level tiep theo phai choi".
+            // O day ta tam de bang currentLevelNum + 1 (mo khoa man sau)
+            await pool.execute(sqlUpsert, [
+                student_id, dbType, currentLevelNum + 1, currentLevelNum, stars, // Values cho Insert
+                currentLevelNum, stars // Values cho Update
+            ]);
         } else {
-             // Nếu không qua màn, vẫn cập nhật số lần chơi và thời gian
-             const sqlUpdateFail = `
+            // Neu khong qua man, van cap nhat so lan choi va thoi gian
+            const sqlUpdateFail = `
                 INSERT INTO student_game_progress 
                     (student_id, game_type, current_level, highest_level_passed, total_stars, total_attempts, last_played_at, last_updated_at)
                 VALUES 
@@ -115,16 +115,16 @@ exports.submitScore = async (req, res) => {
                     last_played_at = NOW(),
                     last_updated_at = NOW();
              `;
-             await pool.execute(sqlUpdateFail, [student_id, dbType]);
+            await pool.execute(sqlUpdateFail, [student_id, dbType]);
         }
 
-        // Tự động check achievements và rewards (không block response nếu có lỗi)
+        // Tu dong check achievements va rewards (khong block response neu co loi)
         let newAchievements = [];
         let newRewards = [];
-        
+
         try {
             const achievementController = require('./achievementController');
-            // Tạo một mock req object với body data
+            // Tao mot mock req object voi body data
             const mockReq = {
                 user: req.user,
                 body: { game_type: dbType, score, level_id: finalLevelId, stars }
@@ -134,9 +134,9 @@ exports.submitScore = async (req, res) => {
                 newAchievements = achResult.new_achievements;
             }
         } catch (achError) {
-            console.error("Lỗi check achievements (không ảnh hưởng):", achError);
+            console.error("Loi check achievements (khong anh huong):", achError);
         }
-        
+
         try {
             const rewardController = require('./rewardController');
             const rewardResult = await rewardController.checkRewards(req);
@@ -144,85 +144,17 @@ exports.submitScore = async (req, res) => {
                 newRewards = rewardResult.new_rewards;
             }
         } catch (rewardError) {
-            console.error("Lỗi check rewards (không ảnh hưởng):", rewardError);
+            console.error("Loi check rewards (khong anh huong):", rewardError);
         }
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: 'Lưu thành công',
             new_achievements: newAchievements,
             new_rewards: newRewards
         });
     } catch (error) {
-        console.error("Lỗi lưu điểm:", error);
+        console.error("Loi luu diem:", error);
         res.status(500).json({ success: false, message: 'Lỗi lưu điểm' });
     }
 };
-
-
-
-
-
-// const db = require('../config/db');
-
-// // API 1: Lấy danh sách Level theo loại game (ví dụ: 'hoc-so')
-// exports.getLevelsByGameType = async (req, res) => {
-//     try {
-//         const { gameType } = req.params; // Lấy từ URL
-//         const [rows] = await db.execute(
-//             'SELECT * FROM game_levels WHERE game_type = ? ORDER BY level_number ASC',
-//             [gameType]
-//         );
-        
-//         // Parse JSON config để Frontend dùng được luôn
-//         const levels = rows.map(level => ({
-//             ...level,
-//             config: typeof level.config === 'string' ? JSON.parse(level.config) : level.config
-//         }));
-
-//         res.json({ success: true, data: levels });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ success: false, message: 'Lỗi server' });
-//     }
-// };
-
-// // API 2: Nộp bài và lưu kết quả
-// exports.submitGameResult = async (req, res) => {
-//     try {
-//         const { student_id, level_id, game_type, score, stars, time_spent, is_passed, answers } = req.body;
-
-//         // 1. Lưu vào bảng lịch sử chi tiết (game_results)
-//         await db.execute(
-//             `INSERT INTO game_results 
-//             (student_id, level_id, game_type, score, stars, time_spent, is_passed, answers) 
-//             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-//             [student_id, level_id, game_type, score, stars, time_spent, is_passed, JSON.stringify(answers)]
-//         );
-
-//         // 2. Cập nhật tiến độ tổng (student_game_progress)
-//         // Logic: Nếu chưa có thì tạo mới, nếu có rồi thì update level cao nhất và cộng dồn sao
-//         if (is_passed) {
-//             // Lấy level number hiện tại
-//             const [levelInfo] = await db.execute('SELECT level_number FROM game_levels WHERE level_id = ?', [level_id]);
-//             const currentLevelNum = levelInfo[0].level_number;
-
-//             // Upsert (Insert nếu chưa có, Update nếu đã có)
-//             const sqlUpdateProgress = `
-//                 INSERT INTO student_game_progress (student_id, game_type, current_level, highest_level_passed, total_stars, last_played_at)
-//                 VALUES (?, ?, ?, ?, ?, NOW())
-//                 ON DUPLICATE KEY UPDATE 
-//                     highest_level_passed = GREATEST(highest_level_passed, ?),
-//                     total_stars = total_stars + ?,
-//                     last_played_at = NOW();
-//             `;
-//             await db.execute(sqlUpdateProgress, [student_id, game_type, currentLevelNum + 1, currentLevelNum, stars, currentLevelNum, stars]);
-//         }
-
-//         res.json({ success: true, message: 'Lưu kết quả thành công!' });
-
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ success: false, message: 'Lỗi lưu kết quả' });
-//     }
-// };

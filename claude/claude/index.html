@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học Toán Thông Minh AI</title>
+    <link rel="stylesheet" href="/claude/style.css">
+    <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Bé Tập Làm Toán</h2>
+        
+        <div id="question-box">
+            <span id="num1">0</span>
+            <span id="operator">+</span>
+            <span id="num2">0</span>
+            <span>=</span>
+            <span>?</span>
+        </div>
+
+        <div class="canvas-wrapper" id="board-container">
+            <canvas id="drawing-board" width="300" height="200"></canvas>
+        </div>
+
+        <div class="controls">
+            <button onclick="clearCanvas()" class="btn-clear">Xóa bảng</button>
+            <button onclick="checkResult()" class="btn-check">Xác nhận</button>
+        </div>
+
+        <p id="status-text">Hãy viết đáp án lên bảng và ấn Xác nhận</p>
+    </div>
+
+    <script src="/claude/script.js"></script>
+</body>
+</html>

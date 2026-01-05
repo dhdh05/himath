@@ -10,9 +10,10 @@ export function mount(container) {
   }
   style.textContent = `
       .about-us-panel {
-        padding: 20px;
+        padding: 40px 20px;
         max-width: 900px;
-        height: 100%;
+        min-height: 100%;
+        height: auto;
         margin: 0 auto;
         color: #333;
         font-family: 'Nunito', sans-serif;
@@ -22,9 +23,8 @@ export function mount(container) {
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
-        overflow: hidden; /* Prevent scrolling */
       }
       .about-us-title {
         font-family: 'Lato', 'Arial', sans-serif;
@@ -49,6 +49,8 @@ export function mount(container) {
         display: inline-block;
         text-align: left;
         border: 2px solid #e9ecef;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       .contact-item {
         margin: 8px 0;
@@ -57,6 +59,7 @@ export function mount(container) {
         display: flex;
         align-items: center;
         gap: 10px;
+        flex-wrap: wrap;
       }
       .contact-item a:hover {
         color: #2575fc !important;
@@ -101,7 +104,7 @@ export function mount(container) {
 
   container.innerHTML = `
     <div class="about-us-panel">
-      <h1 class="about-us-title">Về Chúng Tớ</h1>
+      <h1 class="about-us-title">ABOUT US</h1>
       
       <div class="team-members">
         <div class="member">
@@ -120,23 +123,31 @@ export function mount(container) {
         </div>
       </div>
 
-      <p class="about-us-content">
-        Xin chào mọi người! Website này là sản phẩm của bài tập lớn trong học phần <strong>"Kỹ thuật phần mềm ứng dụng"</strong> của chúng tớ.
-        <br><br>
-        Chúng tớ rất mong sau khi mọi người trải nghiệm sẽ gửi lại phản hồi để chúng tớ có thể hoàn thiện và phát triển sản phẩm tốt hơn nữa.
-        <br><br>
-        Cảm ơn các bạn rất nhiều! ❤️
-      </p>
+      <div class="about-us-content" style="max-width: 800px; text-align: justify;">
+        <p>
+          Xin chào mọi người! Website này là sản phẩm của bài tập lớn trong học phần <strong>"Kỹ thuật phần mềm ứng dụng"</strong> của chúng tớ.
+        </p>
+        
+        <div style="background: #e3f2fd; padding: 15px; border-radius: 12px; margin: 20px 0; border-left: 5px solid #2196F3;">
+            <p style="margin: 0; font-style: italic; color: #0d47a1;">
+                "Chúng em xin gửi lời cảm ơn chân thành và sâu sắc nhất đến thầy <strong>Hoàng Quang Huy</strong> – người thầy tâm huyết đã tận tình hướng dẫn, chỉ bảo và đưa ra những lời góp ý xác đáng để chúng em thực hiện dự án này. Sự dẫn dắt của thầy không chỉ giúp chúng em xây dựng được nền tảng cơ bản trong phạm vi môn học, mà còn tạo nên nguồn tư liệu tham khảo hữu ích để các bạn sinh viên khóa sau có thể tiếp cận và phát triển thêm."
+            </p>
+        </div>
+
+        <p>
+          Chúng tớ rất mong sau khi mọi người trải nghiệm sẽ gửi lại phản hồi để chúng tớ có thể hoàn thiện và phát triển sản phẩm tốt hơn nữa. Cảm ơn các bạn rất nhiều! ❤️
+        </p>
+      </div>
 
       <div class="contact-info">
         <div style="font-weight: 700; margin-bottom: 15px; text-align: center; text-transform: uppercase; color: #666;">Contact Us</div>
         <div class="contact-item">
           <i class="fas fa-envelope"></i>
-          <span><strong>Huy:</strong> <a href="mailto:huy.dd233441@sis.hust.edu.vn" style="color: #444; text-decoration: none; border-bottom: 1px dotted #888;">huy.dd233441@sis.hust.edu.vn</a></span>
+          <span><strong>Huy:</strong> <a href="mailto:huy.dd233441@sis.hust.edu.vn" style="color: #444; text-decoration: none; border-bottom: 1px dotted #888; word-break: break-all;">huy.dd233441@sis.hust.edu.vn</a></span>
         </div>
         <div class="contact-item">
           <i class="fas fa-envelope"></i>
-          <span><strong>Trung:</strong> <a href="mailto:trung.pc233683@sis.hust.edu.vn" style="color: #444; text-decoration: none; border-bottom: 1px dotted #888;">trung.pc233683@sis.hust.edu.vn</a></span>
+          <span><strong>Trung:</strong> <a href="mailto:trung.pc233683@sis.hust.edu.vn" style="color: #444; text-decoration: none; border-bottom: 1px dotted #888; word-break: break-all;">trung.pc233683@sis.hust.edu.vn</a></span>
         </div>
       </div>
     </div>

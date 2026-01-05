@@ -50,7 +50,7 @@
     try { localStorage.removeItem(CURRENT_USER_KEY); localStorage.removeItem(AUTH_KEY); localStorage.removeItem('user_token'); } catch (e) { }
   }
 
-  // Helper function để lấy Authorization headers cho API calls
+  // Helper function de lay Authorization headers cho API calls
   function getAuthHeaders() {
     const token = localStorage.getItem('user_token');
     const headers = { 'Content-Type': 'application/json' };
@@ -60,23 +60,23 @@
     return headers;
   }
 
-  // Export helper function để các panel files có thể dùng
+  // Export helper function de cac panel files co the dung
   window.getAuthHeaders = getAuthHeaders;
 
-  // Cập nhật HiMathUserId khi page load (nếu user đã đăng nhập)
+  // Cap nhat HiMathUserId khi page load (neu user da dang nhap)
   function initHiMathUserId() {
     const currentUser = getCurrentUser();
     if (currentUser && (currentUser.id || currentUser.user_id)) {
       const userId = currentUser.id || currentUser.user_id;
       window.HiMathUserId = userId;
-      // Cập nhật trong stats gateway nếu đã load
+      // Cap nhat trong stats gateway neu da load
       if (window.updateHiMathUserId) {
         window.updateHiMathUserId();
       }
     }
   }
 
-  // Gọi ngay khi script load
+  // Goi ngay khi script load
   initHiMathUserId();
 
 
@@ -85,7 +85,7 @@
   seedDemoUser();
   updateAuthUI();
 
-  // ===== Notification Bell - Hiển thị thời gian học hôm nay =====
+  // ===== Notification Bell - Hien thi thoi gian hoc hom nay =====
   function formatStudyTime(seconds) {
     if (!seconds || seconds === 0) return '0s';
 
@@ -112,7 +112,7 @@
     }
 
     try {
-      // Gọi API mới để lấy tổng thời gian truy cập website trong ngày hôm nay
+      // Goi API moi de lay tong thoi gian truy cap website trong ngay hom nay
       const apiUrl = window.API_CONFIG?.ENDPOINTS?.PARENTS?.TODAY_TIME || 'http://localhost:3000/api/parents/today-time';
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
 
@@ -134,39 +134,39 @@
     }
   }
 
-  // Cập nhật khi user đăng nhập và định kỳ mỗi 30 giây
+  // Cap nhat khi user dang nhap va dinh ky moi 30 giay
   setInterval(updateNotificationBell, 30000);
   updateNotificationBell();
 
-  // Thêm event listener cho bell button
+  // Them event listener cho bell button
   let notificationPopup = null;
 
   function initNotificationBell() {
     const bellBtn = document.getElementById('notificationBell');
     if (!bellBtn) {
-      // Retry sau một chút nếu button chưa có
+      // Retry sau mot chut neu button chua co
       setTimeout(initNotificationBell, 100);
       return;
     }
 
-    // Xóa listener cũ nếu có (tránh duplicate)
+    // Xoa listener cu neu co (tranh duplicate)
     const newBellBtn = bellBtn.cloneNode(true);
     bellBtn.parentNode.replaceChild(newBellBtn, bellBtn);
 
     newBellBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
 
-      // Xóa popup cũ nếu có
+      // Xoa popup cu neu co
       if (notificationPopup) {
         notificationPopup.remove();
         notificationPopup = null;
         return;
       }
 
-      // Lấy thông tin thời gian học từ title hoặc gọi API để lấy thời gian mới nhất
+      // Lay thong tin thoi gian hoc tu title hoac goi API de lay thoi gian moi nhat
       let studyTime = newBellBtn.title.replace('Hôm nay bé đã học: ', '') || '0s';
 
-      // Gọi API để lấy thời gian mới nhất khi mở popup
+      // Goi API de lay thoi gian moi nhat khi mo popup
       try {
         const apiUrl = window.API_CONFIG?.ENDPOINTS?.PARENTS?.TODAY_TIME || 'http://localhost:3000/api/parents/today-time';
         const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
@@ -176,7 +176,7 @@
           if (json.success) {
             const totalSeconds = parseInt(json.total_seconds || 0);
             studyTime = formatStudyTime(totalSeconds);
-            // Cập nhật title luôn
+            // Cap nhat title luon
             newBellBtn.title = `Hôm nay bé đã học: ${studyTime}`;
           }
         }
@@ -184,7 +184,7 @@
         console.error('Lỗi lấy thời gian khi mở popup:', e);
       }
 
-      // Tạo popup
+      // Tao popup
       notificationPopup = document.createElement('div');
       notificationPopup.style.cssText = `
         position: fixed;
@@ -217,7 +217,7 @@
         <button id="closeNotificationBtn" style="margin-top: 12px; width: 100%; padding: 8px; background: #4a6bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Đóng</button>
       `;
 
-      // Thêm animation CSS nếu chưa có
+      // Them animation CSS neu chua co
       if (!document.getElementById('notificationPopupStyle')) {
         const style = document.createElement('style');
         style.id = 'notificationPopupStyle';
@@ -238,7 +238,7 @@
 
       document.body.appendChild(notificationPopup);
 
-      // Đóng khi click nút đóng
+      // Dong khi click nut dong
       const closeBtn = notificationPopup.querySelector('#closeNotificationBtn');
       if (closeBtn) {
         closeBtn.addEventListener('click', (e) => {
@@ -248,7 +248,7 @@
         });
       }
 
-      // Đóng khi click bên ngoài
+      // Dong khi click ben ngoai
       setTimeout(() => {
         const closeOnOutsideClick = (e) => {
           if (notificationPopup && !notificationPopup.contains(e.target) && e.target !== newBellBtn && !newBellBtn.contains(e.target)) {
@@ -262,7 +262,7 @@
     });
   }
 
-  // Khởi tạo ngay khi script chạy (vì script được load ở cuối body)
+  // Khoi tao ngay khi script chay (vi script duoc load o cuoi body)
   initNotificationBell();
 
   function syncScrollLock() {
@@ -521,19 +521,19 @@
   const PROTECTED_KEYS = new Set(['digits-hoc-so', 'digits-ghep-so', 'digits-chan-le', 'digits-dem-so', 'compare-so-sanh', 'compare-xep-so', 'practice-tinh-toan', 'practice-nhan-ngon', 'games', 'games-dino']);
   // Handle both forms
   // handle login and register with localStorage (demo only)
-  // --- CODE MỚI: XỬ LÝ ĐĂNG NHẬP THẬT ---
+  // --- CODE MOI: XU LY DANG NHAP THAT ---
 
-  // 1. Xử lý Form Đăng Nhập
+  // 1. Xu ly Form Dang Nhap
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault(); // Chặn reload trang
+      e.preventDefault(); // Chan reload trang
 
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
 
       try {
-        // Gọi API Backend
+        // Goi API Backend
         const apiUrl = window.API_CONFIG?.ENDPOINTS?.AUTH?.LOGIN || 'http://localhost:3000/api/auth/login';
         const res = await fetch(apiUrl, {
           method: 'POST',
@@ -544,31 +544,31 @@
         const data = await res.json();
 
         if (data.success) {
-          // A. Lưu thông tin quan trọng vào bộ nhớ
-          localStorage.setItem('user_token', data.token); // Thẻ bài để chơi game
-          localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(data.user)); // Thông tin user
-          localStorage.setItem(AUTH_KEY, '1'); // Để giữ logic giao diện cũ của bạn
+          // A. Luu thong tin quan trong vao bo nho
+          localStorage.setItem('user_token', data.token); // The bai de choi game
+          localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(data.user)); // Thong tin user
+          localStorage.setItem(AUTH_KEY, '1'); // De giu logic giao dien cu cua ban
 
-          // A1. Cập nhật HiMathUserId để stats và games dùng đúng user
+          // A1. Cap nhat HiMathUserId de stats va games dung dung user
           if (window.updateHiMathUserId) {
             window.updateHiMathUserId();
           } else {
-            // Fallback: Set trực tiếp nếu function chưa load
+            // Fallback: Set truc tiep neu function chua load
             const userId = data.user.id || data.user.user_id;
             if (userId) {
               window.HiMathUserId = userId;
             }
           }
 
-          // B. Thông báo & Đóng popup
-          // C. Kiểm tra Email và DOB
+          // B. Thong bao & Dong popup
+          // C. Kiem tra Email va DOB
           if (!data.user.email || !data.user.dob) {
             alert('⚠️ Vui lòng cập nhật thông tin còn thiếu (Email/Ngày sinh) để tiếp tục!');
             closeAuth();
             const upModal = document.getElementById('update-email-modal');
             if (upModal) {
               upModal.hidden = false;
-              // Điền sẵn thông tin đã có (nếu có)
+              // Dien san thong tin da co (neu co)
               if (data.user.email) document.getElementById('update_email_input').value = data.user.email;
               // Format DOB yyyy-MM-dd
               if (data.user.dob) {
@@ -577,7 +577,7 @@
                 document.getElementById('update_dob_input').value = iso;
               }
             }
-            // KHÔNG RELOAD, chờ update xong mới reload
+            // KHONG RELOAD, cho update xong moi reload
           } else {
             alert('✅ Xin chào ' + data.user.name + '! Đăng nhập thành công.');
             closeAuth();
@@ -599,14 +599,13 @@
     });
   }
 
-  // 2. Xử lý Form Đăng Ký (Giữ tạm demo vì Backend chưa làm chức năng này)
-  // 2. Xử lý Form Đăng Ký (Đã hoàn thiện)
+  // 2. Xu ly Form Dang Ky (Da hoan thien)
   const registerForm = document.querySelector('[data-auth-form="register"]');
   if (registerForm) {
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Lấy giá trị từ các ô input (Đảm bảo HTML đã đặt đúng ID này)
+      // Lay gia tri tu cac o input (Dam bao HTML da dat dung ID nay)
       const fullName = document.getElementById('reg_fullname')?.value;
       const dob = document.getElementById('reg_dob')?.value;
       const email = document.getElementById('reg_email')?.value;
@@ -615,7 +614,7 @@
       const password = document.getElementById('reg_password')?.value;
       const confirmPass = document.getElementById('reg_confirm')?.value;
 
-      // Kiểm tra cơ bản
+      // Kiem tra co ban
       if (!fullName || !username || !password) {
         alert('Vui lòng điền đầy đủ thông tin của bé!');
         return;
@@ -626,7 +625,7 @@
         return;
       }
 
-      // Gửi dữ liệu sang Server
+      // Gui du lieu sang Server
       try {
         const apiUrl = window.API_CONFIG?.ENDPOINTS?.AUTH?.REGISTER || 'http://localhost:3000/api/auth/register';
         const res = await fetch(apiUrl, {
@@ -636,7 +635,7 @@
             full_name: fullName,
             username: username,
             password: password,
-            parent_pin: parentPin, // Gửi mã PIN phụ huynh
+            parent_pin: parentPin, // Gui ma PIN phu huynh
             role: 'student',
             email: email,
             dob: dob
@@ -647,11 +646,11 @@
 
         if (data.success) {
           alert('🎉 ' + data.message);
-          // Chuyển sang tab đăng nhập sau khi đăng ký xong
+          // Chuyen sang tab dang nhap sau khi dang ky xong
           const loginTabBtn = document.querySelector('[data-auth-tab="login"]');
           if (loginTabBtn) loginTabBtn.click();
 
-          // Điền sẵn username cho tiện
+          // Dien san username cho tien
           const loginUserInp = document.getElementById('username');
           if (loginUserInp) loginUserInp.value = username;
         } else {
@@ -696,13 +695,13 @@
     const current = getCurrentUser();
 
     if (current) {
-      // 1. Xác định tên hiển thị
-      // Server trả về 'name' (full_name), 'username'. Fallback sang childName nếu là dữ liệu cũ.
+      // 1. Xac dinh ten hien thi
+      // Server tra ve 'name' (full_name), 'username'. Fallback sang childName neu la du lieu cu.
       const displayName = current.name || current.full_name || current.childName || current.username;
 
-      // 2. Hiển thị Lời chào + Nút Đăng xuất
+      // 2. Hien thi Loi chao + Nut Dang xuat
       if (heroActions) {
-        // Style inline để căn chỉnh hàng ngang đẹp mắt ngay lập tức
+        // Style inline de can chinh hang ngang dep mat ngay lap tuc
         heroActions.style.display = 'flex';
         heroActions.style.alignItems = 'center';
         heroActions.style.gap = '10px';
@@ -716,16 +715,16 @@
             </button>
         `;
 
-        // 3. Gắn sự kiện click cho nút Đăng xuất vừa tạo
+        // 3. Gan su kien click cho nut Dang xuat vua tao
         const btnLogout = document.getElementById('quickLogoutBtn');
         if (btnLogout) {
           btnLogout.addEventListener('click', () => {
             if (confirm('Bé có muốn đăng xuất không?')) {
-              clearCurrentUser(); // Hàm xóa localStorage có sẵn ở trên
-              window.location.reload(); // Tải lại trang về trạng thái chưa đăng nhập
+              clearCurrentUser(); // Ham xoa localStorage co san o tren
+              window.location.reload(); // Tai lai trang ve trang thai chua dang nhap
             }
           });
-          // Hiệu ứng hover nhẹ
+          // Hieu ung hover nhe
           btnLogout.addEventListener('mouseenter', () => btnLogout.style.background = 'rgba(255,255,255,0.4)');
           btnLogout.addEventListener('mouseleave', () => btnLogout.style.background = 'rgba(255,255,255,0.25)');
         }
@@ -737,18 +736,18 @@
         initAvatarButton(avatarBtn);
       }
 
-      // Cập nhật thời gian học hôm nay trong notification bell
+      // Cap nhat thoi gian hoc hom nay trong notification bell
       updateNotificationBell();
 
-      // Load streak widget nếu user đã đăng nhập
-      // Load streak widget nếu user đã đăng nhập
+      // Load streak widget neu user da dang nhap
+      // Load streak widget neu user da dang nhap
       initStreakWidget();
       const streakBtn = document.getElementById('streakBtn');
       if (streakBtn) streakBtn.style.display = 'inline-flex';
     } else {
-      // Trạng thái CHƯA đăng nhập
+      // Trang thai CHUA dang nhap
       if (heroActions) {
-        heroActions.style.display = 'block'; // Reset về mặc định
+        heroActions.style.display = 'block'; // Reset ve mac dinh
         heroActions.innerHTML = `<button class="btn btn--primary" data-action="open-auth">Đăng nhập / Đăng ký</button>`;
       }
       if (avatarBtn) {
@@ -1197,7 +1196,7 @@
   //   if (current) {
   //     // show greeting in hero
   //     if (heroActions) heroActions.innerHTML = `<div class="hero__greeting">Xin chào bé ${escapeHtml(current.full_name || current.username)}</div>`;
-  //     if (avatarBtn) avatarBtn.title = `Đăng nhập: ${current.username}`;
+  //     if (avatarBtn) avatarBtn.title = `Dang nhap: ${current.username}`;
   //   } else {
   //     if (heroActions) heroActions.innerHTML = `<button class="btn btn--primary" data-action="open-auth">Đăng nhập / Đăng ký</button>`;
   //     if (avatarBtn) avatarBtn.title = 'Tài khoản';
@@ -1585,7 +1584,7 @@
 
   // Simple page render when clicking nav items or subitems
   function renderPanel(key, title) {
-    // Lưu lại trang hiện tại để F5 không bị mất
+    // Luu lai trang hien tai de F5 khong bi mat
     localStorage.setItem('HM_LAST_PAGE', key);
     localStorage.setItem('HM_LAST_TITLE', title || '');
     const content = document.querySelector('.content');
@@ -2004,8 +2003,8 @@
 
 })();
 
-/* === LOGIC QUÊN MẬT KHẨU (DEMO) === */
-// Tự động gắn logic khi DOM load xong
+/* === LOGIC QUEN MAT KHAU (DEMO) === */
+// Tu dong gan logic khi DOM load xong
 (function () {
   function initForgotPassword() {
     const btnForgot = document.getElementById('btnForgotPass');
@@ -2014,14 +2013,14 @@
     const formStep1 = document.getElementById('forgot-step-1');
     const formStep2 = document.getElementById('forgot-step-2');
 
-    // Mở modal
+    // Mo modal
     if (btnForgot) {
-      // Clone node để tránh duplicate listener nếu init nhiều lần
+      // Clone node de tranh duplicate listener neu init nhieu lan
       const newBtn = btnForgot.cloneNode(true);
       btnForgot.parentNode.replaceChild(newBtn, btnForgot);
 
       newBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // Nút nằm trong form nên cần chặn submit
+        e.preventDefault(); // Nut nam trong form nen can chan submit
         if (modalForgot) modalForgot.hidden = false;
         // Reset state
         if (formStep1) formStep1.hidden = false;
@@ -2035,7 +2034,7 @@
       });
     }
 
-    // Đóng modal
+    // Dong modal
     if (btnCloseForgot) {
       const newClose = btnCloseForgot.cloneNode(true);
       btnCloseForgot.parentNode.replaceChild(newClose, btnCloseForgot);
@@ -2045,9 +2044,9 @@
       });
     }
 
-    // Xử lý Step 1: Lấy mã
+    // Xu ly Step 1: Lay ma
     if (formStep1) {
-      // Clone form để clear listener cũ
+      // Clone form de clear listener cu
       const newForm1 = formStep1.cloneNode(true);
       formStep1.parentNode.replaceChild(newForm1, formStep1);
 
@@ -2065,10 +2064,10 @@
           const data = await res.json();
 
           if (data.success) {
-            // Chuyển sang step 2
+            // Chuyen sang step 2
             newForm1.hidden = true;
 
-            // Cần lấy lại reference form 2 vì nó có thể đã bị clone/mất reference
+            // Can lay lai reference form 2 vi no co the da bi clone/mat reference
             const f2 = document.getElementById('forgot-step-2');
             if (f2) f2.hidden = false;
 
@@ -2083,7 +2082,7 @@
       });
     }
 
-    // Xử lý Step 2: Đổi pass
+    // Xu ly Step 2: Doi pass
     if (formStep2) {
       const newForm2 = formStep2.cloneNode(true);
       formStep2.parentNode.replaceChild(newForm2, formStep2);
@@ -2099,7 +2098,7 @@
           const res = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // Fix: Gửi OTP kèm theo để server verify
+            // Fix: Gui OTP kem theo de server verify
             body: JSON.stringify({ username, new_password: newPass, otp: otp })
           });
           const data = await res.json();
@@ -2117,12 +2116,12 @@
     }
   }
 
-  // Init ngay nếu DOM đã load
+  // Init ngay neu DOM da load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initForgotPassword);
   } else {
     initForgotPassword();
-    // Retry đề phòng dynamic load
+    // Retry de phong dynamic load
     setTimeout(initForgotPassword, 1000);
   }
   // --- STREAK CHECK-IN LOGIC ---
@@ -2148,7 +2147,7 @@
     }
   }
 
-  // Gọi checking ngay
+  // Goi checking ngay
   performDailyCheckIn();
 
 })();
@@ -2163,7 +2162,7 @@
         const email = document.getElementById('update_email_input').value;
         const dob = document.getElementById('update_dob_input').value;
 
-        // Lấy user_id từ localStorage
+        // Lay user_id tu localStorage
         let userStart = null;
         try {
           userStart = JSON.parse(localStorage.getItem('hm_user'));

@@ -6,7 +6,7 @@ export function mount(container) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = './panels/ghep-so/style.css';
-    link.setAttribute('data-panel','ghep-so');
+    link.setAttribute('data-panel', 'ghep-so');
     document.head.appendChild(link);
   }
 
@@ -40,6 +40,72 @@ export function mount(container) {
             <div class="numbers-container ghep-numbers-container"></div>
           </div>
 
+         <div class="instruction-arrow-overlay" style="
+    position: absolute; 
+    top: 1%; 
+    left: 17%;     
+    width: 45%; 
+    height: 40%;  
+    z-index: 5; 
+    pointer-events: none; 
+    animation: floatArrow 3s ease-in-out infinite;
+">
+    <svg width="100%" height="100%" viewBox="0 0 400 200" preserveAspectRatio="none" style="overflow: visible;">
+        <defs>
+            <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#D1C4E9;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#9575CD;stop-opacity:1" />
+            </linearGradient>
+            <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                <feOffset dx="2" dy="3" result="offsetblur"/>
+                <feFlood flood-color="rgba(0,0,0,0.15)"/>
+                <feComposite in2="offsetblur" operator="in"/>
+                <feMerge>
+                    <feMergeNode/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+        
+        <!-- Adjusted Path with Animation: 
+             stroke-dasharray creates dashed line pattern (gap as big as line).
+             animation offsets it to simulate drawing.
+        -->
+        <path d="M 80 120 C 140 30, 260 40, 300 96" 
+              stroke="url(#arrowGradient)" 
+              stroke-width="16" 
+              fill="none" 
+              stroke-linecap="round" 
+              filter="url(#softShadow)" 
+              style="stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawPath 2s ease-out infinite;" />
+        
+        <!-- Arrowhead with Fade Animation -->
+        <g transform="translate(300, 96) rotate(45)">
+             <path d="M -3 -15 L 24 0 L -3 15 Q 3 0 -3 -15 Z" 
+                   fill="#9575CD" 
+                   filter="url(#softShadow)" 
+                   style="opacity: 0; animation: fadeHead 2s ease-out infinite; transform-origin: 0px 0px;" /> 
+        </g>
+        
+        <style>
+            @keyframes floatArrow {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+            @keyframes drawPath {
+                0% { stroke-dashoffset: 400; }
+                55% { stroke-dashoffset: 0; }
+                100% { stroke-dashoffset: 0; }
+            }
+            @keyframes fadeHead {
+                0%, 50% { opacity: 0; transform: scale(0.5); } 
+                65% { opacity: 1; transform: scale(1.1); }
+                75% { opacity: 1; transform: scale(1); }
+                100% { opacity: 1; transform: scale(1); }
+            }
+        </style>
+</div>
           <div class="icons-section">
             <h2><i class="fas fa-arrow-right"></i></h2>
             <div class="icons-container ghep-icons-container"></div>
@@ -77,7 +143,7 @@ export function mount(container) {
   `;
 
   // instrumentation: notify stats system that panel mounted
-  try { if (window.HiMathStats) window.HiMathStats.startPage('digits-ghep-so'); } catch (e) {}
+  try { if (window.HiMathStats) window.HiMathStats.startPage('digits-ghep-so'); } catch (e) { }
 
   // Game data (copied from main.js)
   const levelQuestions = {
@@ -202,15 +268,15 @@ export function mount(container) {
     return new Promise(resolve => {
       try {
         if (currentAudio) {
-          try { currentAudio.pause(); currentAudio.currentTime = 0; } catch(e){}
+          try { currentAudio.pause(); currentAudio.currentTime = 0; } catch (e) { }
           currentAudio = null;
         }
         const audio = new Audio(`assets/sound/${filename}`);
         currentAudio = audio;
         _activeAudios.add(audio);
-        const onEnd = () => { try { _activeAudios.delete(audio); } catch(e){} if (currentAudio === audio) currentAudio = null; cleanupListeners(); resolve(); };
-        const onError = () => { try { _activeAudios.delete(audio); } catch(e){} if (currentAudio === audio) currentAudio = null; cleanupListeners(); resolve(); };
-        function cleanupListeners(){ try { audio.removeEventListener('ended', onEnd); audio.removeEventListener('error', onError); } catch(e){} }
+        const onEnd = () => { try { _activeAudios.delete(audio); } catch (e) { } if (currentAudio === audio) currentAudio = null; cleanupListeners(); resolve(); };
+        const onError = () => { try { _activeAudios.delete(audio); } catch (e) { } if (currentAudio === audio) currentAudio = null; cleanupListeners(); resolve(); };
+        function cleanupListeners() { try { audio.removeEventListener('ended', onEnd); audio.removeEventListener('error', onError); } catch (e) { } }
         audio.addEventListener('ended', onEnd);
         audio.addEventListener('error', onError);
         const p = audio.play(); if (p && typeof p.then === 'function') p.catch(() => onError());
@@ -218,40 +284,57 @@ export function mount(container) {
     });
   }
 
-  function shuffleArray(arr) { const shuffled = [...arr]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'vi-VN';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }, 100);
+    }
+  }
+
+  function shuffleArray(arr) { const shuffled = [...arr]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
 
   function initGame() {
     score = 0; timeLeft = levelConfig[level].timePerMove; isGameActive = true; scoreEl.textContent = score; levelEl.textContent = level; timerEl.textContent = timeLeft; currentGameData = [...(levelQuestions[level] || levelQuestions[1])]; shuffleGameData(); createNumbers(); createIcons(); startTimer(); initDragAndDrop(); hideModal(gameOverModal); hideModal(levelCompleteModal);
+
+    // Voice Instruction
+    speakText("Bé hãy ghép số ở cột bên trái với ô chứa số lượng hình tương ứng ở cột bên phải nhé");
   }
 
-  function shuffleGameData() { for (let i = currentGameData.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [currentGameData[i], currentGameData[j]] = [currentGameData[j], currentGameData[i]]; } }
+  function shuffleGameData() { for (let i = currentGameData.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[currentGameData[i], currentGameData[j]] = [currentGameData[j], currentGameData[i]]; } }
 
   function createNumbers() { numbersContainer.innerHTML = ''; const numbers = currentGameData.map(item => item.answer); const shuffled = shuffleArray(numbers); shuffled.forEach((num, idx) => { const el = document.createElement('div'); el.className = 'number-item'; el.textContent = num; el.draggable = true; el.dataset.number = num; el.dataset.id = `g-num-${idx}`; numbersContainer.appendChild(el); }); }
 
   function createIcons() { iconsContainer.innerHTML = ''; currentGameData.forEach((q, idx) => { const iconEl = document.createElement('div'); iconEl.className = 'icon-item'; iconEl.dataset.id = `g-icon-${idx}`; iconEl.dataset.answer = q.answer; let iconsHTML = ''; for (let i = 0; i < q.count; i++) iconsHTML += `<i class="${q.icon}" style="color:${getIconColor(q.iconType)}"></i>`; iconEl.innerHTML = `\n          <div class="icon-name">${q.iconType}</div>\n          <div class="icon-group">${iconsHTML}</div>\n          <div class="icon-answer" id="g-answer-${idx}">?</div>\n        `; iconsContainer.appendChild(iconEl); }); }
 
-  function getIconColor(type) { const map = { 'Táo':'#ff6b6b','Cam':'#FF9800','Chuối':'#FFC107','Dâu':'#f44336','Nho':'#9C27B0','Dưa hấu':'#4CAF50','Dứa':'#FF9800','Cherry':'#E91E63','Mận':'#9C27B0','Lê':'#8BC34A' }; return map[type] || '#4a6bff'; }
-  function getIconColor(type) { const map = {
-    'Táo':'#ff6b6b',
-    'Chanh':'#FFEB3B',
-    'Cà rốt':'#FF9800',
-    'Kem':'#FFB6C1',
-    'Lá':'#4CAF50',
-    'Trái tim':'#f44336',
-    'Ngôi sao':'#FFD700',
-    'Hình vuông':'#607D8B',
-    'Cam':'#FF9800',
-    'Chuối':'#FFC107',
-    'Nho':'#9C27B0'
-  }; return map[type] || '#4a6bff'; }
+  function getIconColor(type) { const map = { 'Táo': '#ff6b6b', 'Cam': '#FF9800', 'Chuối': '#FFC107', 'Dâu': '#f44336', 'Nho': '#9C27B0', 'Dưa hấu': '#4CAF50', 'Dứa': '#FF9800', 'Cherry': '#E91E63', 'Mận': '#9C27B0', 'Lê': '#8BC34A' }; return map[type] || '#4a6bff'; }
+  function getIconColor(type) {
+    const map = {
+      'Táo': '#ff6b6b',
+      'Chanh': '#FFEB3B',
+      'Cà rốt': '#FF9800',
+      'Kem': '#FFB6C1',
+      'Lá': '#4CAF50',
+      'Trái tim': '#f44336',
+      'Ngôi sao': '#FFD700',
+      'Hình vuông': '#607D8B',
+      'Cam': '#FF9800',
+      'Chuối': '#FFC107',
+      'Nho': '#9C27B0'
+    }; return map[type] || '#4a6bff';
+  }
 
   function initDragAndDrop() { const numberItems = container.querySelectorAll('.number-item:not(.used)'); numberItems.forEach(n => { n.removeEventListener('dragstart', handleDragStart); n.removeEventListener('touchstart', handleTouchStart); n.addEventListener('dragstart', handleDragStart); n.addEventListener('touchstart', handleTouchStart, { passive: false }); }); if (dragMoveHandler) container.removeEventListener('dragover', dragMoveHandler); dragMoveHandler = handleDragMove; container.addEventListener('dragover', dragMoveHandler); container.addEventListener('drop', handleDrop); }
 
   function handleDragStart(e) { if (!isGameActive) { e.preventDefault(); return; } draggedNumber = { element: e.target, number: parseInt(e.target.dataset.number), id: e.target.dataset.id }; e.target.classList.add('dragging'); e.dataTransfer.setData('text/plain', e.target.dataset.number); e.dataTransfer.effectAllowed = 'move'; document.addEventListener('dragend', handleDragEnd); }
 
-  function handleDragMove(e) { if (!draggedNumber || !isGameActive) return; e.preventDefault(); const icons = container.querySelectorAll('.icon-item:not(.completed)'); let closest = null; let minDist = Infinity; icons.forEach(icon => { const r = icon.getBoundingClientRect(); const cx = r.left + r.width/2; const cy = r.top + r.height/2; const d = Math.hypot(e.clientX - cx, e.clientY - cy); if (d < 100 && d < minDist) { minDist = d; closest = icon; } }); if (currentIconHighlighted && currentIconHighlighted !== closest) currentIconHighlighted.classList.remove('highlight-correct','highlight-incorrect'); if (closest) { currentIconHighlighted = closest; const answer = parseInt(closest.dataset.answer); if (draggedNumber.number === answer) { closest.classList.remove('highlight-incorrect'); closest.classList.add('highlight-correct'); } else { closest.classList.remove('highlight-correct'); closest.classList.add('highlight-incorrect'); } } else if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct','highlight-incorrect'); currentIconHighlighted = null; } }
+  function handleDragMove(e) { if (!draggedNumber || !isGameActive) return; e.preventDefault(); const icons = container.querySelectorAll('.icon-item:not(.completed)'); let closest = null; let minDist = Infinity; icons.forEach(icon => { const r = icon.getBoundingClientRect(); const cx = r.left + r.width / 2; const cy = r.top + r.height / 2; const d = Math.hypot(e.clientX - cx, e.clientY - cy); if (d < 100 && d < minDist) { minDist = d; closest = icon; } }); if (currentIconHighlighted && currentIconHighlighted !== closest) currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect'); if (closest) { currentIconHighlighted = closest; const answer = parseInt(closest.dataset.answer); if (draggedNumber.number === answer) { closest.classList.remove('highlight-incorrect'); closest.classList.add('highlight-correct'); } else { closest.classList.remove('highlight-correct'); closest.classList.add('highlight-incorrect'); } } else if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect'); currentIconHighlighted = null; } }
 
-  function handleDragEnd() { if (!draggedNumber) return; if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct','highlight-incorrect'); currentIconHighlighted = null; } draggedNumber.element.classList.remove('dragging'); document.removeEventListener('dragend', handleDragEnd); }
+  function handleDragEnd() { if (!draggedNumber) return; if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect'); currentIconHighlighted = null; } draggedNumber.element.classList.remove('dragging'); document.removeEventListener('dragend', handleDragEnd); }
 
   function handleDrop(e) {
     if (!isGameActive || !draggedNumber) { e.preventDefault(); return; }
@@ -260,116 +343,116 @@ export function mount(container) {
     if (!icon || icon.classList.contains('completed')) return;
     const idx = parseInt(icon.dataset.id.split('-')[2]);
     const answer = parseInt(icon.dataset.answer);
-      if (draggedNumber.number === answer) {
-        const pts = 10 * (levelConfig[level] ? levelConfig[level].scoreMultiplier : 1);
-        score += pts; scoreEl.textContent = score;
-        icon.classList.add('completed');
-        currentGameData[idx].placedNumber = draggedNumber.number;
-        container.querySelector(`#g-answer-${idx}`).textContent = draggedNumber.number;
-        draggedNumber.element.classList.add('used'); draggedNumber.element.draggable = false;
-        resetTimer();
-        // Dùng cho cả lúc đúng và sai (chỉ khác biến correct: true/false)
-try { 
-  if (window.HiMathStats) window.HiMathStats.recordAttempt('digits-ghep-so', { 
-    level: level,
-    chosen: draggedNumber.number,
-    answer: answer,
-    correct: (draggedNumber.number === answer)
-  }); 
-} catch (e) {}
-        playSoundFile('sound_correct_answer_bit.mp3').then(() => checkLevelCompletion());
-      } else {
-        icon.classList.add('highlight-incorrect');
-        timeLeft -= (levelConfig[level] ? levelConfig[level].timeDecrement : 0);
-        if (timeLeft < 0) timeLeft = 0;
-        timerEl.textContent = timeLeft;
-        if (timeLeft <= 0) endLevel(false);
-// Dùng cho cả lúc đúng và sai (chỉ khác biến correct: true/false)
-try { 
-  if (window.HiMathStats) window.HiMathStats.recordAttempt('digits-ghep-so', { 
-    level: level,
-    chosen: draggedNumber.number,
-    answer: answer,
-    correct: (draggedNumber.number === answer)
-  }); 
-} catch (e) {}        playSoundFile('sound_wrong_answer_bit.mp3');
-        setTimeout(() => icon.classList.remove('highlight-incorrect'), 500);
+    if (draggedNumber.number === answer) {
+      const pts = 10 * (levelConfig[level] ? levelConfig[level].scoreMultiplier : 1);
+      score += pts; scoreEl.textContent = score;
+      icon.classList.add('completed');
+      currentGameData[idx].placedNumber = draggedNumber.number;
+      container.querySelector(`#g-answer-${idx}`).textContent = draggedNumber.number;
+      draggedNumber.element.classList.add('used'); draggedNumber.element.draggable = false;
+      resetTimer();
+      // Dung cho ca luc dung va sai (chi khac bien correct: true/false)
+      try {
+        if (window.HiMathStats) window.HiMathStats.recordAttempt('digits-ghep-so', {
+          level: level,
+          chosen: draggedNumber.number,
+          answer: answer,
+          correct: (draggedNumber.number === answer)
+        });
+      } catch (e) { }
+      playSoundFile('sound_correct_answer_bit.mp3').then(() => checkLevelCompletion());
+    } else {
+      icon.classList.add('highlight-incorrect');
+      timeLeft -= (levelConfig[level] ? levelConfig[level].timeDecrement : 0);
+      if (timeLeft < 0) timeLeft = 0;
+      timerEl.textContent = timeLeft;
+      if (timeLeft <= 0) endLevel(false);
+      // Dung cho ca luc dung va sai (chi khac bien correct: true/false)
+      try {
+        if (window.HiMathStats) window.HiMathStats.recordAttempt('digits-ghep-so', {
+          level: level,
+          chosen: draggedNumber.number,
+          answer: answer,
+          correct: (draggedNumber.number === answer)
+        });
+      } catch (e) { } playSoundFile('sound_wrong_answer_bit.mp3');
+      setTimeout(() => icon.classList.remove('highlight-incorrect'), 500);
     }
     draggedNumber = null;
   }
 
 
-  function handleTouchStart(e) { if (!isGameActive) { e.preventDefault(); return; } const touch = e.touches[0]; draggedNumber = { element: e.target, number: parseInt(e.target.dataset.number), id: e.target.dataset.id }; draggedNumber.element.classList.add('dragging'); const touchMove = (moveEvent) => { if (!draggedNumber) return; const t = moveEvent.touches[0]; const icons = container.querySelectorAll('.icon-item:not(.completed)'); let closest=null; let minD=Infinity; icons.forEach(icon => { const r = icon.getBoundingClientRect(); const cx=r.left+r.width/2; const cy=r.top+r.height/2; const d=Math.hypot(t.clientX-cx,t.clientY-cy); if (d<120 && d<minD){minD=d;closest=icon;} }); if (currentIconHighlighted && currentIconHighlighted !== closest) currentIconHighlighted.classList.remove('highlight-correct','highlight-incorrect'); if (closest) { currentIconHighlighted=closest; const answer=parseInt(closest.dataset.answer); if (draggedNumber.number===answer) {closest.classList.remove('highlight-incorrect'); closest.classList.add('highlight-correct');} else {closest.classList.remove('highlight-correct'); closest.classList.add('highlight-incorrect');} } else if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct','highlight-incorrect'); currentIconHighlighted=null; } }; const touchEnd = (endEvent) => { if (!draggedNumber) return; const t = endEvent.changedTouches[0]; const icons = container.querySelectorAll('.icon-item:not(.completed)'); let closest=null; let minD=Infinity; icons.forEach(icon => { const r = icon.getBoundingClientRect(); const cx=r.left+r.width/2; const cy=r.top+r.height/2; const d=Math.hypot(t.clientX-cx,t.clientY-cy); if (d<120 && d<minD){minD=d;closest=icon;} }); if (closest) { const idx = parseInt(closest.dataset.id.split('-')[2]); const answer = parseInt(closest.dataset.answer); if (draggedNumber.number===answer) { const pts=10*(levelConfig[level] ? levelConfig[level].scoreMultiplier : 1); score+=pts; scoreEl.textContent=score; closest.classList.add('completed'); currentGameData[idx].placedNumber = draggedNumber.number; container.querySelector(`#g-answer-${idx}`).textContent=draggedNumber.number; draggedNumber.element.classList.add('used'); draggedNumber.element.draggable=false; resetTimer(); checkLevelCompletion(); } else { closest.classList.add('highlight-incorrect'); timeLeft -= (levelConfig[level] ? levelConfig[level].timeDecrement : 0); if (timeLeft<0) timeLeft=0; timerEl.textContent=timeLeft; if (timeLeft<=0) endLevel(false); setTimeout(()=>closest.classList.remove('highlight-incorrect'),500); } } if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct','highlight-incorrect'); currentIconHighlighted=null; } draggedNumber.element.classList.remove('dragging'); draggedNumber=null; document.removeEventListener('touchmove', touchMove); document.removeEventListener('touchend', touchEnd); }; document.addEventListener('touchmove', touchMove, { passive:false }); document.addEventListener('touchend', touchEnd); e.preventDefault(); }
+  function handleTouchStart(e) { if (!isGameActive) { e.preventDefault(); return; } const touch = e.touches[0]; draggedNumber = { element: e.target, number: parseInt(e.target.dataset.number), id: e.target.dataset.id }; draggedNumber.element.classList.add('dragging'); const touchMove = (moveEvent) => { if (!draggedNumber) return; const t = moveEvent.touches[0]; const icons = container.querySelectorAll('.icon-item:not(.completed)'); let closest = null; let minD = Infinity; icons.forEach(icon => { const r = icon.getBoundingClientRect(); const cx = r.left + r.width / 2; const cy = r.top + r.height / 2; const d = Math.hypot(t.clientX - cx, t.clientY - cy); if (d < 120 && d < minD) { minD = d; closest = icon; } }); if (currentIconHighlighted && currentIconHighlighted !== closest) currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect'); if (closest) { currentIconHighlighted = closest; const answer = parseInt(closest.dataset.answer); if (draggedNumber.number === answer) { closest.classList.remove('highlight-incorrect'); closest.classList.add('highlight-correct'); } else { closest.classList.remove('highlight-correct'); closest.classList.add('highlight-incorrect'); } } else if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect'); currentIconHighlighted = null; } }; const touchEnd = (endEvent) => { if (!draggedNumber) return; const t = endEvent.changedTouches[0]; const icons = container.querySelectorAll('.icon-item:not(.completed)'); let closest = null; let minD = Infinity; icons.forEach(icon => { const r = icon.getBoundingClientRect(); const cx = r.left + r.width / 2; const cy = r.top + r.height / 2; const d = Math.hypot(t.clientX - cx, t.clientY - cy); if (d < 120 && d < minD) { minD = d; closest = icon; } }); if (closest) { const idx = parseInt(closest.dataset.id.split('-')[2]); const answer = parseInt(closest.dataset.answer); if (draggedNumber.number === answer) { const pts = 10 * (levelConfig[level] ? levelConfig[level].scoreMultiplier : 1); score += pts; scoreEl.textContent = score; closest.classList.add('completed'); currentGameData[idx].placedNumber = draggedNumber.number; container.querySelector(`#g-answer-${idx}`).textContent = draggedNumber.number; draggedNumber.element.classList.add('used'); draggedNumber.element.draggable = false; resetTimer(); checkLevelCompletion(); } else { closest.classList.add('highlight-incorrect'); timeLeft -= (levelConfig[level] ? levelConfig[level].timeDecrement : 0); if (timeLeft < 0) timeLeft = 0; timerEl.textContent = timeLeft; if (timeLeft <= 0) endLevel(false); setTimeout(() => closest.classList.remove('highlight-incorrect'), 500); } } if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect'); currentIconHighlighted = null; } draggedNumber.element.classList.remove('dragging'); draggedNumber = null; document.removeEventListener('touchmove', touchMove); document.removeEventListener('touchend', touchEnd); }; document.addEventListener('touchmove', touchMove, { passive: false }); document.addEventListener('touchend', touchEnd); e.preventDefault(); }
 
-  function startTimer() { clearInterval(timerInterval); timerInterval = setInterval(()=>{ if (!isGameActive){ clearInterval(timerInterval); return; } timeLeft--; timerEl.textContent=timeLeft; if (timeLeft<=10) timerEl.classList.add('timer-warning'); if (timeLeft<=0) endLevel(false); }, 1000); }
-  function resetTimer(){ timeLeft = levelConfig[level] ? levelConfig[level].timePerMove : 60; timerEl.textContent = timeLeft; timerEl.classList.remove('timer-warning'); }
+  function startTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isGameActive) { clearInterval(timerInterval); return; } timeLeft--; timerEl.textContent = timeLeft; if (timeLeft <= 10) timerEl.classList.add('timer-warning'); if (timeLeft <= 0) endLevel(false); }, 1000); }
+  function resetTimer() { timeLeft = levelConfig[level] ? levelConfig[level].timePerMove : 60; timerEl.textContent = timeLeft; timerEl.classList.remove('timer-warning'); }
 
-  function checkLevelCompletion(){ const allCompleted = currentGameData.every(item => item.placedNumber !== undefined); if (allCompleted) endLevel(true); }
+  function checkLevelCompletion() { const allCompleted = currentGameData.every(item => item.placedNumber !== undefined); if (allCompleted) endLevel(true); }
 
-  function showModal(modal){ modal.classList.add('active'); document.body.style.overflow='hidden'; }
-  function hideModal(modal){ modal.classList.remove('active'); document.body.style.overflow=''; }
+  function showModal(modal) { modal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+  function hideModal(modal) { modal.classList.remove('active'); document.body.style.overflow = ''; }
 
-  function endLevel(isWin){
-    isGameActive=false;
+  function endLevel(isWin) {
+    isGameActive = false;
     clearInterval(timerInterval);
-    
-    // --- CODE MỚI: GỬI KẾT QUẢ VỀ SERVER KHI THẮNG ---
+
+    // --- CODE MOI: GUI KET QUA VE SERVER KHI THANG ---
     if (isWin) {
       const maxTime = levelConfig[level] ? levelConfig[level].timePerMove : 60;
-      const timeSpent = maxTime - timeLeft; // Thời gian đã dùng
-      
-      // Tính sao dựa trên thời gian còn lại
+      const timeSpent = maxTime - timeLeft; // Thoi gian da dung
+
+      // Tinh sao dua tren thoi gian con lai
       let stars = 1;
-      if (timeLeft >= maxTime * 0.5) stars = 3;      // Còn hơn 50% thời gian -> 3 sao
-      else if (timeLeft >= maxTime * 0.25) stars = 2; // Còn hơn 25% thời gian -> 2 sao
+      if (timeLeft >= maxTime * 0.5) stars = 3;      // Con hon 50% thoi gian -> 3 sao
+      else if (timeLeft >= maxTime * 0.25) stars = 2; // Con hon 25% thoi gian -> 2 sao
 
-      // ID Level trong db.sql bắt đầu từ 41 (Ghép số 1-3)
-      // Logic map tạm thời: Level 1 -> 41, Level 2 -> 42...
-      const dbLevelId = 40 + level; 
+      // ID Level trong db.sql bat dau tu 41 (Ghep so 1-3)
+      // Logic map tam thoi: Level 1 -> 41, Level 2 -> 42...
+      const dbLevelId = 40 + level;
 
-      // Lấy user_id từ current user
+      // Lay user_id tu current user
       let studentId = null;
       try {
         const currentUser = JSON.parse(localStorage.getItem('hm_user') || 'null');
         if (currentUser && (currentUser.id || currentUser.user_id)) {
           studentId = currentUser.id || currentUser.user_id;
         }
-      } catch (e) {}
+      } catch (e) { }
       if (!studentId) studentId = window.HiMathUserId || null;
-      
+
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
       const apiUrl = window.API_CONFIG?.ENDPOINTS?.GAMES?.SUBMIT || 'http://localhost:3000/api/games/submit';
       fetch(apiUrl, {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify({
-              student_id: studentId,
-              level_id: dbLevelId, 
-              game_type: 'ghep-so',
-              score: score, // Điểm tích lũy
-              stars: stars,
-              is_passed: true,
-              time_spent: timeSpent
-          })
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+          student_id: studentId,
+          level_id: dbLevelId,
+          game_type: 'ghep-so',
+          score: score, // Diem tich luy
+          stars: stars,
+          is_passed: true,
+          time_spent: timeSpent
+        })
       }).then(res => console.log("Đã lưu kết quả Level " + level))
         .catch(e => console.error("Lỗi lưu:", e));
     }
     // -----------------------------------------------------
 
-    setTimeout(()=>{
-      if (isWin){
-        try { if (window.HiMathStats) window.HiMathStats.record('ghep_level_complete', { level, score, questions: currentGameData }); } catch (e) {}
+    setTimeout(() => {
+      if (isWin) {
+        try { if (window.HiMathStats) window.HiMathStats.record('ghep_level_complete', { level, score, questions: currentGameData }); } catch (e) { }
         modalCompletedLevel.textContent = level;
         if (modalNextLevel) modalNextLevel.textContent = Math.min(level + 1, 10);
         if (modalLevelScore) modalLevelScore.textContent = score;
         showModal(levelCompleteModal);
-        
+
         playSoundFile('sound_correct_answer_long.mp3').then(() => {
-          // Tự động chuyển màn sau 3 giây nếu muốn, hoặc đợi bấm nút
+          // Tu dong chuyen man sau 3 giay neu muon, hoac doi bam nut
           // handleNextLevel(); 
         });
       } else {
-        try { if (window.HiMathStats) window.HiMathStats.record('ghep_level_failed', { level, score, questions: currentGameData }); } catch (e) {}
+        try { if (window.HiMathStats) window.HiMathStats.record('ghep_level_failed', { level, score, questions: currentGameData }); } catch (e) { }
         modalLevel.textContent = level;
         showModal(gameOverModal);
       }
@@ -422,17 +505,18 @@ try {
     nextLevelBtn?.removeEventListener('click', handleNextLevel);
     try {
       // stop the last tracked audio
-      if (currentAudio) { try { currentAudio.pause(); currentAudio.currentTime = 0; } catch(e){} currentAudio = null; }
+      if (currentAudio) { try { currentAudio.pause(); currentAudio.currentTime = 0; } catch (e) { } currentAudio = null; }
       // stop any other audios created by this panel
       if (_activeAudios.size) {
         _activeAudios.forEach(a => {
-          try { a.pause(); a.currentTime = 0; a.src = ''; } catch(e) {}
+          try { a.pause(); a.currentTime = 0; a.src = ''; } catch (e) { }
         });
         _activeAudios.clear();
       }
-    } catch(e) {}
+    } catch (e) { }
     delete container._ghepCleanup;
-      try { if (window.HiMathStats) window.HiMathStats.endPage('digits-ghep-so'); } catch (e) {}  };
+    try { if (window.HiMathStats) window.HiMathStats.endPage('digits-ghep-so'); } catch (e) { }
+  };
 }
 
 export function unmount(container) {

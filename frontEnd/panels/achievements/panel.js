@@ -94,13 +94,13 @@ async function loadAchievements() {
           rewardsContainer.innerHTML = '<div class="empty" style="grid-column: 1/-1;">Chưa có phần thưởng đặc biệt nào.</div>';
         }
       } catch (e) {
-        console.warn('Lỗi load rewards:', e);
+        console.warn('Loi load rewards:', e);
         rewardsContainer.innerHTML = '';
       }
     }
 
   } catch (error) {
-    console.error('Lỗi load achievements:', error);
+    console.error('Loi load achievements:', error);
     gridEl.innerHTML = '<div class="error">Lỗi tải dữ liệu</div>';
   }
 }
@@ -119,7 +119,7 @@ function getAchievementIcon(type) {
   return icons[type] || '🏅';
 }
 
-// Function để hiển thị popup khi có achievement mới (gọi từ game panels)
+// Function de hien thi popup khi co achievement moi (goi tu game panels)
 export function showAchievementPopup(achievements) {
   if (!achievements || achievements.length === 0) return;
 

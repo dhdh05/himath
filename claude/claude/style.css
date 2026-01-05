@@ -1,0 +1,91 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 350px;
+}
+
+h2 {
+    color: #333;
+}
+
+#question-box {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Cấu hình bảng đen */
+.canvas-wrapper {
+    padding: 5px;
+    border-radius: 10px;
+    transition: all 0.5s ease; /* Hiệu ứng chuyển màu mượt mà */
+    display: inline-block;
+}
+
+canvas {
+    background-color: #000; /* Bảng màu đen */
+    border-radius: 8px;
+    cursor: crosshair;
+    display: block;
+    border: 4px solid #444;
+}
+
+/* Hiệu ứng ánh xanh lá khi đúng */
+.correct-glow {
+    box-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+    border-color: #00ff00 !important;
+}
+
+/* Hiệu ứng ánh đỏ khi sai */
+.wrong-glow {
+    box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+    border-color: #ff0000 !important;
+}
+
+.controls {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-clear {
+    background-color: #e74c3c;
+}
+
+.btn-check {
+    background-color: #27ae60;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+#status-text {
+    margin-top: 15px;
+    font-style: italic;
+    color: #666;
+    min-height: 20px;
+}

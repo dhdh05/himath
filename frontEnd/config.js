@@ -1,16 +1,16 @@
 // Frontend Configuration
-// API Base URL - có thể override bằng environment variable hoặc config
+// API Base URL - co the override bang environment variable hoac config
 (function () {
-  // Cho phép override từ HTML hoặc environment
-  // Nếu có window.API_BASE_URL (set từ HTML) thì dùng, nếu không thì tự detect
+  // Cho phep override tu HTML hoac environment
+  // Neu co window.API_BASE_URL (set tu HTML) thi dung, neu khong thi tu detect
   const API_BASE_URL = window.API_BASE_URL ||
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:3000'
       : (window.location.hostname.includes('render.com')
-        ? 'https://himath-be.onrender.com'  // Thay bằng backend URL thực tế của bạn
+        ? 'https://himath-be.onrender.com'  // Thay bang backend URL thuc te cua ban
         : 'https://your-backend-domain.com'));
 
-  // Export ra window object để các file khác có thể dùng
+  // Export ra window object de cac file khac co the dung
   window.API_CONFIG = {
     BASE_URL: API_BASE_URL,
     ENDPOINTS: {

@@ -1,11 +1,11 @@
 export function mount(container) {
   if (!container) return;
 
-  // --- CẤU HÌNH GAME ---
+  // --- CAU HINH GAME ---
   const GAME_CONFIG = {
     totalQuestions: 10,
     gameType: 'chan-le',
-    levelId: 50, // ID trong db.sql cho bài Nhập môn Chẵn Lẻ
+    levelId: 50, // ID trong db.sql cho bai Nhap mon Chan Le
     passScore: 50
   };
 
@@ -100,7 +100,7 @@ export function mount(container) {
   `;
 
   // instrumentation
-  try { if (window.HiMathStats) window.HiMathStats.startPage('digits-chan-le'); } catch (e) {}
+  try { if (window.HiMathStats) window.HiMathStats.startPage('digits-chan-le'); } catch (e) { }
 
   // state
   let questionCount = 1;
@@ -137,7 +137,7 @@ export function mount(container) {
       if (currentUser && (currentUser.id || currentUser.user_id)) {
         return currentUser.id || currentUser.user_id;
       }
-    } catch (e) {}
+    } catch (e) { }
     return window.HiMathUserId || null;
   }
 
@@ -145,7 +145,7 @@ export function mount(container) {
   function playSoundFile(filename) {
     return new Promise(resolve => {
       try {
-        if (currentAudio) { try { currentAudio.pause(); currentAudio.currentTime = 0; } catch (e) {} currentAudio = null; }
+        if (currentAudio) { try { currentAudio.pause(); currentAudio.currentTime = 0; } catch (e) { } currentAudio = null; }
         const audio = new Audio(`assets/sound/${filename}`);
         currentAudio = audio;
         const finish = () => { if (currentAudio === audio) currentAudio = null; resolve(); };
@@ -156,16 +156,28 @@ export function mount(container) {
     });
   }
 
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'vi-VN';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }, 100);
+    }
+  }
+
   function initGame() {
     questionCount = 1;
     correctAnswers = 0;
     wrongAnswers = 0;
     startTime = Date.now();
     isGameActive = true;
-    
+
     gameScreen.style.display = 'block';
     endScreen.style.display = 'none';
-    
+
     updateStats();
     generateNewQuestion();
   }
@@ -179,24 +191,29 @@ export function mount(container) {
 
   function generateNewQuestion() {
     if (autoNextTimeout) { clearTimeout(autoNextTimeout); autoNextTimeout = null; }
-    
+
     isAnswered = false;
-    currentNumber = Math.floor(Math.random() * 21); // Số từ 0-20
+    currentNumber = Math.floor(Math.random() * 21); // So tu 0-20
     currentAnswer = currentNumber % 2 === 0 ? 'even' : 'odd';
-    
+
     currentNumberElement.textContent = currentNumber;
     currentNumberElement.draggable = true;
     currentNumberElement.className = 'current-number'; // Reset class
-    
+
     evenBox.classList.remove('drag-over');
     oddBox.classList.remove('drag-over');
     evenResultElement.textContent = '';
     oddResultElement.textContent = '';
     evenResultElement.className = 'result-message';
     oddResultElement.className = 'result-message';
-    
+
     nextBtn.style.display = 'none';
-    
+
+    nextBtn.style.display = 'none';
+
+    // Doc cau hoi
+    speakText(`Bé hãy cho biết số ${currentNumber} là số chẵn hay số lẻ`);
+
     startTimer();
   }
 
@@ -220,10 +237,10 @@ export function mount(container) {
     processResult(false, null); // Time out counts as wrong
   }
 
-  // Xử lý Logic Kéo thả
+  // Xu ly Logic Keo tha
   function handleDragStart(e) {
     if (!isGameActive || isAnswered) { e.preventDefault(); return; }
-    try { e.dataTransfer.setData('text/plain', currentNumber); } catch (err) {}
+    try { e.dataTransfer.setData('text/plain', currentNumber); } catch (err) { }
     currentNumberElement.classList.add('dragging');
   }
 
@@ -236,9 +253,9 @@ export function mount(container) {
   }
 
   function handleDragLeave(e) {
-    if (!e.target.closest('.even-box') && !e.target.closest('.odd-box')) { 
-      evenBox.classList.remove('drag-over'); 
-      oddBox.classList.remove('drag-over'); 
+    if (!e.target.closest('.even-box') && !e.target.closest('.odd-box')) {
+      evenBox.classList.remove('drag-over');
+      oddBox.classList.remove('drag-over');
     }
   }
 
@@ -246,13 +263,13 @@ export function mount(container) {
     if (!isGameActive || isAnswered) { e.preventDefault(); return; }
     e.preventDefault();
     let droppedBox = null; let userAnswer = '';
-    
+
     if (e.target.closest('.even-box')) { droppedBox = evenBox; userAnswer = 'even'; }
     else if (e.target.closest('.odd-box')) { droppedBox = oddBox; userAnswer = 'odd'; }
-    
+
     if (!droppedBox) return;
     evenBox.classList.remove('drag-over'); oddBox.classList.remove('drag-over');
-    
+
     const isCorrect = userAnswer === currentAnswer;
     processResult(isCorrect, droppedBox);
   }
@@ -264,134 +281,134 @@ export function mount(container) {
     currentNumberElement.classList.remove('dragging');
 
     if (isCorrect) {
-        correctAnswers++;
-        currentNumberElement.classList.add('correct-number');
-        playSoundFile('sound_correct_answer_long.mp3');
-        
-        if (targetBox === evenBox) {
-            evenResultElement.textContent = 'Đúng rồi!'; evenResultElement.classList.add('correct');
-        } else if (targetBox === oddBox) {
-            oddResultElement.textContent = 'Đúng rồi!'; oddResultElement.classList.add('correct');
-        }
+      correctAnswers++;
+      currentNumberElement.classList.add('correct-number');
+      playSoundFile('sound_correct_answer_long.mp3');
+
+      if (targetBox === evenBox) {
+        evenResultElement.textContent = 'Đúng rồi!'; evenResultElement.classList.add('correct');
+      } else if (targetBox === oddBox) {
+        oddResultElement.textContent = 'Đúng rồi!'; oddResultElement.classList.add('correct');
+      }
     } else {
-        wrongAnswers++;
-        currentNumberElement.classList.add('wrong-number');
-        playSoundFile('sound_wrong_answer_long.mp3');
-        
-        // Hiện thông báo sai ở box thả vào (hoặc nếu timeout thì ko box nào)
-        if (targetBox === evenBox) {
-            evenResultElement.textContent = 'Sai rồi!'; evenResultElement.classList.add('wrong');
-        } else if (targetBox === oddBox) {
-            oddResultElement.textContent = 'Sai rồi!'; oddResultElement.classList.add('wrong');
-        } else {
-            // Timeout
-            currentNumberElement.textContent = 'Hết giờ!';
-        }
+      wrongAnswers++;
+      currentNumberElement.classList.add('wrong-number');
+      playSoundFile('sound_wrong_answer_long.mp3');
+
+      // Hien thong bao sai o box tha vao (hoac neu timeout thi ko box nao)
+      if (targetBox === evenBox) {
+        evenResultElement.textContent = 'Sai rồi!'; evenResultElement.classList.add('wrong');
+      } else if (targetBox === oddBox) {
+        oddResultElement.textContent = 'Sai rồi!'; oddResultElement.classList.add('wrong');
+      } else {
+        // Timeout
+        currentNumberElement.textContent = 'Hết giờ!';
+      }
     }
-    
+
     updateStats();
-    
-    // Tự động chuyển câu hoặc kết thúc
+
+    // Tu dong chuyen cau hoac ket thuc
     if (questionCount < GAME_CONFIG.totalQuestions) {
-        questionCount++;
-        autoNextTimeout = setTimeout(generateNewQuestion, 1500);
+      questionCount++;
+      autoNextTimeout = setTimeout(generateNewQuestion, 1500);
     } else {
-        autoNextTimeout = setTimeout(finishGame, 1500);
+      autoNextTimeout = setTimeout(finishGame, 1500);
     }
   }
 
-  // --- KẾT THÚC & GỬI KẾT QUẢ ---
+  // --- KET THUC & GUI KET QUA ---
   async function finishGame() {
     isGameActive = false;
     const totalTime = Math.round((Date.now() - startTime) / 1000);
     const score = Math.round((correctAnswers / GAME_CONFIG.totalQuestions) * 100);
-    
-    // Tính sao
+
+    // Tinh sao
     let stars = 0;
     if (score === 100) stars = 3;
     else if (score >= 80) stars = 2;
     else if (score >= 50) stars = 1;
-    
+
     const isPassed = score >= GAME_CONFIG.passScore;
 
-    // UI Kết quả
+    // UI Ket qua
     gameScreen.style.display = 'none';
     endScreen.style.display = 'block';
-    
+
     container.querySelector('#endTitle').textContent = isPassed ? "Tuyệt Vời! 🎉" : "Cố Lên Nhé! 💪";
     container.querySelector('#endScore').textContent = `${score}/100 Điểm`;
     container.querySelector('#endTime').textContent = `Thời gian: ${totalTime}s`;
-    
+
     const starContainer = container.querySelector('#endStars');
     starContainer.innerHTML = '';
-    for(let i=1; i<=3; i++) {
-        if(i <= stars) starContainer.innerHTML += '<i class="fas fa-star"></i>';
-        else starContainer.innerHTML += '<i class="far fa-star"></i>';
+    for (let i = 1; i <= 3; i++) {
+      if (i <= stars) starContainer.innerHTML += '<i class="fas fa-star"></i>';
+      else starContainer.innerHTML += '<i class="far fa-star"></i>';
     }
 
-    // Gửi API
+    // Gui API
     const payload = {
-        student_id: getUserId(),
-        level_id: GAME_CONFIG.levelId,
-        game_type: GAME_CONFIG.gameType,
-        score: score,
-        stars: stars,
-        is_passed: isPassed,
-        time_spent: totalTime
+      student_id: getUserId(),
+      level_id: GAME_CONFIG.levelId,
+      game_type: GAME_CONFIG.gameType,
+      score: score,
+      stars: stars,
+      is_passed: isPassed,
+      time_spent: totalTime
     };
 
     try {
-        console.log("📤 Submitting Chan-Le:", payload);
-        const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
-        const apiUrl = window.API_CONFIG?.ENDPOINTS?.GAMES?.SUBMIT || 'http://localhost:3000/api/games/submit';
-        const res = await fetch(apiUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        console.log("📥 Server response:", data);
-    } catch(err) {
-        console.error("Lỗi gửi kết quả:", err);
+      console.log("📤 Submitting Chan-Le:", payload);
+      const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
+      const apiUrl = window.API_CONFIG?.ENDPOINTS?.GAMES?.SUBMIT || 'http://localhost:3000/api/games/submit';
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      console.log("📥 Server response:", data);
+    } catch (err) {
+      console.error("Loi gui ket qua:", err);
     }
   }
 
   // --- TOUCH EVENTS (Mobile) ---
   function initTouchEvents() {
     let touchStartX = 0; let touchStartY = 0;
-    
+
     function touchStartHandler(e) {
       if (!isGameActive || isAnswered) return;
       const touch = e.touches[0]; touchStartX = touch.clientX; touchStartY = touch.clientY;
       currentNumberElement.classList.add('dragging'); e.preventDefault();
     }
-    
+
     function touchEndHandler(e) {
       if (!isGameActive || isAnswered || !currentNumberElement.classList.contains('dragging')) return;
-      const touch = e.changedTouches[0]; 
-      const deltaX = touch.clientX - touchStartX; 
-      
+      const touch = e.changedTouches[0];
+      const deltaX = touch.clientX - touchStartX;
+
       if (Math.abs(deltaX) > 50) {
         let userAnswer = ''; let targetBox = null;
-        // Kéo sang trái (< -50) là Chẵn (Even Box ở bên trái trong CSS layout thường thấy, hoặc check HTML structure)
-        // Trong HTML: evenBox (trái), oddBox (phải)
+        // Keo sang trai (< -50) la Chan (Even Box o ben trai trong CSS layout thuong thay, hoa check HTML structure)
+        // Trong HTML: evenBox (trai), oddBox (phai)
         if (deltaX < -50) { userAnswer = 'even'; targetBox = evenBox; }
         else if (deltaX > 50) { userAnswer = 'odd'; targetBox = oddBox; }
-        
+
         if (targetBox) {
-            const isCorrect = userAnswer === currentAnswer;
-            processResult(isCorrect, targetBox);
+          const isCorrect = userAnswer === currentAnswer;
+          processResult(isCorrect, targetBox);
         }
       }
-      currentNumberElement.classList.remove('dragging'); 
-      evenBox.classList.remove('drag-over'); 
-      oddBox.classList.remove('drag-over'); 
+      currentNumberElement.classList.remove('dragging');
+      evenBox.classList.remove('drag-over');
+      oddBox.classList.remove('drag-over');
       e.preventDefault();
     }
 
     currentNumberElement.addEventListener('touchstart', touchStartHandler, { passive: false });
     currentNumberElement.addEventListener('touchend', touchEndHandler, { passive: false });
-    
+
     container._clTouch = { touchStartHandler, touchEndHandler };
   }
 
@@ -413,7 +430,7 @@ export function mount(container) {
   container._chanLeCleanup = () => {
     clearInterval(timerInterval);
     if (autoNextTimeout) clearTimeout(autoNextTimeout);
-    
+
     currentNumberElement.removeEventListener('dragstart', handleDragStart);
     evenBox.removeEventListener('dragover', handleDragOver);
     evenBox.removeEventListener('drop', handleDrop);
@@ -426,9 +443,9 @@ export function mount(container) {
       currentNumberElement.removeEventListener('touchend', container._clTouch.touchEndHandler);
     }
 
-    try { if (currentAudio) { currentAudio.pause(); currentAudio = null; } } catch(e) {}
-    try { if (window.HiMathStats) window.HiMathStats.endPage('digits-chan-le'); } catch (e) {}
-    
+    try { if (currentAudio) { currentAudio.pause(); currentAudio = null; } } catch (e) { }
+    try { if (window.HiMathStats) window.HiMathStats.endPage('digits-chan-le'); } catch (e) { }
+
     delete container._chanLeCleanup;
   };
 }

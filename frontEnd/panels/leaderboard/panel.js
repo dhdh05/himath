@@ -1,16 +1,16 @@
 export function mount(container) {
   if (!container) return;
-  
+
   // 1. Load CSS
   if (!document.querySelector('link[data-panel="leaderboard"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = './panels/leaderboard/style.css'; 
-      link.setAttribute('data-panel', 'leaderboard');
-      document.head.appendChild(link);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = './panels/leaderboard/style.css';
+    link.setAttribute('data-panel', 'leaderboard');
+    document.head.appendChild(link);
   }
 
-  // 2. Render HTML Layout (Giữ nguyên giao diện Card đẹp)
+  // 2. Render HTML Layout (Giu nguyen giao dien Card dep)
   container.innerHTML = `
     <div class="leaderboard-panel">
       <div class="leaderboard-card">
@@ -29,42 +29,42 @@ export function mount(container) {
       </div>
     </div>
   `;
-  
+
   loadLeaderboard();
 }
 
 async function loadLeaderboard() {
   const listEl = document.getElementById('leaderboardList');
   if (!listEl) return;
-  
+
   try {
-    // --- KHÔI PHỤC LOGIC KẾT NỐI CHUẨN ---
-    // 1. Lấy URL từ config (nếu có) hoặc mặc định
+    // --- KHOI PHUC LOGIC KET NOI CHUAN ---
+    // 1. Lay URL tu config (neu co) hoac mac dinh
     const apiUrl = window.API_CONFIG?.ENDPOINTS?.LEADERBOARD?.ALL || 'http://localhost:3000/api/leaderboard/all';
-    
-    // 2. Lấy Headers xác thực (Token) - QUAN TRỌNG
+
+    // 2. Lay Headers xac thuc (Token) - QUAN TRONG
     const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
 
     const res = await fetch(apiUrl, { headers });
-    
+
     if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-    
+
     const data = await res.json();
-    
-    // Kiểm tra dữ liệu
+
+    // Kiem tra du lieu
     if (!data.success || !data.rankings || data.rankings.length === 0) {
       listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#888;">Chưa có bảng xếp hạng nào.</div>';
       return;
     }
 
-    // Lấy user hiện tại để highlight
+    // Lay user hien tai de highlight
     let currentUserId = null;
     try {
-        const u = JSON.parse(localStorage.getItem('hm_user'));
-        if(u) currentUserId = u.id || u.user_id;
-    } catch(e){}
+      const u = JSON.parse(localStorage.getItem('hm_user'));
+      if (u) currentUserId = u.id || u.user_id;
+    } catch (e) { }
 
-    // Render Bảng (Giữ nguyên style mới)
+    // Render Bang (Giu nguyen style moi)
     let html = `
       <table class="leaderboard-table">
         <thead>
@@ -80,26 +80,26 @@ async function loadLeaderboard() {
     `;
 
     data.rankings.forEach((item, index) => {
-        const isMe = (currentUserId && item.user_id == currentUserId);
-        const rank = index + 1;
-        
-        // Huy chương
-        let medal = rank;
-        if (rank === 1) medal = '🥇';
-        if (rank === 2) medal = '🥈';
-        if (rank === 3) medal = '🥉';
-        
-        const rankClass = rank <= 3 ? `rank-${rank}` : '';
-        const name = item.full_name || item.username || 'Học sinh';
-        const initial = name.charAt(0).toUpperCase();
-        
-        // Load avatar from localStorage
-        const savedAvatar = localStorage.getItem(`avatar_${item.user_id}`);
-        const avatarHTML = savedAvatar 
-          ? `<img src="${savedAvatar}" alt="${name}" class="avatar-img" />`
-          : `<span class="avatar-initial">${initial}</span>`;
+      const isMe = (currentUserId && item.user_id == currentUserId);
+      const rank = index + 1;
 
-        html += `
+      // Huy chuong
+      let medal = rank;
+      if (rank === 1) medal = '🥇';
+      if (rank === 2) medal = '🥈';
+      if (rank === 3) medal = '🥉';
+
+      const rankClass = rank <= 3 ? `rank-${rank}` : '';
+      const name = item.full_name || item.username || 'Học sinh';
+      const initial = name.charAt(0).toUpperCase();
+
+      // Load avatar from localStorage
+      const savedAvatar = localStorage.getItem(`avatar_${item.user_id}`);
+      const avatarHTML = savedAvatar
+        ? `<img src="${savedAvatar}" alt="${name}" class="avatar-img" />`
+        : `<span class="avatar-initial">${initial}</span>`;
+
+      html += `
           <tr class="leaderboard-row ${isMe ? 'current-user' : ''}">
             <td class="col-rank ${rankClass}">
                 <div class="rank-badge">${medal}</div>
@@ -128,7 +128,7 @@ async function loadLeaderboard() {
 
   } catch (err) {
     console.error("Leaderboard Error:", err);
-    // Hiển thị lỗi rõ ràng hơn
+    // Hien thi loi ro rang hon
     listEl.innerHTML = `<div class="error">
         <p>⚠️ Không tải được dữ liệu.</p>
         <small style="color:#999">${err.message}</small>
@@ -137,13 +137,13 @@ async function loadLeaderboard() {
 }
 
 function formatTime(s) {
-    if(!s) return '0s';
-    const h = Math.floor(s/3600);
-    const m = Math.floor((s%3600)/60);
-    const sec = s%60;
-    if(h>0) return `${h}h ${m}p`;
-    if(m>0) return `${m}p ${sec}s`;
-    return `${sec}s`;
+  if (!s) return '0s';
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}h ${m}p`;
+  if (m > 0) return `${m}p ${sec}s`;
+  return `${sec}s`;
 }
 
 export function unmount(container) {

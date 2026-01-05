@@ -10,8 +10,8 @@ const pool = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 4,
     queueLimit: 0,
-    charset: 'utf8mb4' // Hỗ trợ đầy đủ Unicode, bao gồm cả emoji
+    charset: 'utf8mb4' // Ho tro day du Unicode, bao gom ca emoji
 });
 
-// Dùng promise wrapper để code async/await cho gọn
+// Dung promise wrapper de code async/await cho gon
 module.exports = pool.promise();

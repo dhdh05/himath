@@ -5,7 +5,7 @@ export function mount(container) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = './panels/hoc-chu-so/style.css';
-    link.setAttribute('data-panel','hoc-chu-so');
+    link.setAttribute('data-panel', 'hoc-chu-so');
     document.head.appendChild(link);
   }
 
@@ -57,8 +57,8 @@ export function mount(container) {
     <audio id="numberAudio" preload="auto"></audio>
   `;
 
-  // --- SỬA: Bắt đầu tính giờ học ---
-  try { if (window.HiMathStats) window.HiMathStats.startPage('digits-hoc-so'); } catch (e) {}
+  // --- SUA: Bat dau tinh gio hoc ---
+  try { if (window.HiMathStats) window.HiMathStats.startPage('digits-hoc-so'); } catch (e) { }
 
   // initialize digits functionality (adapted from main.js)
   const numbersData = [
@@ -104,10 +104,10 @@ export function mount(container) {
     // render N icons to visually represent the number
     renderNumberIcons(currentData.number);
     if (audioElement) {
-      try { audioElement.pause(); audioElement.currentTime = 0; } catch (e) {}
+      try { audioElement.pause(); audioElement.currentTime = 0; } catch (e) { }
       audioElement.onended = null;
       audioElement.src = currentData.audioUrl;
-      try { audioElement.load(); } catch(e) {}
+      try { audioElement.load(); } catch (e) { }
       if (audioBtn) { audioBtn.innerHTML = `<i class="fas fa-volume-up"></i><span>Phát âm</span>`; audioBtn.disabled = false; }
     }
     prevBtn.disabled = currentNumberIndex === 0;
@@ -156,7 +156,7 @@ export function mount(container) {
     if (!audioBtn || !audioElement) return;
     audioBtn.innerHTML = `<i class="fas fa-volume-up"></i><span>Đang phát...</span>`;
     audioBtn.disabled = true;
-    try { audioElement.pause(); audioElement.currentTime = 0; } catch(e) {}
+    try { audioElement.pause(); audioElement.currentTime = 0; } catch (e) { }
     audioElement.onended = () => {
       if (audioBtn) { audioBtn.innerHTML = `<i class="fas fa-volume-up"></i><span>Phát âm</span>`; audioBtn.disabled = false; }
       audioElement.onended = null;
@@ -166,7 +166,7 @@ export function mount(container) {
   }
 
   function handleKeydown(event) {
-    switch(event.key) {
+    switch (event.key) {
       case 'ArrowLeft': if (currentNumberIndex > 0) changeNumber(currentNumberIndex - 1); break;
       case 'ArrowRight': if (currentNumberIndex < numbersData.length - 1) changeNumber(currentNumberIndex + 1); break;
       case ' ': case 'Enter': event.preventDefault(); playAudio(); break;
@@ -190,12 +190,13 @@ export function mount(container) {
     audioBtn?.removeEventListener('click', audioClickHandler);
     prevBtn?.removeEventListener('click', prevClickHandler);
     nextBtn?.removeEventListener('click', nextClickHandler);
-    try { audioElement.pause(); audioElement.currentTime = 0; audioElement.src = ''; audioElement.onended = null; } catch(e) {}
+    try { audioElement.pause(); audioElement.currentTime = 0; audioElement.src = ''; audioElement.onended = null; } catch (e) { }
     delete container._hocChuSoCleanup;
-    // --- SỬA: Kết thúc tính giờ học (Gửi về Server) ---
-    try { if (window.HiMathStats) window.HiMathStats.endPage('digits-hoc-so'); } catch (e) {}
+    // --- SUA: Ket thuc tinh gio hoc (Gui ve Server) ---
+    try { if (window.HiMathStats) window.HiMathStats.endPage('digits-hoc-so'); } catch (e) { }
   };
 }
 
 export function unmount(container) {
-  if (!container) return; if (container._hocChuSoCleanup) container._hocChuSoCleanup(); }
+  if (!container) return; if (container._hocChuSoCleanup) container._hocChuSoCleanup();
+}

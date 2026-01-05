@@ -2,7 +2,7 @@
 export function mount(container) {
   if (!container) return;
 
-  // --- 1. LẤY THÔNG TIN USER ---
+  // --- 1. LAY THONG TIN USER ---
   let currentUser = null;
   try { currentUser = JSON.parse(localStorage.getItem('hm_user')); } catch (e) { }
   const studentId = currentUser ? (currentUser.id || currentUser.user_id) : 1;
@@ -195,7 +195,7 @@ export function mount(container) {
     if (pin.length < 4) return;
 
     try {
-      // Gọi API Verify PIN
+      // Goi API Verify PIN
       const apiUrl = window.API_CONFIG?.ENDPOINTS?.PARENTS?.VERIFY_PIN || 'http://localhost:3000/api/parents/verify-pin';
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
       const res = await fetch(apiUrl, {
@@ -212,13 +212,13 @@ export function mount(container) {
       }
     } catch (err) {
       console.error(err);
-      // Fallback offline (chỉ dùng khi mất mạng)
+      // Fallback offline (chi dung khi mat mang)
       if (pin === '1234') showDashboard();
       else showError('Lỗi kết nối hoặc sai PIN');
     }
   });
 
-  // A2. XỬ LÝ QUÊN PIN
+  // A2. XU LY QUEN PIN
   const forgotLink = qs('#forgotPinLink');
   const resetArea = qs('#resetPinArea');
   const step1 = qs('#resetPinStep1');
@@ -291,7 +291,7 @@ export function mount(container) {
     }
   });
 
-  // A3. XỬ LÝ CẬP NHẬT NGÀY SINH
+  // A3. XU LY CAP NHAT NGAY SINH
   const editDobBtn = qs('#editDobBtn');
   const editDobArea = qs('#editDobArea');
   const newDobInput = qs('#newDobInput');
@@ -357,7 +357,7 @@ export function mount(container) {
     pinInput.focus();
   }
 
-  // B. HIỂN THỊ DASHBOARD
+  // B. HIEN THI DASHBOARD
   function showDashboard() {
     pinScreen.style.display = 'none';
     dashboard.style.display = 'block';
@@ -569,7 +569,7 @@ export function mount(container) {
         qs('#statusMessage').style.color = '#FF9800';
       }
     } catch (err) {
-      console.error("❌ Lỗi tải thống kê:", err);
+      console.error("❌ Loi tai thong ke:", err);
       qs('#historyBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Không thể kết nối Server. Vui lòng kiểm tra lại.</td></tr>';
       qs('#todayTime').textContent = '0 phút';
       qs('#progressBar').style.width = '0%';
@@ -578,7 +578,7 @@ export function mount(container) {
     }
   }
 
-  // C. RENDER BẢNG LỊCH SỬ
+  // C. RENDER BANG LICH SU
   function renderHistory(data) {
     const tbody = qs('#historyBody');
     tbody.innerHTML = '';
@@ -588,7 +588,7 @@ export function mount(container) {
       return;
     }
 
-    // Giới hạn 50 dòng (tăng lên để user dễ thấy)
+    // Gioi han 50 dong (tang len de user de thay)
     data.slice(0, 50).forEach(row => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -617,7 +617,7 @@ export function mount(container) {
     return parts.join(' ');
   }
 
-  // D. TÍNH TOÁN THANH TRẠNG THÁI
+  // D. TINH TOAN THANH TRANG THAI
   function calculateTodayProgress(data) {
     if (!data || !Array.isArray(data) || data.length === 0) {
       console.log('📊 No data to calculate progress');

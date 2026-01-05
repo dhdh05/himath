@@ -1,8 +1,8 @@
 
-// Import TensorFlow.js từ CDN
-let mnistModel = null;
+// Import Tesseract.js tu CDN
+let tesseractWorker = null;
 
-// Từ điển số -> chữ tiếng Anh
+// Tu dien so -> chu tieng Anh
 const NUM_WORDS_EN = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
 
 export function mount(container) {
@@ -17,12 +17,12 @@ export function mount(container) {
     }
 
     // --- 2. Inject Libs ---
-    if (!window.tf) {
+    if (!window.Tesseract) {
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js';
-        script.onload = () => { console.log("🧠 TensorFlow Loaded"); loadModel(); };
+        script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        script.onload = () => { console.log("🧠 Tesseract Loaded"); };
         document.head.appendChild(script);
-    } else { if (!mnistModel) loadModel(); }
+    }
 
     if (!window.confetti) {
         const s = document.createElement('script');
@@ -134,7 +134,7 @@ export function mount(container) {
     const pageSubtitle = document.getElementById('pageSubtitle');
 
     // Canvas Config
-    ctx.lineWidth = 20;
+    ctx.lineWidth = 12; // Do day toi uu cho Tesseract (theo claude algorithm)
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.strokeStyle = 'white';
@@ -181,7 +181,7 @@ export function mount(container) {
         currentModeRaw = mode;
         const parts = mode.split('_');
         currentLang = parts[0];
-        // type sẽ là 'add', 'sub', hoặc 'mix'
+        // type se la 'add', 'sub', hoac 'mix'
 
         modeSelection.style.display = 'none';
         gameArea.classList.add('active');
@@ -197,7 +197,7 @@ export function mount(container) {
         const parts = currentModeRaw.split('_');
         let type = parts[1]; // 'add', 'sub', 'mix'
 
-        // Nếu là 'mix', random ra 'add' hoặc 'sub'
+        // Neu la 'mix', random ra 'add' hoac 'sub'
         if (type === 'mix') {
             type = Math.random() < 0.5 ? 'add' : 'sub';
         }
@@ -294,127 +294,221 @@ export function mount(container) {
     }
 
     // --- AI ---
-    async function loadModel() {
-        if (mnistModel) return;
-        try {
-            console.log("⏳ Loading Model...");
-            mnistModel = await tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/mnist_transfer_cnn_v1/model.json');
-            console.log("✅ Model Loaded!");
-        } catch (e) {
-            console.error(e);
-        }
-    }
+    // --- AI (Tesseract) ---
+    // Khong can loadModel phuc tap nhu TFJS, Tesseract se auto load worker khi goi recognize
+    // Tuy nhien, co the pre-load worker neu muon, nhung o day ta de simple.
 
-    function getBoundingBox(ctx) {
-        const w = canvas.width; const h = canvas.height;
-        const data = ctx.getImageData(0, 0, w, h).data;
-        let minX = w, minY = h, maxX = 0, maxY = 0, found = false;
-        for (let y = 0; y < h; y++) {
-            for (let x = 0; x < w; x++) {
-                if (data[(y * w + x) * 4] > 0) {
-                    if (x < minX) minX = x; if (x > maxX) maxX = x;
-                    if (y < minY) minY = y; if (y > maxY) maxY = y;
+    function preprocessImage(originalCanvas) {
+        const originalCtx = originalCanvas.getContext('2d');
+        const width = originalCanvas.width;
+        const height = originalCanvas.height;
+
+        const imgData = originalCtx.getImageData(0, 0, width, height);
+        const data = imgData.data;
+
+        // 1. Tim Bounding Box voi nguong thap hon
+        let minX = width, minY = height, maxX = 0, maxY = 0;
+        let found = false;
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const index = (y * width + x) * 4;
+                if (data[index] > 30) { // Nguong thap hon de bat duoc nhieu diem anh hon
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
                     found = true;
                 }
             }
         }
-        return found ? { minX, minY, width: maxX - minX, height: maxY - minY } : null;
+
+        if (!found) return null;
+
+        // 2. Tao canvas vuong chuan hoa 28x28 (chuan MNIST)
+        const cropWidth = maxX - minX + 1;
+        const cropHeight = maxY - minY + 1;
+
+        // Padding 20%
+        const maxDim = Math.max(cropWidth, cropHeight);
+        const padding = Math.floor(maxDim * 0.2);
+        const finalSize = 28;
+
+        // Canvas tam de crop
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = maxDim + padding * 2;
+        tempCanvas.height = maxDim + padding * 2;
+
+        // Nen den
+        tempCtx.fillStyle = 'black';
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+        // Ve so vao giua
+        const offsetX = (tempCanvas.width - cropWidth) / 2;
+        const offsetY = (tempCanvas.height - cropHeight) / 2;
+        tempCtx.drawImage(
+            originalCanvas,
+            minX, minY, cropWidth, cropHeight,
+            offsetX, offsetY, cropWidth, cropHeight
+        );
+
+        // 3. Scale ve 28x28
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = finalSize;
+        finalCanvas.height = finalSize;
+        const finalCtx = finalCanvas.getContext('2d');
+
+        // Nen trang (chuan Tesseract)
+        finalCtx.fillStyle = 'white';
+        finalCtx.fillRect(0, 0, finalSize, finalSize);
+
+        // Ve so (smoothing tat de giu net)
+        finalCtx.imageSmoothingEnabled = false;
+        finalCtx.drawImage(tempCanvas, 0, 0, finalSize, finalSize);
+
+        // 4. Dao mau va tang do tuong phan
+        const finalData = finalCtx.getImageData(0, 0, finalSize, finalSize);
+        const d = finalData.data;
+
+        for (let i = 0; i < d.length; i += 4) {
+            // Dao mau: nen den -> trang, chu trang -> den
+            const brightness = (d[i] + d[i + 1] + d[i + 2]) / 3;
+
+            if (brightness > 80) {
+                // Chu (trang) -> Den dam
+                d[i] = 0; d[i + 1] = 0; d[i + 2] = 0;
+            } else {
+                // Nen (den) -> Trang tinh
+                d[i] = 255; d[i + 1] = 255; d[i + 2] = 255;
+            }
+        }
+
+        finalCtx.putImageData(finalData, 0, 0);
+
+        // 5. Scale len 56x56 de Tesseract doc de hon
+        const outputCanvas = document.createElement('canvas');
+        outputCanvas.width = 56;
+        outputCanvas.height = 56;
+        const outputCtx = outputCanvas.getContext('2d');
+
+        outputCtx.fillStyle = 'white';
+        outputCtx.fillRect(0, 0, 56, 56);
+        outputCtx.imageSmoothingEnabled = false;
+        outputCtx.drawImage(finalCanvas, 0, 0, 56, 56);
+
+        return outputCanvas.toDataURL('image/png');
     }
 
     async function predictNumber() {
-        if (!mnistModel) { alert("AI Loading..."); return; }
-        const bbox = getBoundingBox(ctx);
-        if (!bbox || bbox.width === 0) {
+        if (!window.Tesseract) { alert("Tesseract Loading..."); return; }
+
+        debugScore.innerText = "⏳ Detecting...";
+
+        const processedImage = preprocessImage(canvas);
+        if (!processedImage) {
             resultArea.innerText = currentLang === 'en' ? "Please write a number!" : "Bé chưa viết số!";
+            debugScore.innerText = "";
             return;
         }
 
-        const tempC = document.createElement('canvas');
-        tempC.width = 28; tempC.height = 28;
-        const tCtx = tempC.getContext('2d');
-        tCtx.fillStyle = 'black'; tCtx.fillRect(0, 0, 28, 28);
+        try {
+            const { data: { text, confidence } } = await Tesseract.recognize(
+                processedImage,
+                'eng',
+                {
+                    tessedit_char_whitelist: '0123456789',
+                    tessedit_pageseg_mode: Tesseract.PSM.SINGLE_CHAR,
+                    preserve_interword_spaces: '0'
+                }
+            );
 
-        const maxDim = Math.max(bbox.width, bbox.height);
-        const scale = 20 / maxDim;
-        const sw = bbox.width * scale; const sh = bbox.height * scale;
-        tCtx.drawImage(canvas, bbox.minX, bbox.minY, bbox.width, bbox.height, (28 - sw) / 2, (28 - sh) / 2, sw, sh);
+            let top1 = parseInt(text.trim());
+            const conf = parseFloat(confidence);
 
-        const tensor = tf.browser.fromPixels(tCtx.getImageData(0, 0, 28, 28), 1)
-            .toFloat().div(tf.scalar(255)).expandDims(0);
+            // Handle NaN or empty
+            if (isNaN(top1)) top1 = -1; // Unknown
 
-        const prediction = mnistModel.predict(tensor);
-        const scores = prediction.dataSync();
+            console.log(`Predict: ${top1}, Target: ${correctAnswer}, Conf: ${conf}%`);
 
-        const indexedScores = Array.from(scores).map((s, i) => ({ score: s, index: i }));
-        indexedScores.sort((a, b) => b.score - a.score);
-        const top1 = indexedScores[0].index;
-        const top3Classes = indexedScores.slice(0, 3).map(x => x.index);
+            // Use only top1 for now as Tesseract single char mode returns one best guess
+            // Mock scores for visual neighbor compatibility
+            // We set the score for top1 to confidence/100, others to 0
+            const scores = [];
+            scores[top1] = conf / 100;
+            const top3Classes = [top1]; // Tesseract doesn't easily give top 3 in basic mode
 
-        tensor.dispose(); prediction.dispose();
-        console.log(`Predict Top1: ${top1}, Target: ${correctAnswer}. Top3: ${top3Classes.join(',')}`);
+            // ---------------------------------------------------------------------
+            // LOGIC CHECK: VISUAL NEIGHBOR MAP (Ban do hang xom)
+            // ---------------------------------------------------------------------
 
-        // ---------------------------------------------------------------------
-        // LOGIC CHECK: VISUAL NEIGHBOR MAP (Bản đồ hàng xóm)
-        // ---------------------------------------------------------------------
+            // Dinh nghia cac so co net tuong dong nhau
+            // Dinh nghia cac so co net tuong dong nhau (STRICT MODE)
+            const VISUAL_NEIGHBORS = {
+                0: [6, 9],
+                1: [7],
+                2: [7],
+                3: [5, 8],
+                4: [9],
+                5: [3, 6],
+                6: [0, 5],
+                7: [1],
+                8: [3, 0, 6], // 3 nua so 8, 0 tron, 6 bung tron duoi      
+                9: [4]
+            };
 
-        // Định nghĩa các số có nét tương đồng nhau
-        const VISUAL_NEIGHBORS = {
-            0: [6, 8, 9, 5, 2, 3],       // Cong kín, tròn
-            1: [7, 4, 2],                // Nét thẳng
-            2: [1, 3, 7, 8, 0],          // Nét ngang/cong
-            3: [2, 5, 8, 9],             // Cong 2 khúc
-            4: [9, 1, 7],                // Thẳng + Chéo
-            5: [3, 6, 0, 8, 9],          // Cong dưới
-            6: [0, 5, 8, 2],             // Bụng tròn
-            7: [1, 2, 3, 4, 9, 5],       // Gạch ngang/chéo (bao gồm cả 5 vì nhiều bé viết 5 giống 7 ngược)
-            8: [0, 3, 6, 9, 2, 5],       // Hai vòng tròn
-            9: [4, 3, 8, 5, 0, 7]        // Đầu tròn đuôi dài
-        };
+            let isRight = false;
+            let visualMatch = false;
 
-        let isRight = false;
-        let visualMatch = false;
+            // Rule 1: Chuan det
+            if (top1 === correctAnswer) isRight = true;
 
-        // Rule 1: Chuẩn đét (Top 3)
-        if (top3Classes.includes(correctAnswer)) isRight = true;
+            // Rule 2: Hoi hoi dung (Confidence > 40%) - Tesseract confidence is 0-100
+            if (top1 === correctAnswer && conf > 40) isRight = true;
 
-        // Rule 2: Hơi hơi đúng (Confidence > 5%)
-        if (scores[correctAnswer] > 0.05) isRight = true;
+            // Rule 3: Visual Neighbor Check (Chap nhan ho hang)
+            const neighbors = VISUAL_NEIGHBORS[correctAnswer] || [];
+            if (neighbors.includes(top1)) {
+                console.log(`🛡️ Auto-correct: Target ${correctAnswer} ~= Predicted ${top1} (Accepted by Visual Neighbor)`);
+                isRight = true;
+                visualMatch = true;
+            }
 
-        // Rule 3: Visual Neighbor Check (Chấp nhận họ hàng)
-        const neighbors = VISUAL_NEIGHBORS[correctAnswer] || [];
-        if (neighbors.includes(top1)) {
-            console.log(`🛡️ Auto-correct: Target ${correctAnswer} ~= Predicted ${top1} (Accepted by Visual Neighbor)`);
-            isRight = true;
-            visualMatch = true;
+            const sndCorrect = new Audio('./assets/sound/sound_correct_answer_bit.mp3');
+            const sndWrong = new Audio('./assets/sound/sound_wrong_answer_bit.mp3');
+
+            if (isRight) {
+                // Hien thi message ro hon khi auto-correct
+                let congrats = currentLang === 'en' ? "EXCELLENT!" : "CHÍNH XÁC!";
+                if (visualMatch) {
+                    congrats = currentLang === 'en' ? "Close Enough!" : "Gần đúng (Chấp nhận)!";
+                }
+                resultArea.innerHTML = `🎉 <b>${congrats}</b> ${numA} ${currentOp} ${numB} = ${correctAnswer}`;
+                resultArea.style.color = "#00b894";
+                resultArea.classList.add('pop-anim');
+                sndCorrect.play().catch(() => { });
+                if (window.confetti) window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+                submitScore(correctAnswer);
+                setTimeout(() => {
+                    resultArea.classList.remove('pop-anim');
+                    clearCanvas();
+                    generateMathProblem();
+                    resultArea.innerText = currentLang === 'en' ? "Next result..." : "Câu tiếp theo nào!";
+                    resultArea.style.color = "#2d3436";
+                }, 3000);
+            } else {
+                // Neu sai han (AI nhin ra so qua lech pha)
+                let txt = currentLang === 'en' ? `AI sees number <b>${top1}</b>.` : `AI chưa nhìn rõ. Bé viết số <b>${correctAnswer}</b> to hơn nhé!`;
+                resultArea.innerHTML = `🤔 ${txt}`;
+                resultArea.style.color = "#d63031";
+                sndWrong.play().catch(() => { });
+            }
+            debugScore.innerText = `Prediction: ${top1} (${Math.round(conf)}%) ${visualMatch ? '[Auto-Corrected]' : ''}`;
+        } catch (error) {
+            console.error(error);
+            resultArea.innerText = "❌ Lỗi xử lý AI. Bé thử lại nhé!";
         }
-
-        const sndCorrect = new Audio('./assets/sound/sound_correct_answer_bit.mp3');
-        const sndWrong = new Audio('./assets/sound/sound_wrong_answer_bit.mp3');
-
-        if (isRight) {
-            let congrats = currentLang === 'en' ? "EXCELLENT!" : "CHÍNH XÁC!";
-            resultArea.innerHTML = `🎉 <b>${congrats}</b> ${numA} ${currentOp} ${numB} = ${correctAnswer}`;
-            resultArea.style.color = "#00b894";
-            resultArea.classList.add('pop-anim');
-            sndCorrect.play().catch(() => { });
-            if (window.confetti) window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-
-            submitScore(correctAnswer);
-            setTimeout(() => {
-                resultArea.classList.remove('pop-anim');
-                clearCanvas();
-                generateMathProblem();
-                resultArea.innerText = currentLang === 'en' ? "Next result..." : "Câu tiếp theo nào!";
-                resultArea.style.color = "#2d3436";
-            }, 3000);
-        } else {
-            // Nếu sai hẳn (AI nhìn ra số quá lệch pha)
-            let txt = currentLang === 'en' ? `AI sees number <b>${top1}</b>.` : `AI chưa nhìn rõ. Bé viết số <b>${correctAnswer}</b> to hơn nhé!`;
-            resultArea.innerHTML = `🤔 ${txt}`;
-            resultArea.style.color = "#d63031";
-            sndWrong.play().catch(() => { });
-        }
-        debugScore.innerText = `Prediction: ${top1} (${Math.round(scores[top1] * 100)}%) ${visualMatch ? '[Auto-Corrected]' : ''}`;
     }
 
     async function submitScore(num) {

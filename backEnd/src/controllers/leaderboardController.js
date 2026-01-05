@@ -1,10 +1,10 @@
 const pool = require('../config/db');
 
-// Bảng xếp hạng theo điểm số
+// Bang xep hang theo diem so
 exports.getLeaderboardByScore = async (req, res) => {
     try {
         const { limit = 100 } = req.query;
-        
+
         const [rankings] = await pool.execute(
             `SELECT 
                 s.user_id,
@@ -23,25 +23,25 @@ exports.getLeaderboardByScore = async (req, res) => {
              LIMIT ?`,
             [parseInt(limit)]
         );
-        
-        // Thêm rank
+
+        // Them rank
         const rankingsWithRank = rankings.map((item, index) => ({
             ...item,
             rank: index + 1
         }));
-        
+
         res.json({ success: true, rankings: rankingsWithRank });
     } catch (error) {
-        console.error("Lỗi lấy leaderboard by score:", error);
+        console.error("Loi lay leaderboard by score:", error);
         res.status(500).json({ success: false, message: 'Lỗi server' });
     }
 };
 
-// Bảng xếp hạng theo thời gian học
+// Bang xep hang theo thoi gian hoc
 exports.getLeaderboardByTime = async (req, res) => {
     try {
         const { limit = 100 } = req.query;
-        
+
         const [rankings] = await pool.execute(
             `SELECT 
                 s.user_id,
@@ -60,26 +60,26 @@ exports.getLeaderboardByTime = async (req, res) => {
              LIMIT ?`,
             [parseInt(limit)]
         );
-        
-        // Thêm rank và format time
+
+        // Them rank va format time
         const rankingsWithRank = rankings.map((item, index) => ({
             ...item,
             rank: index + 1,
             total_time_formatted: formatTime(item.total_time)
         }));
-        
+
         res.json({ success: true, rankings: rankingsWithRank });
     } catch (error) {
-        console.error("Lỗi lấy leaderboard by time:", error);
+        console.error("Loi lay leaderboard by time:", error);
         res.status(500).json({ success: false, message: 'Lỗi server' });
     }
 };
 
-// Bảng xếp hạng theo sao
+// Bang xep hang theo sao
 exports.getLeaderboardByStars = async (req, res) => {
     try {
         const { limit = 100 } = req.query;
-        
+
         const [rankings] = await pool.execute(
             `SELECT 
                 s.user_id,
@@ -97,34 +97,34 @@ exports.getLeaderboardByStars = async (req, res) => {
              LIMIT ?`,
             [parseInt(limit)]
         );
-        
-        // Thêm rank
+
+        // Them rank
         const rankingsWithRank = rankings.map((item, index) => ({
             ...item,
             rank: index + 1,
             avg_score: item.avg_score ? Math.round(item.avg_score * 10) / 10 : 0
         }));
-        
+
         res.json({ success: true, rankings: rankingsWithRank });
     } catch (error) {
-        console.error("Lỗi lấy leaderboard by stars:", error);
+        console.error("Loi lay leaderboard by stars:", error);
         res.status(500).json({ success: false, message: 'Lỗi server' });
     }
 };
 
-// Bảng xếp hạng tổng hợp (tất cả thông tin)
+// Bang xep hang tong hop (tat ca thong tin)
 exports.getLeaderboardAll = async (req, res) => {
     try {
         const { limit = 100 } = req.query;
-        
-        // Lấy tất cả students
+
+        // Lay tat ca students
         const [students] = await pool.execute(
             `SELECT DISTINCT s.user_id, u.full_name, u.avatar_url, u.username
              FROM students s
              JOIN users u ON s.user_id = u.user_id`
         );
-        
-        // Lấy điểm số và sao từ game_results
+
+        // Lay diem so va sao tu game_results
         const [scoreData] = await pool.execute(
             `SELECT 
                 student_id,
@@ -134,8 +134,8 @@ exports.getLeaderboardAll = async (req, res) => {
              FROM game_results
              GROUP BY student_id`
         );
-        
-        // Lấy thời gian học từ study_sessions
+
+        // Lay thoi gian hoc tu study_sessions
         const [timeData] = await pool.execute(
             `SELECT 
                 user_id,
@@ -144,8 +144,8 @@ exports.getLeaderboardAll = async (req, res) => {
              WHERE page_name IS NULL OR (page_name != 'home' AND page_name != 'users')
              GROUP BY user_id`
         );
-        
-        // Merge dữ liệu
+
+        // Merge du lieu
         const scoreMap = {};
         scoreData.forEach(item => {
             scoreMap[item.student_id] = {
@@ -154,19 +154,19 @@ exports.getLeaderboardAll = async (req, res) => {
                 games_played: item.games_played
             };
         });
-        
+
         const timeMap = {};
         timeData.forEach(item => {
             timeMap[item.user_id] = {
                 total_time: item.total_time
             };
         });
-        
-        // Tạo leaderboard với tất cả thông tin
+
+        // Tao leaderboard voi tat ca thong tin
         const leaderboard = students.map(student => {
             const scoreInfo = scoreMap[student.user_id] || { total_score: 0, total_stars: 0, games_played: 0 };
             const timeInfo = timeMap[student.user_id] || { total_time: 0 };
-            
+
             return {
                 user_id: student.user_id,
                 full_name: student.full_name,
@@ -179,8 +179,8 @@ exports.getLeaderboardAll = async (req, res) => {
                 total_time_formatted: formatTime(timeInfo.total_time)
             };
         });
-        
-        // Sắp xếp theo điểm số
+
+        // Sap xep theo diem so
         leaderboard.sort((a, b) => {
             if (b.total_score !== a.total_score) {
                 return b.total_score - a.total_score;
@@ -190,19 +190,19 @@ exports.getLeaderboardAll = async (req, res) => {
             }
             return b.total_time - a.total_time;
         });
-        
-        // Giới hạn số lượng
+
+        // Gioi han so luong
         const limitedLeaderboard = leaderboard.slice(0, parseInt(limit));
-        
-        // Thêm rank
+
+        // Them rank
         const rankingsWithRank = limitedLeaderboard.map((item, index) => ({
             ...item,
             rank: index + 1
         }));
-        
+
         res.json({ success: true, rankings: rankingsWithRank });
     } catch (error) {
-        console.error("Lỗi lấy leaderboard all:", error);
+        console.error("Loi lay leaderboard all:", error);
         res.status(500).json({ success: false, message: 'Lỗi server' });
     }
 };
@@ -212,7 +212,7 @@ function formatTime(seconds) {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) {
         return `${hours}h ${minutes}m`;
     } else if (minutes > 0) {

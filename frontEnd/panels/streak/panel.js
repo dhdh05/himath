@@ -3,22 +3,22 @@
 export async function fetchStreakData() {
   try {
     const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-    // Đổi sang API check-in mới để đảm bảo tính toán thời gian thực
+    // Doi sang API check-in moi de dam bao tinh toan thoi gian thuc
     const apiUrl = 'http://localhost:3000/api/auth/check-in';
 
     const res = await fetch(apiUrl, {
-      method: 'POST', // Check-in là POST
+      method: 'POST', // Check-in la POST
       headers: headers
     });
 
     if (!res.ok) throw new Error('API Error');
     const data = await res.json();
 
-    // API check-in trả về { success: true, streak: N }
-    // Ta map vào cấu trúc mà panel này mong đợi
+    // API check-in tra ve { success: true, streak: N }
+    // Ta map vao cau truc ma panel nay mong doi
     return { streak: data.streak || 0, total_days: data.streak || 0 };
   } catch (error) {
-    console.error('Lỗi streak:', error);
+    console.error('Loi streak:', error);
     return { streak: 0, total_days: 0 };
   }
 }
@@ -36,10 +36,10 @@ export async function mount(container) {
   }
 
   // 2. Initial HTML state
-  // 2. TẠO HTML (Horizontal Layout)
+  // 2. TAO HTML (Horizontal Layout)
   container.innerHTML = `
     <div class="streak-widget">
-      <!-- Cột Trái: Icon + Số Ngày -->
+      <!-- Cot Trai: Icon + So Ngay -->
       <div class="streak-left">
          <div class="streak-days-container">
             <div class="streak-number" id="streakNumber">--</div>
@@ -47,7 +47,7 @@ export async function mount(container) {
          </div>
       </div>
 
-      <!-- Cột Phải: Thông tin chi tiết -->
+      <!-- Cot Phai: Thong tin chi tiet -->
       <div class="streak-right">
         <div class="streak-header">
            <h3>🔥 Chuỗi Ngày Học</h3>

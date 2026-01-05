@@ -2,20 +2,20 @@
 
 (function () {
   const QUEUE_KEY = 'hm_stats_queue';
-  
-  // Helper function để lấy user_id từ localStorage (current user)
+
+  // Helper function de lay user_id tu localStorage (current user)
   function getCurrentUserId() {
     try {
       const currentUser = JSON.parse(localStorage.getItem('hm_user') || 'null');
       if (currentUser && (currentUser.id || currentUser.user_id)) {
         return currentUser.id || currentUser.user_id;
       }
-    } catch (e) {}
-    // Fallback: Nếu chưa đăng nhập, return null (không gửi stats)
+    } catch (e) { }
+    // Fallback: Neu chua dang nhap, return null (khong gui stats)
     return null;
   }
-  
-  // Set/get HiMathUserId từ current user
+
+  // Set/get HiMathUserId tu current user
   function updateHiMathUserId() {
     const userId = getCurrentUserId();
     if (userId) {
@@ -23,11 +23,11 @@
     }
     return userId;
   }
-  
-  // Khởi tạo lần đầu
+
+  // Khoi tao lan dau
   updateHiMathUserId();
-  
-  // Export function để có thể update khi user đăng nhập
+
+  // Export function de co the update khi user dang nhap
   window.updateHiMathUserId = updateHiMathUserId;
 
   function _now() { return Date.now(); }
@@ -35,25 +35,25 @@
   function _getQueued() {
     try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch (e) { return []; }
   }
-  function _saveQueued(q) { try { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); } catch (e) {} }
+  function _saveQueued(q) { try { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); } catch (e) { } }
   function _enqueue(item) { const q = _getQueued(); q.push(item); _saveQueued(q); }
 
-  // Lấy API URL từ config hoặc fallback về localhost
+  // Lay API URL tu config hoac fallback ve localhost
   const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3000';
 
   async function _post(path, body) {
-  try {
-      // Lấy token từ localStorage để gửi kèm request
+    try {
+      // Lay token tu localStorage de gui kem request
       const token = localStorage.getItem('user_token');
       const headers = { 'Content-Type': 'application/json' };
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
-      
-      const res = await fetch(API_URL + path, { 
-        method: 'POST', 
-        headers: headers, 
-        body: JSON.stringify(body) 
+
+      const res = await fetch(API_URL + path, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(body)
       });
 
       if (!res.ok) {
@@ -65,8 +65,8 @@
       console.log('✅ Stats API Success:', path, result);
       return true;
     } catch (e) {
-      console.error("❌ Lỗi gửi Stats API:", path, e); // In lỗi ra để dễ kiểm tra
-      try { _enqueue({ path, body, ts: _now() }); } catch (err) {}
+      console.error("❌ Loi gui Stats API:", path, e); // In loi ra de de kiem tra
+      try { _enqueue({ path, body, ts: _now() }); } catch (err) { }
       return false;
     }
   }
