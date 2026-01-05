@@ -132,6 +132,7 @@ export function mount(container) {
     const modeSelection = document.getElementById('modeSelection');
     const gameArea = document.getElementById('gameArea');
     const pageSubtitle = document.getElementById('pageSubtitle');
+    const canvasContainer = document.getElementById('canvasContainer');
 
     // Canvas Config
     ctx.lineWidth = 12; // Do day toi uu cho Tesseract (theo claude algorithm)
@@ -252,7 +253,42 @@ export function mount(container) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = lang;
             utterance.rate = rate;
-            window.speechSynthesis.speak(utterance);
+
+            // Helper to get voices reliably
+            const getVoices = () => {
+                let vs = window.speechSynthesis.getVoices();
+                return vs.length > 0 ? vs : [];
+            };
+
+            const selectBestVoice = () => {
+                const voices = getVoices();
+                // console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`)); // Debug
+
+                let selectedVoice = null;
+                if (currentLang === 'vi') {
+                    // Uu tien giong nu tieng Viet: Google Tieng Viet, Hoai My (Windows), Linh, ...
+                    selectedVoice = voices.find(v => v.lang.includes('vi') && v.name.includes('Google')) || // Chrome Female
+                        voices.find(v => v.lang.includes('vi') && (v.name.includes('Hoai My') || v.name.includes('Linh'))) || // Windows/Other Female
+                        voices.find(v => v.lang.includes('vi') && v.name.toLowerCase().includes('female')) ||
+                        voices.find(v => v.lang.includes('vi')); // Fallback
+                } else {
+                    selectedVoice = voices.find(v => v.lang.includes('en') && v.name.includes('Google') && v.name.includes('Female')) ||
+                        voices.find(v => v.lang.includes('en') && v.name.includes('Google')) ||
+                        voices.find(v => v.lang.includes('en'));
+                }
+
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+                window.speechSynthesis.speak(utterance);
+            };
+
+            // Ensure voices are loaded
+            if (window.speechSynthesis.getVoices().length === 0) {
+                window.speechSynthesis.onvoiceschanged = selectBestVoice;
+            } else {
+                selectBestVoice();
+            }
         }
     }
 
@@ -290,6 +326,7 @@ export function mount(container) {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         resultArea.innerText = currentLang === 'en' ? "Ready!" : "Sẵn sàng!";
         resultArea.style.color = "#2d3436";
+        canvasContainer.classList.remove('correct-glow', 'wrong-glow');
         debugScore.innerText = "";
     }
 
@@ -442,19 +479,18 @@ export function mount(container) {
             // LOGIC CHECK: VISUAL NEIGHBOR MAP (Ban do hang xom)
             // ---------------------------------------------------------------------
 
-            // Dinh nghia cac so co net tuong dong nhau
-            // Dinh nghia cac so co net tuong dong nhau (STRICT MODE)
+            // Dinh nghia cac so co net tuong dong nhau (RELAXED MODE)
             const VISUAL_NEIGHBORS = {
-                0: [6, 9],
-                1: [7],
-                2: [7],
-                3: [5, 8],
-                4: [9],
-                5: [3, 6],
-                6: [0, 5],
-                7: [1],
-                8: [3, 0, 6], // 3 nua so 8, 0 tron, 6 bung tron duoi      
-                9: [4]
+                0: [6, 9, 8, 5],        // Tron, cong kin
+                1: [7, 4, 2],           // Net thang
+                2: [1, 7, 3, 0],        // Z shape, cong
+                3: [5, 8, 9, 2],        // Cong 2 khuc, gan giong 5 hoac 8
+                4: [9, 1, 7],           // Thang + Cheo
+                5: [3, 6, 9, 0],        // Cong duoi, bung tron
+                6: [0, 5, 8],           // Bung tron
+                7: [1, 2, 4, 9],        // Gach ngang/cheo
+                8: [3, 0, 6, 5, 9],     // Hai vong tron (Chap nhan ca 9)
+                9: [4, 7, 3, 5, 0]      // Dau tron duoi dai
             };
 
             let isRight = false;
@@ -463,8 +499,8 @@ export function mount(container) {
             // Rule 1: Chuan det
             if (top1 === correctAnswer) isRight = true;
 
-            // Rule 2: Hoi hoi dung (Confidence > 40%) - Tesseract confidence is 0-100
-            if (top1 === correctAnswer && conf > 40) isRight = true;
+            // Rule 2: Hoi hoi dung (Confidence > 30%) - Giam tu 40 xuong 30
+            if (top1 === correctAnswer && conf > 30) isRight = true;
 
             // Rule 3: Visual Neighbor Check (Chap nhan ho hang)
             const neighbors = VISUAL_NEIGHBORS[correctAnswer] || [];
@@ -486,6 +522,11 @@ export function mount(container) {
                 resultArea.innerHTML = `🎉 <b>${congrats}</b> ${numA} ${currentOp} ${numB} = ${correctAnswer}`;
                 resultArea.style.color = "#00b894";
                 resultArea.classList.add('pop-anim');
+
+                // Add Glow Effect
+                canvasContainer.classList.remove('wrong-glow');
+                canvasContainer.classList.add('correct-glow');
+
                 sndCorrect.play().catch(() => { });
                 if (window.confetti) window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 
@@ -502,6 +543,10 @@ export function mount(container) {
                 let txt = currentLang === 'en' ? `AI sees number <b>${top1}</b>.` : `AI chưa nhìn rõ. Bé viết số <b>${correctAnswer}</b> to hơn nhé!`;
                 resultArea.innerHTML = `🤔 ${txt}`;
                 resultArea.style.color = "#d63031";
+
+                canvasContainer.classList.remove('correct-glow');
+                canvasContainer.classList.add('wrong-glow');
+
                 sndWrong.play().catch(() => { });
             }
             debugScore.innerText = `Prediction: ${top1} (${Math.round(conf)}%) ${visualMatch ? '[Auto-Corrected]' : ''}`;

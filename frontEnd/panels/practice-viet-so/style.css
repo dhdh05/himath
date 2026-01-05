@@ -271,3 +271,15 @@ canvas {
         transform: translateY(-5px);
     }
 }
+
+/* Hiệu ứng ánh xanh lá khi đúng (Ported from Claude folder) */
+.correct-glow {
+    box-shadow: 0 0 20px #00b894, 0 0 40px #00b894 !important;
+    border-color: #00b894 !important;
+}
+
+/* Hiệu ứng ánh đỏ khi sai (Ported from Claude folder) */
+.wrong-glow {
+    box-shadow: 0 0 20px #d63031, 0 0 40px #d63031 !important;
+    border-color: #d63031 !important;
+}
