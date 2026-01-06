@@ -153,11 +153,12 @@ const nodemailer = require('nodemailer');
 const otpStore = new Map();
 
 // Cau hinh gui mail
+// Cau hinh gui mail
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'duchuyd241@gmail.com',
-        pass: 'tddo ufqi gbck qboy'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -185,7 +186,7 @@ exports.requestPasswordReset = async (req, res) => {
         const emailTo = user.email;
 
         const mailOptions = {
-            from: '"Hi Math Support" <duchuyd241@gmail.com>',
+            from: `"Hi Math Support" <${process.env.EMAIL_USER}>`,
             to: emailTo,
             subject: `[Hi Math] Mã xác thực reset mật khẩu cho ${username}`,
             html: `
@@ -312,7 +313,7 @@ exports.requestPinResetOTP = async (req, res) => {
 
         // Gui Email
         const mailOptions = {
-            from: '"Hi Math Support" <duchuyd241@gmail.com>',
+            from: `"Hi Math Support" <${process.env.EMAIL_USER}>`,
             to: user.email,
             subject: `[Hi Math] Mã xác thực Reset PIN`,
             html: `<h3>Reset PIN Phụ Huynh</h3><p>Mã OTP của bạn là: <b style="font-size: 20px; color: blue;">${otp}</b></p><p>Đừng chia sẻ mã này cho ai khác.</p>`

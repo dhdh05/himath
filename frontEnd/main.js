@@ -2072,7 +2072,7 @@
             if (f2) f2.hidden = false;
 
             console.log("DEMO OTP:", data.debug_otp);
-            alert("Mã xác thực là: " + data.debug_otp + "\n(Trong thực tế mã này sẽ gửi về email/sđt)");
+            alert("Mã xác thực là: " + data.debug_otp + "\n(Vui lòng check email để nhận mã xác thực)");
           } else {
             alert(data.message);
           }
