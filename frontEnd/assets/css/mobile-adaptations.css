@@ -184,7 +184,7 @@ body {
     }
 
     .team-members {
-        flex-direction: column;
+        flex-direction: column !important;
         /* Stack members vertically */
         align-items: center !important;
         gap: 30px !important;
