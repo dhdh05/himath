@@ -38,7 +38,7 @@ body {
 
     /* 2. Topbar: Fixed at top, High Z-Index to remain clickable */
     .topbar {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         right: 0;
@@ -46,11 +46,17 @@ body {
         z-index: 1200;
         /* Topmost to allow toggling */
         border-radius: 0 0 20px 20px;
-        padding: 0 10px;
+        padding: 0 5px;
         margin: 0;
         background: rgba(16, 26, 56, 0.95);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transform: scale(0.95);
+        transform-origin: top center;
+        width: 105.2%;
+        /* Compensate for scale (100 / 0.95) */
+        left: -2.6%;
+        /* Center it back */
     }
 
     /* 3. Sidebar: Slide-in Drawer (Below Topbar) */
