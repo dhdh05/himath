@@ -10,12 +10,12 @@ const pool = mysql.createPool({
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'ktpmud',
-    port: process.env.DB_PORT || 3306, // Them cong (CleverCloud thuong la 3306, nhung doi khi khac)
+    port: process.env.DB_PORT || 3306, 
     waitForConnections: true,
-    connectionLimit: 4,
+    connectionLimit: 3,
     queueLimit: 0,
     charset: 'utf8mb4',
-    enableKeepAlive: true, // GIUP KET NOI KHONG BI TREO TREN CLOUD
+    enableKeepAlive: true, 
     keepAliveInitialDelay: 0
 });
 

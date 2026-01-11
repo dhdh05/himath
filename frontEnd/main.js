@@ -1645,8 +1645,10 @@
     } catch (e) { }
 
     if (key === 'home') {
+      document.body.classList.remove('force-landscape');
       content.style.overflowY = 'hidden';
     } else {
+      document.body.classList.add('force-landscape');
       content.style.overflowY = 'auto';
     }
     if (key !== 'home') {

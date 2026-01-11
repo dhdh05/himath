@@ -621,16 +621,23 @@ export function mount(container) {
   // SEND OTP for Change PIN
   if (cp_sendOtpBtn) {
     cp_sendOtpBtn.addEventListener('click', async () => {
-      cp_msg.textContent = 'Đang gửi OTP...';
+      cp_msg.textContent = 'Đang gửi OTP (chờ xíu)...';
       cp_msg.style.color = 'blue';
+
+      // Timeout Controller
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 giay timeout
 
       try {
         const apiUrl = window.API_CONFIG?.ENDPOINTS?.AUTH?.FORGOT_PIN || '/api/auth/forgot-pin';
         const res = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: studentId })
+          body: JSON.stringify({ user_id: studentId }),
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
+
         const data = await res.json();
         if (data.success) {
           cp_msg.textContent = '✅ Đã gửi OTP về email.';
@@ -640,7 +647,11 @@ export function mount(container) {
           cp_msg.style.color = 'red';
         }
       } catch (e) {
-        cp_msg.textContent = '❌ Lỗi kết nối';
+        if (e.name === 'AbortError') {
+          cp_msg.textContent = '⚠️ Server phản hồi lâu. Hãy thử lại!';
+        } else {
+          cp_msg.textContent = '❌ Lỗi kết nối server';
+        }
         cp_msg.style.color = 'red';
       }
     });

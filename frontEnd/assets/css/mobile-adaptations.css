@@ -257,8 +257,51 @@ body {
     }
 }
 
-@media only screen and (min-width: 1025px) and (max-width: 1366px) {
-    .features {
-        grid-template-columns: repeat(3, 1fr);
+
+
+/* --- FORCE LANDSCAPE MODE (AUTO ROTATE) --- */
+/* Khi vao Game/Function khac Home -> Tu dong xoay ngang giao dien */
+@media screen and (orientation: portrait) and (max-width: 900px) {
+    body.force-landscape {
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+    }
+
+    body.force-landscape .app {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vh;
+        height: 100vw;
+
+        /* Xoay 90 do: Top -> Right. Origin Top-Left. Translate X de keo lai vao man hinh */
+        transform: rotate(90deg) translateY(-100%);
+        transform-origin: top left;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 9999;
+        background: linear-gradient(160deg, #0b1022, #101a38);
+    }
+
+    /* An Topbar va Sidebar de full man hinh */
+    body.force-landscape .topbar,
+    body.force-landscape .sidebar,
+    body.force-landscape::after {
+        display: none !important;
+    }
+
+    body.force-landscape .content {
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+        padding: 10px !important;
+        margin: 0 !important;
     }
 }

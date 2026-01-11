@@ -155,11 +155,21 @@ const otpStore = new Map();
 // Cau hinh gui mail
 // Cau hinh gui mail
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465, // Thu chuyen sang cong 465 (SSL)
+    secure: true, // true for 465, false for other ports
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    tls: {
+        // Can thiet neu server Render gap van de voi chung chi SSL
+        rejectUnauthorized: false
+    },
+    connectionTimeout: 20000, // Tang timeout len 20s
+    greetingTimeout: 10000,
+    logger: true, // Log chi tiet de debug
+    debug: true
 });
 
 // Kiem tra ket noi Email ngay khi khoi dong
