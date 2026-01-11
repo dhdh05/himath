@@ -271,27 +271,48 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- SỰ KIỆN ---
 
     // Expose API for main.js to control
+    // Expose API for main.js to control
     window.ThemeEffects = {
-        pause: () => {
-            if (activeInterval) clearInterval(activeInterval);
-            if (butterflyInterval) clearInterval(butterflyInterval);
-            // Remove dynamic elements
-            document.querySelectorAll('.falling-obj').forEach(el => el.remove());
-            document.querySelectorAll('.butterfly').forEach(el => el.remove());
-            document.querySelectorAll('.acorn').forEach(el => el.remove());
-            // Note: We keep the background class (e.g. theme-spring) for consistent color scheme
-        },
-        resume: () => {
-            const saved = localStorage.getItem('hm_theme');
-            if (saved) startTheme(saved);
+        updateState: (isHome) => {
+            const currentTheme = localStorage.getItem('hm_theme');
+
+            // 1. FALLING OBJECTS (Snow/Flower/Leaf) - ALWAYS RUNNING
+            // If activeInterval is missing but we have a theme, restart it
+            if (!activeInterval && currentTheme) {
+                // Determine interval based on theme
+                if (currentTheme === 'winter') {
+                    activeInterval = setInterval(() => createFallingObject(snowIcons, 'snow'), 50);
+                } else if (currentTheme === 'spring') {
+                    activeInterval = setInterval(() => createFallingObject(springIcons, 'flower'), 100);
+                } else if (currentTheme === 'autumn') {
+                    activeInterval = setInterval(() => createFallingObject(autumnIcons, 'leaf'), 80);
+                }
+            }
+
+            // 2. HORIZONTAL OBJECTS (Butterflies) - HOME ONLY
+            if (isHome) {
+                // If home and spring, start butterflies if not running
+                if (currentTheme === 'spring' && !butterflyInterval) {
+                    butterflyInterval = setInterval(() => createButterfly(), 1500);
+                }
+            } else {
+                // If not home, clear butterflies immediately
+                if (butterflyInterval) {
+                    clearInterval(butterflyInterval);
+                    butterflyInterval = null;
+                }
+                document.querySelectorAll('.butterfly').forEach(el => el.remove());
+            }
         }
     };
 
-    // Initial Check: If not home, pause animations immediately (keep background)
+    // Initial Check
     const path = window.location.pathname;
     const isHome = path === '/' || path === '/index.html' || path === '/home';
-    if (!isHome) {
-        window.ThemeEffects.pause();
+    // Start theme normally first (which starts everything)
+    // Then refine based on page
+    if (localStorage.getItem('hm_theme')) {
+        startTheme(localStorage.getItem('hm_theme'));
+        window.ThemeEffects.updateState(isHome);
     }
-
 });

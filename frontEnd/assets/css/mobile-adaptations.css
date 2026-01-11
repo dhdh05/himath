@@ -1,0 +1,236 @@
+/* ========================================================
+   MOBILE & TABLET ADAPTATIONS (iPhone 11-17, iPad Air/Pro)
+   ======================================================== */
+
+/* --- GLOBAL MOBILE FIXES --- */
+:root {
+    /* Use dynamic viewport height for modern mobile browsers */
+    --vh: 1vh;
+    --app-height: 100vh;
+}
+
+@supports (height: 100dvh) {
+    :root {
+        --app-height: 100dvh;
+    }
+}
+
+html,
+body {
+    height: var(--app-height);
+    width: 100%;
+    overflow: hidden;
+    /* Prevent body scroll, let .app handle it */
+    position: fixed;
+    /* Prevent bouncy scroll on iOS */
+}
+
+/* Ensure minimum touch target size according to Apple Human Interface Guidelines */
+button,
+a,
+.nav__item,
+.feature,
+.input,
+select {
+    touch-action: manipulation;
+    /* Disable double-tap zoom */
+}
+
+/* --- IPHONE SERIES (PORTRAIT) --- */
+@media only screen and (max-width: 480px) {
+
+    /* 1. App Layout */
+    .app {
+        height: var(--app-height);
+        grid-template-columns: 0 1fr !important;
+        /* Force sidebar hidden by default */
+        grid-template-rows: auto 1fr;
+        grid-template-areas:
+            "topbar topbar"
+            "content content";
+    }
+
+    /* 2. Topbar Adjustments */
+    .topbar {
+        padding: 8px 12px;
+        height: 60px;
+        margin: 0;
+        /* Remove margin for full width feel */
+        border-radius: 0 0 20px 20px;
+        /* Only round bottom */
+    }
+
+    .brand__text {
+        font-size: 1.1rem;
+        /* Slightly smaller logic */
+    }
+
+    .icon-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    /* 3. Content Area */
+    .content {
+        margin: 0 !important;
+        /* Remove outer margin */
+        border-radius: 20px 20px 0 0;
+        /* Card look coming up from bottom */
+        padding: 15px !important;
+        height: 100% !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 80px !important;
+        /* Space for bottom interaction */
+    }
+
+    /* 4. Dashboard Features */
+    .features {
+        grid-template-columns: 1fr !important;
+        /* Single column for focus */
+        gap: 15px;
+    }
+
+    .feature {
+        flex-direction: row;
+        /* Horizontal card for better space usage */
+        align-items: center;
+        text-align: left;
+        padding: 15px;
+        min-height: auto;
+    }
+
+    .feature__icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 0;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+
+    .feature__title {
+        margin: 0 0 4px 0;
+        font-size: 1.1rem;
+        text-align: left;
+    }
+
+    .feature__desc {
+        text-align: left;
+        font-size: 0.85rem;
+        display: none;
+        /* Hide description on very small screens to save space? Or keep short */
+    }
+
+    /* 5. Hero Section */
+    .hero__title {
+        font-size: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero__actions {
+        margin-left: 0;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .hero__actions .btn {
+        width: 100%;
+        /* Full width button */
+        justify-content: center;
+    }
+
+    /* 6. Typography Scale */
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    h2 {
+        font-size: 1.25rem !important;
+    }
+
+    p {
+        font-size: 0.95rem !important;
+    }
+}
+
+/* --- IPHONE LANDSCAPE / SMALL TABLETS --- */
+@media only screen and (max-width: 932px) and (orientation: landscape) {
+    .app {
+        height: var(--app-height);
+    }
+
+    .features {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    }
+
+    .content {
+        padding-bottom: 20px;
+    }
+}
+
+/* --- IPAD FAMILY (Air, Gen, Pro) --- */
+/* Targeting 768px - 1024px and specific Pro sizes like 11inch (834px) */
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+
+    /* Slightly tighter layout */
+    .app {
+        grid-template-columns: 200px 1fr;
+        /* Reduce sidebar width */
+    }
+
+    .sidebar {
+        padding: 12px;
+    }
+
+    .nav__item {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+
+    .features {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 Columns is safe */
+    }
+}
+
+/* --- IPAD PRO 12.9" (1024px - 1366px) --- */
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+    .features {
+        grid-template-columns: repeat(3, 1fr);
+        /* 3 Columns for larger Pros */
+    }
+}
+
+/* --- SAFE AREA INSETS (Notch/Dynamic Island) --- */
+@supports (padding-top: env(safe-area-inset-top)) {
+    .topbar {
+        padding-top: max(8px, env(safe-area-inset-top));
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
+    }
+
+    .sidebar {
+        padding-left: max(14px, env(safe-area-inset-left));
+    }
+
+    .content {
+        padding-right: max(18px, env(safe-area-inset-right));
+        padding-bottom: max(18px, env(safe-area-inset-bottom));
+    }
+}
+
+/* --- UI POLISH FOR TOUCH --- */
+/* Make scrollbars invisible on mobile for cleaner look */
+@media (pointer: coarse) {
+    ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+
+    .content,
+    .nav {
+        scrollbar-width: none;
+        /* Firefox */
+    }
+}

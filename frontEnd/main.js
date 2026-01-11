@@ -1631,18 +1631,21 @@
     if (!content) return;
 
     // control global home music: stop when navigating away
+    // Control theme effects: Butterflies only on Home, Falling objects everywhere
+    try {
+      if (window.ThemeEffects && typeof window.ThemeEffects.updateState === 'function') {
+        window.ThemeEffects.updateState(key === 'home');
+      }
+    } catch (e) { }
+
     if (key === 'home') {
       content.style.overflowY = 'hidden';
-      // Resume theme effects on home
-      try { if (window.ThemeEffects) window.ThemeEffects.resume(); } catch (e) { }
     } else {
       content.style.overflowY = 'auto';
     }
     if (key !== 'home') {
       try { stopHomeMusic(); } catch (e) { }
       try { removeContentSnow(); } catch (e) { }
-      // Stop theme effects (falling objects) on other pages
-      try { if (window.ThemeEffects) window.ThemeEffects.pause(); } catch (e) { }
     }
 
     // cleanup any active panel-specific listeners, timers, or mounted modules

@@ -217,6 +217,28 @@ export function mount(container) {
     document.addEventListener('keydown', keydownListener);
     document.addEventListener('keyup', keyupHandler);
 
+    // --- TOUCH SUPPORT (iPad/Mobile) ---
+    // Tap screen = Jump (Space/ArrowUp)
+    const touchHandler = (e) => {
+        // Prevent default scrolling
+        if (e.cancelable) e.preventDefault();
+
+        if (e.type === 'touchstart') {
+            keys.ArrowUp = true; // Act as Jump
+
+            // Auto start if game not running
+            if (!gameRunning && qs('#math-modal').classList.contains('hidden')) {
+                startGame();
+            }
+        } else if (e.type === 'touchend') {
+            keys.ArrowUp = false;
+        }
+    };
+
+    const gameContainer = qs('.game-container');
+    gameContainer.addEventListener('touchstart', touchHandler, { passive: false });
+    gameContainer.addEventListener('touchend', touchHandler, { passive: false });
+
     function startGame() {
         gameRunning = true;
         score = 0; gameSpeed = 5; lives = 5; obstacles = [];
@@ -318,6 +340,13 @@ export function mount(container) {
     container._dinoCleanup = () => {
         document.removeEventListener('keydown', keydownListener);
         document.removeEventListener('keyup', keyupHandler);
+
+        const gameContainer = qs('.game-container');
+        if (gameContainer) {
+            gameContainer.removeEventListener('touchstart', touchHandler);
+            gameContainer.removeEventListener('touchend', touchHandler);
+        }
+
         cancelAnimationFrame(frameId);
         activeTimeouts.forEach(clearTimeout);
 
