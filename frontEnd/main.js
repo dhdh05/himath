@@ -274,6 +274,12 @@
     return window.matchMedia('(max-width: 900px)').matches;
   }
 
+  // --- AUTO HIDE SIDEBAR ON MOBILE INIT ---
+  if (isMobileLayout()) {
+    const app = document.querySelector('.app');
+    if (app) app.classList.add('sidebar-hidden');
+  }
+
   function openSidebar() {
     if (!sidebar || !backdrop) return;
     sidebar.classList.add('is-open');

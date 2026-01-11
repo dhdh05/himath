@@ -4,7 +4,6 @@
 
 /* --- GLOBAL MOBILE FIXES --- */
 :root {
-    /* Use dynamic viewport height for modern mobile browsers */
     --vh: 1vh;
     --app-height: 100vh;
 }
@@ -20,217 +19,207 @@ body {
     height: var(--app-height);
     width: 100%;
     overflow: hidden;
-    /* Prevent body scroll, let .app handle it */
     position: fixed;
-    /* Prevent bouncy scroll on iOS */
+    /* Prevent bouncy scroll */
+    background: radial-gradient(1200px 600px at 15% 8%, rgba(86, 204, 242, .12), transparent 55%),
+        linear-gradient(160deg, #0b1022, #101a38) !important;
+    /* Ensure dark background */
 }
 
-/* Ensure minimum touch target size according to Apple Human Interface Guidelines */
-button,
-a,
-.nav__item,
-.feature,
-.input,
-select {
-    touch-action: manipulation;
-    /* Disable double-tap zoom */
-}
+/* --- IPHONE / MOBILE (Portrait < 768px) --- */
+@media only screen and (max-width: 767px) {
 
-/* --- IPHONE SERIES (PORTRAIT) --- */
-@media only screen and (max-width: 480px) {
-
-    /* 1. App Layout */
+    /* 1. Layout: Sidebar as Overlay */
     .app {
         height: var(--app-height);
-        grid-template-columns: 0 1fr !important;
-        /* Force sidebar hidden by default */
-        grid-template-rows: auto 1fr;
-        grid-template-areas:
-            "topbar topbar"
-            "content content";
+        display: block;
+        /* Ease grid constraints */
+        position: relative;
+        overflow: hidden;
     }
 
-    /* 2. Topbar Adjustments */
+    /* 2. Topbar: Fixed at top */
     .topbar {
-        padding: 8px 12px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
         height: 60px;
-        margin: 0;
-        /* Remove margin for full width feel */
+        z-index: 100;
         border-radius: 0 0 20px 20px;
-        /* Only round bottom */
+        padding: 0 10px;
+        margin: 0;
+        /* Ensure background is opaque enough */
+        background: rgba(16, 26, 56, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .brand__text {
-        font-size: 1.1rem;
-        /* Slightly smaller logic */
-    }
-
-    .icon-btn {
-        width: 38px;
-        height: 38px;
-    }
-
-    /* 3. Content Area */
-    .content {
+    /* 3. Sidebar: Slide-in Drawer */
+    .sidebar {
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 280px !important;
+        z-index: 1001 !important;
         margin: 0 !important;
-        /* Remove outer margin */
+        border-radius: 0 24px 24px 0 !important;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+        transform: translateX(0);
+        transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        display: flex !important;
+        /* Override display:none */
+    }
+
+    /* Sidebar Hidden State (Default logic in main.js triggers this class) */
+    .app.sidebar-hidden .sidebar {
+        transform: translateX(-100%);
+        display: flex !important;
+        /* Keep it flex but moved away */
+    }
+
+    /* Overlay backdrop when sidebar is open */
+    .app:not(.sidebar-hidden)::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        backdrop-filter: blur(2px);
+    }
+
+    /* 4. Content: Full screen, scrollable */
+    .content {
+        position: absolute;
+        top: 60px;
+        /* Below topbar */
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: 0 !important;
         border-radius: 20px 20px 0 0;
-        /* Card look coming up from bottom */
         padding: 15px !important;
-        height: 100% !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
-        padding-bottom: 80px !important;
-        /* Space for bottom interaction */
+        /* Ensure gradient */
+        background: linear-gradient(to bottom, #2f80ed, #56ccf2) !important;
+        z-index: 1;
+        padding-bottom: 40px !important;
     }
 
-    /* 4. Dashboard Features */
+    /* 5. Feature List Restyling */
     .features {
-        grid-template-columns: 1fr !important;
-        /* Single column for focus */
-        gap: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
 
     .feature {
         flex-direction: row;
-        /* Horizontal card for better space usage */
         align-items: center;
-        text-align: left;
-        padding: 15px;
-        min-height: auto;
+        padding: 12px 16px;
+        min-height: 80px;
+        /* Transparent white card */
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 100%;
     }
 
     .feature__icon {
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
+        margin-right: 16px;
         margin-bottom: 0;
-        margin-right: 15px;
         flex-shrink: 0;
+        font-size: 1.2rem;
     }
 
     .feature__title {
-        margin: 0 0 4px 0;
         font-size: 1.1rem;
+        margin-bottom: 4px;
         text-align: left;
+        color: white;
+        /* Ensure text is readable */
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
 
     .feature__desc {
-        text-align: left;
-        font-size: 0.85rem;
         display: none;
-        /* Hide description on very small screens to save space? Or keep short */
+        /* Simplify on mobile */
     }
 
-    /* 5. Hero Section */
+    /* 6. Typography & Hero */
     .hero__title {
-        font-size: 1.5rem;
-        flex-direction: column;
-        align-items: flex-start;
+        font-size: 1.4rem;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .hero__actions {
-        margin-left: 0;
-        margin-top: 10px;
         width: 100%;
+        margin-top: 8px;
     }
 
     .hero__actions .btn {
         width: 100%;
-        /* Full width button */
         justify-content: center;
-    }
-
-    /* 6. Typography Scale */
-    h1 {
-        font-size: 1.5rem !important;
-    }
-
-    h2 {
-        font-size: 1.25rem !important;
-    }
-
-    p {
-        font-size: 0.95rem !important;
-    }
-}
-
-/* --- IPHONE LANDSCAPE / SMALL TABLETS --- */
-@media only screen and (max-width: 932px) and (orientation: landscape) {
-    .app {
-        height: var(--app-height);
-    }
-
-    .features {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
-    }
-
-    .content {
-        padding-bottom: 20px;
-    }
-}
-
-/* --- IPAD FAMILY (Air, Gen, Pro) --- */
-/* Targeting 768px - 1024px and specific Pro sizes like 11inch (834px) */
-@media only screen and (min-width: 768px) and (max-width: 1024px) {
-
-    /* Slightly tighter layout */
-    .app {
-        grid-template-columns: 200px 1fr;
-        /* Reduce sidebar width */
-    }
-
-    .sidebar {
         padding: 12px;
     }
 
-    .nav__item {
-        font-size: 0.95rem;
-        padding: 10px;
+    /* 7. Toggle Button Icon Rotation */
+    .topbar__hide i {
+        transition: transform 0.3s;
+    }
+
+    /* When sidebar is hidden (default), arrow points Right to indicate 'Open' */
+    .app.sidebar-hidden .topbar__hide i {
+        transform: rotate(180deg);
+    }
+
+    /* When sidebar is visible, arrow points Left to indicate 'Close' */
+    .app:not(.sidebar-hidden) .topbar__hide i {
+        transform: rotate(0deg);
+    }
+}
+
+/* --- LARGE MOBILE / TABLET (Landscape) --- */
+@media only screen and (min-width: 481px) and (max-width: 932px) and (orientation: landscape) {
+    .features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .feature {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .feature__desc {
+        display: block;
+        font-size: 0.8rem;
+    }
+}
+
+/* --- IPAD (Air/Pro) --- */
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+    .app {
+        grid-template-columns: 220px 1fr;
+        /* Custom sidebar width */
+    }
+
+    .sidebar {
+        width: 220px;
     }
 
     .features {
         grid-template-columns: repeat(2, 1fr);
-        /* 2 Columns is safe */
     }
 }
 
-/* --- IPAD PRO 12.9" (1024px - 1366px) --- */
 @media only screen and (min-width: 1025px) and (max-width: 1366px) {
     .features {
         grid-template-columns: repeat(3, 1fr);
-        /* 3 Columns for larger Pros */
-    }
-}
-
-/* --- SAFE AREA INSETS (Notch/Dynamic Island) --- */
-@supports (padding-top: env(safe-area-inset-top)) {
-    .topbar {
-        padding-top: max(8px, env(safe-area-inset-top));
-        padding-left: max(10px, env(safe-area-inset-left));
-        padding-right: max(10px, env(safe-area-inset-right));
-    }
-
-    .sidebar {
-        padding-left: max(14px, env(safe-area-inset-left));
-    }
-
-    .content {
-        padding-right: max(18px, env(safe-area-inset-right));
-        padding-bottom: max(18px, env(safe-area-inset-bottom));
-    }
-}
-
-/* --- UI POLISH FOR TOUCH --- */
-/* Make scrollbars invisible on mobile for cleaner look */
-@media (pointer: coarse) {
-    ::-webkit-scrollbar {
-        width: 0px;
-        background: transparent;
-    }
-
-    .content,
-    .nav {
-        scrollbar-width: none;
-        /* Firefox */
     }
 }
