@@ -153,35 +153,18 @@ const nodemailer = require('nodemailer');
 const otpStore = new Map();
 
 // Cau hinh gui mail
-// Cau hinh gui mail
+// Cau hinh gui mail (Su dung service GMAIL chuan)
+// Luu y: Can dung App Password chu khong phai mat khau login thuong
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465, // Thu chuyen sang cong 465 (SSL)
-    secure: true, // true for 465, false for other ports
+    service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    },
-    tls: {
-        // Can thiet neu server Render gap van de voi chung chi SSL
-        rejectUnauthorized: false
-    },
-    connectionTimeout: 20000, // Tang timeout len 20s
-    greetingTimeout: 10000,
-    logger: true, // Log chi tiet de debug
-    debug: true
-});
-
-// Kiem tra ket noi Email ngay khi khoi dong
-transporter.verify(function (error, success) {
-    if (error) {
-        console.error("❌ Email Config Error:", error.message);
-        console.error("   Make sure EMAIL_USER and EMAIL_PASS are correct in .env");
-        console.error("   If using Gmail, use App Password (https://myaccount.google.com/apppasswords)");
-    } else {
-        console.log("✅ Email Server is ready to take our messages");
     }
 });
+
+// Bo phan verify() tai day vi no thuong gay timeout tren server khi khoi dong.
+// Chung ta se check loi truc tiep khi gui mail.
 
 // 4. Forgot Password (Send OTP via Email)
 exports.requestPasswordReset = async (req, res) => {
