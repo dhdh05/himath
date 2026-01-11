@@ -7,7 +7,7 @@
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:3000'
       : (window.location.hostname.includes('render.com')
-        ? 'https://himath-be.onrender.com'  // Thay bang backend URL thuc te cua ban
+        ? window.location.origin  // Tu dong lay domain hien tai (vi du: https://himath.onrender.com)
         : 'https://your-backend-domain.com'));
 
   // Export ra window object de cac file khac co the dung
@@ -24,6 +24,7 @@
       },
       GAMES: {
         LEVELS: (gameType) => `${API_BASE_URL}/api/games/levels/${gameType}`,
+        QUESTIONS: `${API_BASE_URL}/api/games/questions/:gameType`,
         SUBMIT: `${API_BASE_URL}/api/games/submit`
       },
       PARENTS: {

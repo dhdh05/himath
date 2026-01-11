@@ -158,21 +158,28 @@
                 body: JSON.stringify({ message: text })
             });
 
-            const data = await res.json();
-            typingIndicator.classList.remove('active');
+            let textData;
+            try {
+                textData = await res.text();
+                const data = JSON.parse(textData);
+                typingIndicator.classList.remove('active');
 
-            if (data.success) {
-                addMessage(data.reply, 'bot');
-                // Voice can be different from text
-                speak(data.voice || data.reply);
-            } else {
-                // Show detailed error for debugging
-                let errDetail = JSON.stringify(data.error || {});
-                addMessage("Lỗi kết nối: " + data.message + ". Chi tiết: " + errDetail, 'bot');
+                if (data.success) {
+                    addMessage(data.reply, 'bot');
+                    speak(data.voice || data.reply);
+                } else {
+                    let errDetail = JSON.stringify(data.error || {});
+                    addMessage("Lỗi từ server: " + data.message + (errDetail !== '{}' ? ". Chi tiết: " + errDetail : ""), 'bot');
+                }
+            } catch (jsonError) {
+                console.error("JSON Parse Error:", jsonError, "Response:", textData);
+                typingIndicator.classList.remove('active');
+                addMessage(`Lỗi kết nối (Không đọc được phản hồi): ${res.status} ${res.statusText}. Có thể server đang khởi động lại hoặc lỗi code.`, 'bot');
             }
         } catch (e) {
             typingIndicator.classList.remove('active');
-            addMessage("Lỗi kết nối rồi bạn ơi! (Check if server is running)", 'bot');
+            console.error("Fetch Error:", e);
+            addMessage("Lỗi mạng! Không thể gửi tin nhắn đến server.", 'bot');
         }
     }
 
