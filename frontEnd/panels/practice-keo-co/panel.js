@@ -257,9 +257,15 @@ export function mount(container) {
                 // Make text more natural for kids
                 txt = txt.replace(/(\d+)\s*\+\s*(\d+)\s*=\s*\?/g, "$1 cộng $2 bằng bao nhiêu?");
                 txt = txt.replace(/(\d+)\s*\-\s*(\d+)\s*=\s*\?/g, "$1 trừ $2 bằng bao nhiêu?");
-                txt = txt.replace(/(\d+)\s*\.\.\.\s*(\d+)/g, "Số $1 nhỏ hơn hay lớn hơn số $2?");
-                // "Số sau số 9?" -> "Số sau số 9 là số nào?"
-                txt = txt.replace(/^Số (.*) số (\d+)\?$/i, "Số $1 số $2 là số nào?");
+                // Fix: Read comparison nicely ("5 ... 5" -> "Số 5 so với số 5 như thế nào?")
+                txt = txt.replace(/(\d+)\s*\.\.\.\s*(\d+)/g, "Số $1 so với số $2 như thế nào?");
+
+                // Only replace "Number ... ?" patterns that are asking for a number
+                // "Số liền sau..." -> keep "là số nào"
+                if (txt.match(/^Số (liền|bé|lớn)/i)) {
+                    txt = txt.replace(/^Số (.*) số (\d+)\?$/i, "Số $1 số $2 là số nào?");
+                }
+
                 // "1, 2, 3, ..." -> "1, 2, 3... Số tiếp theo là số nào?"
                 txt = txt.replace(/(\d+),\s*(\d+),\s*(\d+),\s*\.\.\./g, "$1, $2, $3... Số tiếp theo là số nào?");
 
