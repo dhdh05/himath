@@ -518,7 +518,7 @@
   function hideAuthOverlay() { if (authOverlayEl) authOverlayEl.hidden = true; }
 
   // protected areas by page key
-  const PROTECTED_KEYS = new Set(['digits-hoc-so', 'digits-ghep-so', 'digits-chan-le', 'digits-dem-so', 'compare-so-sanh', 'compare-xep-so', 'practice-tinh-toan', 'practice-nhan-ngon', 'practice-viet-so', 'practice-keo-co', 'games', 'games-dino']);
+  const PROTECTED_KEYS = new Set(['digits-hoc-so', 'digits-ghep-so', 'digits-chan-le', 'digits-dem-so', 'compare-so-sanh', 'compare-xep-so', 'practice-tinh-toan', 'practice-nhan-ngon', 'practice-viet-so', 'games-keo-co', 'games', 'games-dino']);
   // Handle both forms
   // handle login and register with localStorage (demo only)
   // --- CODE MOI: XU LY DANG NHAP THAT ---

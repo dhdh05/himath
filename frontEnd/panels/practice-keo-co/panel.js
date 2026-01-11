@@ -333,6 +333,16 @@ export function mount(container) {
     }
 
     function switchToArrowPhase() {
+        // Detect touch device roughly (iPad/Mobile)
+        const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+        if (isTouch) {
+            // On iPad/Tablets: Skip arrow/swipe phase entirely as requested
+            uiQuizPanel.classList.add('hidden');
+            handleRoundEnd(true); // Auto-win the pulling phase
+            return;
+        }
+
         uiQuizPanel.classList.add('hidden');
         uiArrowPanel.classList.remove('hidden');
 
@@ -343,19 +353,7 @@ export function mount(container) {
         document.removeEventListener('keydown', handleArrowKey);
         document.addEventListener('keydown', handleArrowKey);
 
-        // Touch support
-        uiArrowContainer.removeEventListener('touchstart', handleTouchStart);
-        uiArrowContainer.removeEventListener('touchend', handleTouchEnd);
-
-        // Detect touch device roughly
-        const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-        if (isTouch) {
-            uiArrowContainer.addEventListener('touchstart', handleTouchStart, { passive: false });
-            uiArrowContainer.addEventListener('touchend', handleTouchEnd, { passive: false });
-            container.querySelector('.hint-text').innerText = "(Vuốt màn hình theo chiều mũi tên!)";
-        } else {
-            container.querySelector('.hint-text').innerText = "(Sử dụng phím mũi tên trên bàn phím)";
-        }
+        container.querySelector('.hint-text').innerText = "(Sử dụng phím mũi tên trên bàn phím)";
     }
 
     function generateArrowSequence() {

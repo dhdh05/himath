@@ -36,6 +36,8 @@ html {
     -webkit-overflow-scrolling: touch !important;
     overflow-y: auto !important;
     height: 100%;
+    touch-action: pan-y !important;
+    /* Enable swipe scrolling */
 }
 
 /* ===== iPAD 10 INCH (768x1024) ===== */
