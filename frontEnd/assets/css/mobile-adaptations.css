@@ -20,7 +20,6 @@ body {
     width: 100%;
     overflow: hidden;
     position: fixed;
-    /* Prevent bouncy scroll */
     background: radial-gradient(1200px 600px at 15% 8%, rgba(86, 204, 242, .12), transparent 55%),
         linear-gradient(160deg, #0b1022, #101a38) !important;
 }
@@ -28,7 +27,7 @@ body {
 /* --- IPHONE / MOBILE (Portrait < 768px) --- */
 @media only screen and (max-width: 767px) {
 
-    /* 1. App Layout: Overlay Mode */
+    /* 1. App Layout */
     .app {
         height: var(--app-height);
         display: block;
@@ -36,7 +35,7 @@ body {
         overflow: hidden;
     }
 
-    /* 2. Topbar: Fixed at top, High Z-Index to remain clickable */
+    /* 2. Topbar */
     .topbar {
         position: fixed;
         top: 0;
@@ -44,7 +43,6 @@ body {
         right: 0;
         height: 60px;
         z-index: 1200;
-        /* Topmost to allow toggling */
         border-radius: 0 0 20px 20px;
         padding: 0 5px;
         margin: 0;
@@ -54,37 +52,29 @@ body {
         transform: scale(0.95);
         transform-origin: top center;
         width: 105.2%;
-        /* Compensate for scale (100 / 0.95) */
         left: -2.6%;
-        /* Center it back */
     }
 
-    /* 3. Sidebar: Slide-in Drawer (Below Topbar) */
+    /* 3. Sidebar */
     .sidebar {
         position: fixed !important;
         top: 60px;
-        /* Start below Topbar */
         bottom: 0;
         left: 0;
         width: 280px !important;
         z-index: 1100 !important;
-        /* Below Topbar, Above Backdrop */
         margin: 0 !important;
         border-radius: 0 24px 24px 0 !important;
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
         transform: translateX(0);
-        /* Visible state */
         transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
         display: flex !important;
     }
 
-    /* Sidebar Hidden State (Default on Mobile) */
-    /* Main.js adds this class on mobile init */
     .app.sidebar-hidden .sidebar {
         transform: translateX(-100%);
     }
 
-    /* Overlay backdrop when sidebar is open */
     .app:not(.sidebar-hidden)::after {
         content: '';
         position: fixed;
@@ -97,11 +87,10 @@ body {
         backdrop-filter: blur(2px);
     }
 
-    /* 4. Content: Scrollable Area */
+    /* 4. Content */
     .content {
         position: absolute;
         top: 60px;
-        /* Start below Topbar */
         bottom: 0;
         left: 0;
         right: 0;
@@ -115,36 +104,38 @@ body {
         padding-bottom: 40px !important;
     }
 
-    /* 5. Feature List Restyling */
+    /* 5. Feature List (Grid Layout) */
     .features {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 
     .feature {
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
-        padding: 12px 16px;
-        min-height: 80px;
+        text-align: center;
+        padding: 15px;
+        min-height: 110px;
         background: rgba(255, 255, 255, 0.15);
         border: 1px solid rgba(255, 255, 255, 0.2);
         width: 100%;
+        border-radius: 16px;
     }
 
     .feature__icon {
-        width: 48px;
-        height: 48px;
-        margin-right: 16px;
-        margin-bottom: 0;
+        width: 54px;
+        height: 54px;
+        margin-right: 0;
+        margin-bottom: 8px;
         flex-shrink: 0;
-        font-size: 1.2rem;
+        font-size: 1.4rem;
     }
 
     .feature__title {
-        font-size: 1.1rem;
+        font-size: 1rem;
         margin-bottom: 4px;
-        text-align: left;
+        text-align: center;
         color: white;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
@@ -153,7 +144,7 @@ body {
         display: none;
     }
 
-    /* 6. Typography */
+    /* 6. Typography & Hero */
     .hero__title {
         font-size: 1.4rem;
         flex-wrap: wrap;
@@ -171,7 +162,6 @@ body {
         padding: 12px;
     }
 
-    /* 7. Icon Rotation for Toggle Button */
     .topbar__hide i {
         transition: transform 0.3s;
     }
@@ -180,12 +170,57 @@ body {
         transform: rotate(180deg);
     }
 
-    /* Points Right (> Open) */
     .app:not(.sidebar-hidden) .topbar__hide i {
         transform: rotate(0deg);
     }
 
-    /* Points Left (< Close) */
+    /* --- SPECIFIC FIXES FOR PANELS --- */
+
+    /* About Us Panel Mobile Fixes */
+    .about-us-panel {
+        padding: 20px 10px !important;
+        width: 100% !important;
+        border-radius: 16px !important;
+    }
+
+    .team-members {
+        flex-direction: column;
+        /* Stack members vertically */
+        align-items: center !important;
+        gap: 30px !important;
+    }
+
+    .member.featured {
+        order: -1;
+        /* Show teacher first or prominent */
+        margin-bottom: 20px;
+    }
+
+    .member-avatar {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    .member.featured .member-avatar {
+        width: 140px !important;
+        height: 140px !important;
+    }
+
+    .contact-info {
+        width: 100% !important;
+        padding: 15px !important;
+    }
+
+    .contact-item {
+        font-size: 0.9rem !important;
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+
+    .contact-item span {
+        word-break: break-all;
+    }
 }
 
 /* --- LARGE MOBILE / TABLET (Landscape) --- */
