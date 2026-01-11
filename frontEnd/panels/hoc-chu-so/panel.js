@@ -57,6 +57,102 @@ export function mount(container) {
     <audio id="numberAudio" preload="auto"></audio>
   `;
 
+  // --- FORCE THEME UPDATE via JS (Robust Style Injection) ---
+  const updateSpringTheme = () => {
+    const wrapper = container.querySelector('.hoc-chu-so-container');
+    const isSpring = document.body.classList.contains('theme-spring');
+    // console.log("HocChuSo: Checking Spring Theme. Active:", isSpring);
+
+    // Method 1: Inject strong CSS Style Tag
+    let overrideStyle = document.getElementById('hocchuso-spring-override');
+    if (isSpring) {
+      if (!overrideStyle) {
+        overrideStyle = document.createElement('style');
+        overrideStyle.id = 'hocchuso-spring-override';
+        overrideStyle.innerHTML = `
+                   .hoc-chu-so-container { 
+                       background: rgba(255, 243, 224, 0.99) !important; 
+                       background-color: rgba(255, 243, 224, 0.99) !important;
+                       border: 2px solid #ffccbc !important;
+                       background-image: none !important;
+                   }
+                   .hoc-chu-so-container header { border-bottom-color: #ffccbc !important; }
+                   .hoc-chu-so-container header h1 { color: #d84315 !important; }
+                   
+                   .hoc-chu-so-container main, 
+                   .hoc-chu-so-container .number-section,
+                   .hoc-chu-so-container .icon-quantity-section,
+                   .hoc-chu-so-container .audio-section { 
+                       background: transparent !important; 
+                       background-color: transparent !important;
+                   }
+
+                   /* Nút Phát âm */
+                   .hoc-chu-so-container .audio-btn {
+                       background: linear-gradient(to right, #ff9800, #ff5722) !important;
+                       box-shadow: 0 4px 10px rgba(255, 87, 34, 0.4) !important;
+                   }
+
+                   /* Số to ở giữa */
+                   .hoc-chu-so-container .number-icon {
+                       background-color: #fff3e0 !important;
+                       color: #d84315 !important;
+                       border-color: #ffe0b2 !important;
+                       box-shadow: 0 0 15px rgba(255, 112, 67, 0.3) !important;
+                   }
+                   .hoc-chu-so-container .number-name { color: #bf360c !important; }
+
+                   /* Footer dãy số */
+                   .hoc-chu-so-container .quick-numbers {
+                       background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%) !important;
+                       border-color: #ffccbc !important;
+                       box-shadow: none !important;
+                   }
+                   .hoc-chu-so-container .number-btn {
+                       background-color: white !important;
+                       color: #d84315 !important;
+                       border-color: #ffab91 !important;
+                   }
+                   .hoc-chu-so-container .number-btn.active, .hoc-chu-so-container .number-btn:hover {
+                       background-color: #ff5722 !important;
+                       color: white !important;
+                   }
+
+                   /* Nút điều hướng trái phải */
+                   .hoc-chu-so-container .nav-btn {
+                        background: linear-gradient(to right, #ff9800, #ff5722) !important;
+                   }
+               `;
+        document.head.appendChild(overrideStyle);
+      }
+    } else {
+      if (overrideStyle) overrideStyle.remove();
+    }
+
+    if (!wrapper) return;
+
+    // Method 2: Inline Styles (Fallback)
+    if (isSpring) {
+      wrapper.style.backgroundColor = 'rgba(255, 243, 224, 0.99)';
+      wrapper.style.backgroundImage = 'none';
+      wrapper.style.borderColor = '#ffccbc';
+    } else {
+      wrapper.style.backgroundColor = '';
+      wrapper.style.backgroundImage = '';
+      wrapper.style.borderColor = '';
+    }
+  };
+
+  // Initial check
+  requestAnimationFrame(() => setTimeout(updateSpringTheme, 50));
+
+  // Observer for theme changes
+  const observer = new MutationObserver(updateSpringTheme);
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  // Save observer to disconnect
+  container._themeObserver = observer;
+
   // --- SUA: Bat dau tinh gio hoc ---
   try { if (window.HiMathStats) window.HiMathStats.startPage('digits-hoc-so'); } catch (e) { }
 

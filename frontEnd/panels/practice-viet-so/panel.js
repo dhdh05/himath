@@ -1,572 +1,444 @@
 
-// Import Tesseract.js tu CDN
-let tesseractWorker = null;
-
-// Tu dien so -> chu tieng Anh
-const NUM_WORDS_EN = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
-
 export function mount(container) {
     if (!container) return;
 
-    // --- 1. Load External CSS ---
+    // Load External CSS
     if (!document.querySelector('link[href="./panels/practice-viet-so/style.css"]')) {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = './panels/practice-viet-so/style.css';
         document.head.appendChild(link);
     }
-
-    // --- 2. Inject Libs ---
-    if (!window.Tesseract) {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-        script.onload = () => { console.log("🧠 Tesseract Loaded"); };
-        document.head.appendChild(script);
-    }
-
+    // Load Confetti
     if (!window.confetti) {
         const s = document.createElement('script');
         s.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
         document.head.appendChild(s);
     }
+    // Load Tesseract for Level 2
+    if (!window.Tesseract) {
+        const s2 = document.createElement('script');
+        s2.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        document.head.appendChild(s2);
+    }
 
-    // --- 3. HTML Structure ---
+    // MAIN CONTAINER State
     container.innerHTML = `
-        <div class="viet-so-panel">
-            <div class="viet-so-header">
-                <h1>🧮 Bé Làm Toán & Tập Viết</h1>
-                <p id="pageSubtitle">Chọn chế độ để bắt đầu nhé!</p>
-            </div>
-
-            <!-- MODE SELECTION MENU -->
-            <div class="mode-selection" id="modeSelection">
-                <!-- Card 1: Cộng Việt -->
-                <div class="mode-card" data-mode="vi_add_10">
-                    <div class="mode-icon icon-add-vi"><i class="fas fa-plus"></i></div>
-                    <div class="mode-info">
-                        <h3>Phép Cộng</h3>
-                        <p>Tiếng Việt • Phạm vi 10</p>
+        <div class="viet-so-container">
+            <!-- MENU SELECTION -->
+            <div id="levelSelection" class="selection-screen">
+                <h1 style="color:#d84315; margin-bottom: 30px; text-transform: uppercase;">Bé Tập Viết Số</h1>
+                <div style="display: flex; gap: 20px; justify-content: center;">
+                    <div class="level-card" id="btnLevel1">
+                        <div class="level-icon">✏️</div>
+                        <h3>Mức độ 1</h3>
+                        <p>Tập tô số theo nét mẫu</p>
                     </div>
-                </div>
-
-                <!-- Card 2: Trừ Việt -->
-                <div class="mode-card" data-mode="vi_sub_10">
-                    <div class="mode-icon icon-sub-vi"><i class="fas fa-minus"></i></div>
-                    <div class="mode-info">
-                        <h3>Phép Trừ</h3>
-                        <p>Tiếng Việt • Phạm vi 10</p>
-                    </div>
-                </div>
-
-                <!-- Card 3: Cộng Anh -->
-                <div class="mode-card" data-mode="en_add_10">
-                    <div class="mode-icon icon-add-en"><i class="fas fa-language"></i></div>
-                    <div class="mode-info">
-                        <h3>Addition</h3>
-                        <p>English • To 10</p>
-                    </div>
-                </div>
-
-                <!-- Card 4: Trừ Anh -->
-                <div class="mode-card" data-mode="en_sub_10">
-                    <div class="mode-icon icon-sub-en"><i class="fas fa-globe-americas"></i></div>
-                    <div class="mode-info">
-                        <h3>Subtraction</h3>
-                        <p>English • To 10</p>
-                    </div>
-                </div>
-
-                <!-- Card 5: Mix Việt -->
-                <div class="mode-card" data-mode="vi_mix_10">
-                    <div class="mode-icon icon-mix-vi"><i class="fas fa-random"></i></div>
-                    <div class="mode-info">
-                        <h3>Cả Hai</h3>
-                        <p>Phép cộng và trừ ngẫu nhiên</p>
-                    </div>
-                </div>
-
-                <!-- Card 6: Mix Anh -->
-                <div class="mode-card" data-mode="en_mix_10">
-                    <div class="mode-icon icon-mix-en"><i class="fas fa-random"></i></div>
-                    <div class="mode-info">
-                        <h3>Mixed</h3>
-                        <p>Add & Sub Random</p>
+                    <div class="level-card" id="btnLevel2">
+                        <div class="level-icon">🧮</div>
+                        <h3>Mức độ 2</h3>
+                        <p>Giải toán và viết kết quả</p>
                     </div>
                 </div>
             </div>
 
-            <!-- GAME AREA -->
-            <div class="game-area" id="gameArea">
-                <button id="backBtn" class="btn-back"><i class="fas fa-arrow-left"></i> Chọn lại</button>
-
-                <div class="math-block">
-                    <div class="math-question" id="mathDisplay">...</div>
-                    <button id="speakBtn" title="Nghe câu hỏi" style="border:none; background:none; font-size:2em; cursor:pointer; color:#0984e3; margin-left:15px; vertical-align: middle;">
-                        <i class="fas fa-volume-up"></i>
-                    </button>
+            <!-- LEVEL 1: TRACING (Existing) -->
+            <div id="level1Container" class="drawing-container hidden-level">
+                <div class="level-header">
+                     <button class="back-btn" id="l1BackBtn"><i class="fas fa-arrow-left"></i></button>
+                     <h2>Bé hãy tô theo số mẫu</h2>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="bgCanvas" width="300" height="300"></canvas>
+                    <canvas id="drawCanvas" width="300" height="300"></canvas>
                 </div>
 
-                <div class="canvas-container" id="canvasContainer">
-                    <canvas id="drawingCanvas" width="280" height="280"></canvas>
+                <div class="controls">
+                    <div class="number-selector">
+                        <button class="btn-nav-num" id="prevNumBtn"><i class="fas fa-chevron-left"></i></button>
+                        <span id="currentNumDisplay">0</span>
+                        <button class="btn-nav-num" id="nextNumBtn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    
+                    <div class="btn-row">
+                        <button class="btn-action btn-clear" id="clearBtn"><i class="fas fa-eraser"></i> Xóa</button>
+                        <button class="btn-action btn-check" id="checkBtn"><i class="fas fa-check"></i> Kiểm tra</button>
+                    </div>
                 </div>
 
-                <div class="controls-area">
-                    <button id="clearBtn" class="btn-game btn-clear"><i class="fas fa-eraser"></i> Xóa</button>
-                    <button id="checkBtn" class="btn-game btn-check"><i class="fas fa-check-circle"></i> Kiểm tra</button>
+                <div id="message" class="message"></div>
+            </div>
+
+            <!-- LEVEL 2: MATH + TESSERACT (Re-implemented) -->
+            <div id="level2Container" class="drawing-container hidden-level">
+                <div class="level-header">
+                     <button class="back-btn" id="l2BackBtn"><i class="fas fa-arrow-left"></i></button>
+                     <h2>Giải toán và viết kết quả</h2>
                 </div>
 
-                <div class="result-area" id="resultArea">Mời bé!</div>
-                <div class="prediction-score" id="debugScore"></div>
+                <div class="math-question" id="mathQuestionDisplay">
+                    1 + 1 = ?
+                </div>
+
+                <div class="canvas-wrapper" style="border-color: #2196F3;">
+                    <!-- Single canvas for writing -->
+                    <canvas id="writeCanvas" width="300" height="300" style="background:#fff;"></canvas>
+                </div>
+
+                <div class="controls">
+                    <div class="btn-row">
+                        <button class="btn-action btn-clear" id="l2ClearBtn"><i class="fas fa-eraser"></i> Xóa</button>
+                        <button class="btn-action btn-check" id="l2CheckBtn" style="background-color:#2196F3"><i class="fas fa-check"></i> Chấm điểm</button>
+                    </div>
+                </div>
+
+                <div id="l2Message" class="message"></div>
+                <div id="l2Loading" style="display:none; color:#666; font-size:14px; margin-top:5px;">
+                    <i class="fas fa-spinner fa-spin"></i> AI đang ngắm chữ của bé...
+                </div>
             </div>
         </div>
     `;
 
-    // --- 4. Logic Variables ---
-    const canvas = document.getElementById('drawingCanvas');
-    const ctx = canvas.getContext('2d');
-    const resultArea = document.getElementById('resultArea');
-    const debugScore = document.getElementById('debugScore');
-    const mathDisplay = document.getElementById('mathDisplay');
-
-    // Areas
-    const modeSelection = document.getElementById('modeSelection');
-    const gameArea = document.getElementById('gameArea');
-    const pageSubtitle = document.getElementById('pageSubtitle');
-    const canvasContainer = document.getElementById('canvasContainer');
-
-    // Canvas Config
-    ctx.lineWidth = 12; // Do day toi uu cho Tesseract (theo claude algorithm)
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = 'white';
-
-    let isDrawing = false;
-
-    // Game State
-    let numA = 0; let numB = 0; let correctAnswer = 0;
-    let currentLang = 'vi';
-    let currentOp = '+';
-    let currentModeRaw = '';
-
-    // --- EVENT LISTENERS ---
-
-    document.querySelectorAll('.mode-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const mode = card.getAttribute('data-mode');
-            startGame(mode);
-        });
-    });
-
-    document.getElementById('backBtn').addEventListener('click', () => {
-        gameArea.classList.remove('active');
-        modeSelection.style.display = 'grid'; // Show menu
-        pageSubtitle.innerText = "Chọn chế độ để bắt đầu nhé!";
-    });
-
-    canvas.addEventListener('mousedown', startPosition);
-    canvas.addEventListener('mouseup', endPosition);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseleave', endPosition);
-    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startPosition(e.touches[0]); }, { passive: false });
-    canvas.addEventListener('touchend', endPosition);
-    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); }, { passive: false });
-
-    document.getElementById('clearBtn').addEventListener('click', clearCanvas);
-    document.getElementById('checkBtn').addEventListener('click', predictNumber);
-    document.getElementById('speakBtn').addEventListener('click', () => speakQuestion(true));
-
-
-    // --- FUNCTIONS ---
-
-    function startGame(mode) {
-        currentModeRaw = mode;
-        const parts = mode.split('_');
-        currentLang = parts[0];
-        // type se la 'add', 'sub', hoac 'mix'
-
-        modeSelection.style.display = 'none';
-        gameArea.classList.add('active');
-
-        if (currentLang === 'vi') pageSubtitle.innerText = "Bé hãy tính và viết kết quả vào bảng đen nhé!";
-        else pageSubtitle.innerText = "Let's calculate and write the answer!";
-
-        generateMathProblem();
-        setTimeout(() => clearCanvas(), 50);
-    }
-
-    function generateMathProblem() {
-        const parts = currentModeRaw.split('_');
-        let type = parts[1]; // 'add', 'sub', 'mix'
-
-        // Neu la 'mix', random ra 'add' hoac 'sub'
-        if (type === 'mix') {
-            type = Math.random() < 0.5 ? 'add' : 'sub';
-        }
-
-        if (type === 'add') {
-            currentOp = '+';
-            numA = Math.floor(Math.random() * 9);
-            const maxB = 9 - numA;
-            numB = Math.floor(Math.random() * (maxB + 1));
-            correctAnswer = numA + numB;
-        } else {
-            currentOp = '-';
-            numA = Math.floor(Math.random() * 10);
-            numB = Math.floor(Math.random() * (numA + 1));
-            correctAnswer = numA - numB;
-        }
-
-        // Display
-        let displayA = numA;
-        let displayB = numB;
-        if (currentLang === 'en') {
-            displayA = NUM_WORDS_EN[numA];
-            displayB = NUM_WORDS_EN[numB];
-            mathDisplay.style.fontSize = "2.5em";
-        } else {
-            mathDisplay.style.fontSize = "4em";
-        }
-
-        mathDisplay.innerHTML = `<span style="color:#0984e3">${displayA}</span> ${currentOp} <span style="color:#e84393">${displayB}</span> = <span style="color:#d63031">?</span>`;
-
-        setTimeout(() => speakQuestion(false), 500);
-    }
-
-    function speakQuestion(force) {
+    // TTS Helper
+    function speak(text) {
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-
-            let text = "";
-            let lang = "vi-VN";
-            let rate = 0.9;
-
-            if (currentLang === 'vi') {
-                const opText = currentOp === '+' ? 'cộng' : 'trừ';
-                text = `${numA} ${opText} ${numB} bằng mấy?`;
-            } else {
-                lang = "en-US";
-                const opText = currentOp === '+' ? 'plus' : 'minus';
-                text = `${numA} ${opText} ${numB} equals?`;
-                rate = 0.8;
-            }
-
+            window.speechSynthesis.cancel(); // Stop previous
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-            utterance.rate = rate;
-
-            // Helper to get voices reliably
-            const getVoices = () => {
-                let vs = window.speechSynthesis.getVoices();
-                return vs.length > 0 ? vs : [];
-            };
-
-            const selectBestVoice = () => {
-                const voices = getVoices();
-                // console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`)); // Debug
-
-                let selectedVoice = null;
-                if (currentLang === 'vi') {
-                    // Uu tien giong nu tieng Viet: Google Tieng Viet, Hoai My (Windows), Linh, ...
-                    selectedVoice = voices.find(v => v.lang.includes('vi') && v.name.includes('Google')) || // Chrome Female
-                        voices.find(v => v.lang.includes('vi') && (v.name.includes('Hoai My') || v.name.includes('Linh'))) || // Windows/Other Female
-                        voices.find(v => v.lang.includes('vi') && v.name.toLowerCase().includes('female')) ||
-                        voices.find(v => v.lang.includes('vi')); // Fallback
-                } else {
-                    selectedVoice = voices.find(v => v.lang.includes('en') && v.name.includes('Google') && v.name.includes('Female')) ||
-                        voices.find(v => v.lang.includes('en') && v.name.includes('Google')) ||
-                        voices.find(v => v.lang.includes('en'));
-                }
-
-                if (selectedVoice) {
-                    utterance.voice = selectedVoice;
-                }
-                window.speechSynthesis.speak(utterance);
-            };
-
-            // Ensure voices are loaded
-            if (window.speechSynthesis.getVoices().length === 0) {
-                window.speechSynthesis.onvoiceschanged = selectBestVoice;
-            } else {
-                selectBestVoice();
-            }
+            utterance.lang = 'vi-VN';
+            window.speechSynthesis.speak(utterance);
         }
     }
 
-    // --- CANVAS HELPERS ---
-    function startPosition(e) {
-        isDrawing = true;
-        const { x, y } = getPos(e);
-        ctx.beginPath();
-        ctx.fillStyle = 'white';
-        ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(x, y);
+    // --- SHARED VARS ---
+    const selectionScreen = container.querySelector('#levelSelection');
+    const level1Container = container.querySelector('#level1Container');
+    const level2Container = container.querySelector('#level2Container');
+
+    // BACK HANDLERS
+    container.querySelector('#l1BackBtn').onclick = () => showScreen('menu');
+    container.querySelector('#l2BackBtn').onclick = () => showScreen('menu');
+
+    container.querySelector('#btnLevel1').onclick = () => {
+        showScreen('level1');
+        initLevel1();
+    };
+    container.querySelector('#btnLevel2').onclick = () => {
+        showScreen('level2');
+        initLevel2();
+    };
+
+    function showScreen(name) {
+        selectionScreen.style.display = 'none';
+        level1Container.style.display = 'none';
+        level2Container.style.display = 'none';
+
+        if (name === 'menu') selectionScreen.style.display = 'flex'; // It's flex in CSS actually but we handle it
+        if (name === 'level1') level1Container.style.display = 'block';
+        if (name === 'level2') level2Container.style.display = 'block';
     }
-    function endPosition() { isDrawing = false; ctx.beginPath(); }
-    function draw(e) {
-        if (!isDrawing) return;
-        const { x, y } = getPos(e);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-    }
-    function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        return {
-            x: (e.clientX - rect.left) * scaleX,
-            y: (e.clientY - rect.top) * scaleY
+
+
+    // ==========================================
+    // LEVEL 1 LOGIC (TRACING)
+    // ==========================================
+    let l1_inited = false;
+    let l1_currentNumber = 0;
+
+    function initLevel1() {
+        if (l1_inited) return;
+        l1_inited = true;
+
+        const CONFIG = {
+            font: "bold 220px Arial, sans-serif",
+            guideColor: "#e0e0e0",
+            drawColor: "#333333",
+            lineWidth: 25,
+            minAccuracy: 0.65,
+            minCoverage: 0.80
         };
-    }
-    function clearCanvas() {
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        resultArea.innerText = currentLang === 'en' ? "Ready!" : "Sẵn sàng!";
-        resultArea.style.color = "#2d3436";
-        canvasContainer.classList.remove('correct-glow', 'wrong-glow');
-        debugScore.innerText = "";
-    }
 
-    // --- AI ---
-    // --- AI (Tesseract) ---
-    // Khong can loadModel phuc tap nhu TFJS, Tesseract se auto load worker khi goi recognize
-    // Tuy nhien, co the pre-load worker neu muon, nhung o day ta de simple.
+        const bgCanvas = container.querySelector('#bgCanvas');
+        const bgCtx = bgCanvas.getContext('2d', { willReadFrequently: true });
+        const drawCanvas = container.querySelector('#drawCanvas');
+        const ctx = drawCanvas.getContext('2d', { willReadFrequently: true });
 
-    function preprocessImage(originalCanvas) {
-        const originalCtx = originalCanvas.getContext('2d');
-        const width = originalCanvas.width;
-        const height = originalCanvas.height;
+        // UI
+        const prevBtn = container.querySelector('#prevNumBtn');
+        const nextBtn = container.querySelector('#nextNumBtn');
+        const numDisp = container.querySelector('#currentNumDisplay');
+        const clearBtn = container.querySelector('#clearBtn');
+        const checkBtn = container.querySelector('#checkBtn');
+        const msgEl = container.querySelector('#message');
 
-        const imgData = originalCtx.getImageData(0, 0, width, height);
-        const data = imgData.data;
+        let isDrawing = false;
 
-        // 1. Tim Bounding Box voi nguong thap hon
-        let minX = width, minY = height, maxX = 0, maxY = 0;
-        let found = false;
+        function drawTemplate(num) {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            bgCtx.font = CONFIG.font;
+            bgCtx.fillStyle = CONFIG.guideColor;
+            bgCtx.textAlign = "center";
+            bgCtx.textBaseline = "middle";
+            bgCtx.fillText(num, bgCanvas.width / 2, bgCanvas.height / 2 + 20);
 
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-                const index = (y * width + x) * 4;
-                if (data[index] > 30) { // Nguong thap hon de bat duoc nhieu diem anh hon
-                    if (x < minX) minX = x;
-                    if (x > maxX) maxX = x;
-                    if (y < minY) minY = y;
-                    if (y > maxY) maxY = y;
-                    found = true;
+            clearL1();
+            numDisp.innerText = num;
+
+            // Voice
+            speak(`Bé hãy tập viết số ${num} nhé`);
+        }
+
+        function clearL1() {
+            ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+            msgEl.innerText = "";
+        }
+
+        function changeL1Num(d) {
+            l1_currentNumber += d;
+            if (l1_currentNumber > 9) l1_currentNumber = 0;
+            if (l1_currentNumber < 0) l1_currentNumber = 9;
+            drawTemplate(l1_currentNumber);
+        }
+
+        // Draw handlers
+        function getPos(e) {
+            const rect = drawCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (drawCanvas.width / rect.width),
+                y: (clientY - rect.top) * (drawCanvas.height / rect.height)
+            };
+        }
+        function start(e) {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.lineWidth = CONFIG.lineWidth;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.strokeStyle = CONFIG.drawColor;
+            const p = getPos(e);
+            ctx.moveTo(p.x, p.y);
+        }
+        function move(e) {
+            if (!isDrawing) return;
+            const p = getPos(e);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+        }
+        function stop() { isDrawing = false; ctx.closePath(); }
+
+        drawCanvas.addEventListener('mousedown', start);
+        drawCanvas.addEventListener('mousemove', move);
+        drawCanvas.addEventListener('mouseup', stop);
+        drawCanvas.addEventListener('mouseout', stop);
+        drawCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); start(e); }, { passive: false });
+        drawCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); move(e); }, { passive: false });
+        drawCanvas.addEventListener('touchend', stop);
+
+        prevBtn.onclick = () => changeL1Num(-1);
+        nextBtn.onclick = () => changeL1Num(1);
+        clearBtn.onclick = clearL1;
+
+        checkBtn.onclick = () => {
+            const width = bgCanvas.width;
+            const height = bgCanvas.height;
+            const bgData = bgCtx.getImageData(0, 0, width, height).data;
+            const drawData = ctx.getImageData(0, 0, width, height).data;
+
+            let guide = 0, user = 0, overlap = 0;
+            for (let i = 0; i < bgData.length; i += 4) {
+                const isG = bgData[i + 3] > 20;
+                const isD = drawData[i + 3] > 20;
+                if (isG) guide++;
+                if (isD) {
+                    user++;
+                    if (isG) overlap++;
                 }
             }
-        }
 
-        if (!found) return null;
+            if (user === 0) { msgEl.innerText = "Bé chưa vẽ gì cả!"; msgEl.style.color = "gray"; return; }
+            const acc = user > 0 ? overlap / user : 0;
+            const cov = guide > 0 ? overlap / guide : 0;
 
-        // 2. Tao canvas vuong chuan hoa 28x28 (chuan MNIST)
-        const cropWidth = maxX - minX + 1;
-        const cropHeight = maxY - minY + 1;
-
-        // Padding 20%
-        const maxDim = Math.max(cropWidth, cropHeight);
-        const padding = Math.floor(maxDim * 0.2);
-        const finalSize = 28;
-
-        // Canvas tam de crop
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCanvas.width = maxDim + padding * 2;
-        tempCanvas.height = maxDim + padding * 2;
-
-        // Nen den
-        tempCtx.fillStyle = 'black';
-        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-        // Ve so vao giua
-        const offsetX = (tempCanvas.width - cropWidth) / 2;
-        const offsetY = (tempCanvas.height - cropHeight) / 2;
-        tempCtx.drawImage(
-            originalCanvas,
-            minX, minY, cropWidth, cropHeight,
-            offsetX, offsetY, cropWidth, cropHeight
-        );
-
-        // 3. Scale ve 28x28
-        const finalCanvas = document.createElement('canvas');
-        finalCanvas.width = finalSize;
-        finalCanvas.height = finalSize;
-        const finalCtx = finalCanvas.getContext('2d');
-
-        // Nen trang (chuan Tesseract)
-        finalCtx.fillStyle = 'white';
-        finalCtx.fillRect(0, 0, finalSize, finalSize);
-
-        // Ve so (smoothing tat de giu net)
-        finalCtx.imageSmoothingEnabled = false;
-        finalCtx.drawImage(tempCanvas, 0, 0, finalSize, finalSize);
-
-        // 4. Dao mau va tang do tuong phan
-        const finalData = finalCtx.getImageData(0, 0, finalSize, finalSize);
-        const d = finalData.data;
-
-        for (let i = 0; i < d.length; i += 4) {
-            // Dao mau: nen den -> trang, chu trang -> den
-            const brightness = (d[i] + d[i + 1] + d[i + 2]) / 3;
-
-            if (brightness > 80) {
-                // Chu (trang) -> Den dam
-                d[i] = 0; d[i + 1] = 0; d[i + 2] = 0;
+            if (acc < CONFIG.minAccuracy) {
+                msgEl.innerText = "Hơi lem rồi! Bé vẽ gọn lại nhé."; msgEl.style.color = "#e74c3c";
+                playAudioL1(false);
+            } else if (cov < CONFIG.minCoverage) {
+                msgEl.innerText = `Chưa kín số (mới ${(cov * 100).toFixed(0)}%).`; msgEl.style.color = "#e67e22";
             } else {
-                // Nen (den) -> Trang tinh
-                d[i] = 255; d[i + 1] = 255; d[i + 2] = 255;
+                msgEl.innerText = "Tuyệt vời! Chính xác."; msgEl.style.color = "#27ae60";
+                playAudioL1(true);
+                if (window.confetti) window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             }
-        }
+        };
 
-        finalCtx.putImageData(finalData, 0, 0);
-
-        // 5. Scale len 56x56 de Tesseract doc de hon
-        const outputCanvas = document.createElement('canvas');
-        outputCanvas.width = 56;
-        outputCanvas.height = 56;
-        const outputCtx = outputCanvas.getContext('2d');
-
-        outputCtx.fillStyle = 'white';
-        outputCtx.fillRect(0, 0, 56, 56);
-        outputCtx.imageSmoothingEnabled = false;
-        outputCtx.drawImage(finalCanvas, 0, 0, 56, 56);
-
-        return outputCanvas.toDataURL('image/png');
+        // Init view
+        drawTemplate(l1_currentNumber);
     }
 
-    async function predictNumber() {
-        if (!window.Tesseract) { alert("Tesseract Loading..."); return; }
+    function playAudioL1(isCorrect) {
+        const snd = new Audio(isCorrect ? './assets/sound/sound_correct_answer_bit.mp3' : './assets/sound/sound_wrong_answer_bit.mp3');
+        snd.play().catch(e => { });
+    }
 
-        debugScore.innerText = "⏳ Detecting...";
 
-        const processedImage = preprocessImage(canvas);
-        if (!processedImage) {
-            resultArea.innerText = currentLang === 'en' ? "Please write a number!" : "Bé chưa viết số!";
-            debugScore.innerText = "";
+    // ==========================================
+    // LEVEL 2 LOGIC (MATH + TESSERACT)
+    // ==========================================
+    let l2_inited = false;
+    let l2_currentAnswer = 0;
+
+    function initLevel2() {
+        if (l2_inited) {
+            newMathQuestion(); // Refresh question on re-enter
             return;
         }
+        l2_inited = true;
 
-        try {
-            const { data: { text, confidence } } = await Tesseract.recognize(
-                processedImage,
-                'eng',
-                {
-                    tessedit_char_whitelist: '0123456789',
-                    tessedit_pageseg_mode: Tesseract.PSM.SINGLE_CHAR,
-                    preserve_interword_spaces: '0'
-                }
-            );
+        const writeCanvas = container.querySelector('#writeCanvas');
+        const ctx2 = writeCanvas.getContext('2d', { willReadFrequently: true });
 
-            let top1 = parseInt(text.trim());
-            const conf = parseFloat(confidence);
+        // Settings
+        const LINE_WIDTH = 25; // Bolder for better OCR
+        const STROKE_COLOR = 'black';
 
-            // Handle NaN or empty
-            if (isNaN(top1)) top1 = -1; // Unknown
-
-            console.log(`Predict: ${top1}, Target: ${correctAnswer}, Conf: ${conf}%`);
-
-            // Use only top1 for now as Tesseract single char mode returns one best guess
-            // Mock scores for visual neighbor compatibility
-            // We set the score for top1 to confidence/100, others to 0
-            const scores = [];
-            scores[top1] = conf / 100;
-            const top3Classes = [top1]; // Tesseract doesn't easily give top 3 in basic mode
-
-            // ---------------------------------------------------------------------
-            // LOGIC CHECK: VISUAL NEIGHBOR MAP (Ban do hang xom)
-            // ---------------------------------------------------------------------
-
-            // Dinh nghia cac so co net tuong dong nhau (RELAXED MODE)
-            const VISUAL_NEIGHBORS = {
-                0: [6, 9, 8, 5],        // Tron, cong kin
-                1: [7, 4, 2],           // Net thang
-                2: [1, 7, 3, 0],        // Z shape, cong
-                3: [5, 8, 9, 2],        // Cong 2 khuc, gan giong 5 hoac 8
-                4: [9, 1, 7],           // Thang + Cheo
-                5: [3, 6, 9, 0],        // Cong duoi, bung tron
-                6: [0, 5, 8],           // Bung tron
-                7: [1, 2, 4, 9],        // Gach ngang/cheo
-                8: [3, 0, 6, 5, 9],     // Hai vong tron (Chap nhan ca 9)
-                9: [4, 7, 3, 5, 0]      // Dau tron duoi dai
+        // Draw Logic L2
+        let drawing2 = false;
+        function getPos2(e) {
+            const rect = writeCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (writeCanvas.width / rect.width),
+                y: (clientY - rect.top) * (writeCanvas.height / rect.height)
             };
-
-            let isRight = false;
-            let visualMatch = false;
-
-            // Rule 1: Chuan det
-            if (top1 === correctAnswer) isRight = true;
-
-            // Rule 2: Hoi hoi dung (Confidence > 30%) - Giam tu 40 xuong 30
-            if (top1 === correctAnswer && conf > 30) isRight = true;
-
-            // Rule 3: Visual Neighbor Check (Chap nhan ho hang)
-            const neighbors = VISUAL_NEIGHBORS[correctAnswer] || [];
-            if (neighbors.includes(top1)) {
-                console.log(`🛡️ Auto-correct: Target ${correctAnswer} ~= Predicted ${top1} (Accepted by Visual Neighbor)`);
-                isRight = true;
-                visualMatch = true;
-            }
-
-            const sndCorrect = new Audio('./assets/sound/sound_correct_answer_bit.mp3');
-            const sndWrong = new Audio('./assets/sound/sound_wrong_answer_bit.mp3');
-
-            if (isRight) {
-                // Hien thi message ro hon khi auto-correct
-                let congrats = currentLang === 'en' ? "EXCELLENT!" : "CHÍNH XÁC!";
-                if (visualMatch) {
-                    congrats = currentLang === 'en' ? "Close Enough!" : "Gần đúng (Chấp nhận)!";
-                }
-                resultArea.innerHTML = `🎉 <b>${congrats}</b> ${numA} ${currentOp} ${numB} = ${correctAnswer}`;
-                resultArea.style.color = "#00b894";
-                resultArea.classList.add('pop-anim');
-
-                // Add Glow Effect
-                canvasContainer.classList.remove('wrong-glow');
-                canvasContainer.classList.add('correct-glow');
-
-                sndCorrect.play().catch(() => { });
-                if (window.confetti) window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-
-                submitScore(correctAnswer);
-                setTimeout(() => {
-                    resultArea.classList.remove('pop-anim');
-                    clearCanvas();
-                    generateMathProblem();
-                    resultArea.innerText = currentLang === 'en' ? "Next result..." : "Câu tiếp theo nào!";
-                    resultArea.style.color = "#2d3436";
-                }, 3000);
-            } else {
-                // Neu sai han (AI nhin ra so qua lech pha)
-                let txt = currentLang === 'en' ? `AI sees number <b>${top1}</b>.` : `AI chưa nhìn rõ. Bé viết số <b>${correctAnswer}</b> to hơn nhé!`;
-                resultArea.innerHTML = `🤔 ${txt}`;
-                resultArea.style.color = "#d63031";
-
-                canvasContainer.classList.remove('correct-glow');
-                canvasContainer.classList.add('wrong-glow');
-
-                sndWrong.play().catch(() => { });
-            }
-            debugScore.innerText = `Prediction: ${top1} (${Math.round(conf)}%) ${visualMatch ? '[Auto-Corrected]' : ''}`;
-        } catch (error) {
-            console.error(error);
-            resultArea.innerText = "❌ Lỗi xử lý AI. Bé thử lại nhé!";
         }
+        function start2(e) {
+            drawing2 = true;
+            ctx2.beginPath();
+            ctx2.lineWidth = LINE_WIDTH;
+            ctx2.lineCap = "round";
+            ctx2.lineJoin = "round";
+            ctx2.strokeStyle = STROKE_COLOR;
+            const p = getPos2(e);
+            ctx2.moveTo(p.x, p.y);
+        }
+        function move2(e) {
+            if (!drawing2) return;
+            const p = getPos2(e);
+            ctx2.lineTo(p.x, p.y);
+            ctx2.stroke();
+        }
+        function stop2() { drawing2 = false; ctx2.closePath(); }
+
+        writeCanvas.addEventListener('mousedown', start2);
+        writeCanvas.addEventListener('mousemove', move2);
+        writeCanvas.addEventListener('mouseup', stop2);
+        writeCanvas.addEventListener('mouseout', stop2);
+        writeCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); start2(e); }, { passive: false });
+        writeCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); move2(e); }, { passive: false });
+        writeCanvas.addEventListener('touchend', stop2);
+
+        // Buttons
+        container.querySelector('#l2ClearBtn').onclick = () => {
+            ctx2.clearRect(0, 0, writeCanvas.width, writeCanvas.height);
+            // set white bg again because tesseract likes white bg better than transparent usually, 
+            // but transparent png is also handled. Let's keep transparent for simplicity or fill white if issues.
+            // Actually Tesseract works better with black text on white background.
+            ctx2.fillStyle = "white";
+            ctx2.fillRect(0, 0, writeCanvas.width, writeCanvas.height);
+
+            container.querySelector('#l2Message').innerText = "";
+        };
+
+        // Initialize white bg first time
+        ctx2.fillStyle = "white";
+        ctx2.fillRect(0, 0, writeCanvas.width, writeCanvas.height);
+
+        container.querySelector('#l2CheckBtn').onclick = async () => {
+            if (!window.Tesseract) {
+                alert("Đang tải AI, bé đợi 1 lát nhé...");
+                return;
+            }
+
+            const loading = container.querySelector('#l2Loading');
+            const msg = container.querySelector('#l2Message');
+
+            loading.style.display = 'block';
+            msg.innerText = "";
+
+            try {
+                // Pre-process: Maybe not needed for simple digits
+                const result = await Tesseract.recognize(
+                    writeCanvas,
+                    'eng', // English model works fine for digits 0-9
+                    {
+                        logger: m => console.log(m),
+                        tessedit_char_whitelist: '0123456789',
+                        tessedit_pageseg_mode: '6' // Assume single uniform block of text
+                    }
+                );
+
+                loading.style.display = 'none';
+
+                const text = result.data.text.trim();
+                console.log("AI Read:", text);
+
+                if (!text) {
+                    msg.innerText = "Bé chưa viết số nào cả!";
+                    msg.style.color = "orange";
+                    return;
+                }
+
+                // Compare
+                // Use regex to find number in text
+                const match = text.match(/\d+/);
+                const numberRecognized = match ? parseInt(match[0]) : null;
+
+                if (numberRecognized === l2_currentAnswer) {
+                    msg.innerText = `Chính xác! Bé viết số ${numberRecognized} rất đúng.`;
+                    msg.style.color = "green";
+                    if (window.confetti) window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                    playAudioL1(true);
+                    setTimeout(newMathQuestion, 2000); // Next question logic
+                } else {
+                    msg.innerText = `Sai rồi. AI đọc là số ${numberRecognized || '?'}. Kết quả là ${l2_currentAnswer} cơ.`;
+                    msg.style.color = "red";
+                    playAudioL1(false);
+                }
+
+            } catch (e) {
+                loading.style.display = 'none';
+                msg.innerText = "Lỗi AI: " + e.message;
+                msg.style.color = "red";
+            }
+        };
+
+        newMathQuestion();
     }
 
-    async function submitScore(num) {
-        try {
-            const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-            if (!headers['Authorization']) { console.warn("Not logged in"); return; }
-            const submitUrl = window.API_CONFIG?.ENDPOINTS?.GAMES?.SUBMIT || 'http://localhost:3000/api/games/submit';
-            const res = await fetch(submitUrl, {
-                method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ game_type: 'practice-viet-so', score: 10, stars: 1, is_passed: true, time_spent: 10 })
-            });
-            const data = await res.json();
-        } catch (e) { }
+    function newMathQuestion() {
+        const qEl = container.querySelector('#mathQuestionDisplay');
+        // Simple Add/Sub
+        const a = Math.floor(Math.random() * 5); // 0-4
+        const b = Math.floor(Math.random() * 5); // 0-4
+        l2_currentAnswer = a + b;
+        qEl.innerText = `${a} + ${b} = ?`;
+
+        // Clear canvas
+        container.querySelector('#l2ClearBtn').click();
+
+        // Voice
+        speak(`${a} cộng ${b} bằng bao nhiêu?`);
     }
+
+    // Default start
+    // showScreen('menu'); // Already set by HTML structure logic but CSS handles visual
+    // Just ensure
+    showScreen('menu');
 }
-export function unmount() { }
+
+export function unmount() {
+}

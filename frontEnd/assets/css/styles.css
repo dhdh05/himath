@@ -49,22 +49,31 @@ button {
   font: inherit
 }
 
+/* ===== MAIN APP CONTAINER - REFACTORED FOR EQUAL HEIGHT ===== */
 .app {
   height: 100vh;
   min-height: 0;
   display: grid;
-  grid-template-columns: 290px 1fr;
+  grid-template-columns: 260px 1fr;
   grid-template-rows: auto 1fr;
   grid-template-areas:
     "topbar topbar"
     "sidebar content";
   overflow: hidden;
   background-color: #292670;
+  row-gap: 8px;
+  /* Force consistent vertical gap between Topbar and Panels */
+  padding-bottom: 8px;
+  /* Force consistent bottom spacing */
 }
 
 /* Collapsed sidebar: narrow left column and compact nav */
 .app.sidebar-collapsed {
   grid-template-columns: 78px 1fr;
+}
+
+.app.sidebar-collapsed .sidebar {
+  width: 78px;
 }
 
 .app.sidebar-collapsed .sidebar {
@@ -336,7 +345,11 @@ button {
 
 .sidebar {
   grid-area: sidebar;
-  margin: 8px -9px 4px 4px;
+  margin: 0 4px 0 4px;
+  /* Remove vertical margins, keep horizontal */
+  height: 100%;
+  /* Fill the grid row completely */
+  /* Standardized margins */
   border-radius: 24px;
   padding: 14px;
   position: relative;
@@ -583,7 +596,11 @@ button {
 
 .content {
   grid-area: content;
-  margin: 8px 12px 4px;
+  margin: 0 12px 0 12px;
+  /* Remove vertical margins, keep horizontal */
+  height: 100%;
+  /* Fill the grid row completely */
+  /* Standardized margins */
   border-radius: 24px;
   padding: 18px;
   /* background: linear-gradient(180deg, rgba(86,204,242,0.08), rgba(255,255,255,0.96)); */
@@ -737,35 +754,35 @@ button {
   border: 1px solid rgba(2, 6, 23, .08);
 }
 
+
+
+/* Restored Grid Layout */
 .features {
   margin-top: 18px;
   display: grid;
-  grid-template-columns: repeat(4, minmax(160px, 1fr));
-  gap: 14px;
-}
-
-#features-row {
-  /* legacy backup - not used */
-}
-
-/* New layout: 4 features evenly spaced */
-.features {
-  display: flex;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 18px;
-  justify-content: space-between;
-  align-items: stretch
+  align-items: stretch;
 }
 
 .feature {
-  flex: 1 1 0;
-  max-width: calc((100% - 54px)/4);
+  /* Removed flex sizing to let Grid handle width */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 18px;
   border-radius: 14px;
   transition: transform .2s ease, box-shadow .18s ease;
-  height: 100%
+  height: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  /* Restored card background visibility */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feature:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
 }
 
 .feature__icon {
@@ -867,7 +884,6 @@ button {
 
   /* Tăng chiều cao tối thiểu để tất cả đều cao bằng thẻ Bảng Xếp Hạng */
   min-height: 260px;
-  height: 100%;
 
   /* Căn đều nội dung: Icon ở trên, Chữ ở giữa, Khoảng trống ở dưới */
   display: flex;
@@ -910,7 +926,8 @@ button {
   color: var(--muted);
   font-weight: 600;
   line-height: 1.45;
-  flex: 1
+  flex: 1;
+  /* Auto-expand to push footer down, ensuring equal card heights */
 }
 
 .feature--wide {

@@ -860,7 +860,15 @@ export function mount(container) {
       'tinh-toan': 'Tính Toán',
       'practice-nhan-ngon': 'Nhận Ngón',
       'learning': 'Xem Video',
-      'practice-viet-so': 'Tập Viết Số'
+      'practice-viet-so': 'Tập Viết Số',
+      'viet-so': 'Tập Viết Số',
+      'hoc-chu-so': 'Học Chữ Số',
+      'hoc-so': 'Học Chữ Số',
+      'keo-co': 'Kéo Co',
+      'practice-keo-co': 'Kéo Co',
+      'hung-tao': 'Hứng Táo',
+      'games': 'Trò Chơi',
+      'about-us': 'About Us'
     };
     return map[type] || type;
   }

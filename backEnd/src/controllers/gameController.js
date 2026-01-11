@@ -158,3 +158,63 @@ exports.submitScore = async (req, res) => {
         res.status(500).json({ success: false, message: 'Lỗi lưu điểm' });
     }
 };
+
+// Lay danh sach cau hoi (custom for specific games like keo-co)
+exports.getQuestions = async (req, res) => {
+    try {
+        const { gameType } = req.params;
+
+        // Auto-migrate function internal
+        const ensureTableAndData = async () => {
+            try {
+                // Test query
+                await pool.execute('SELECT 1 FROM game_questions LIMIT 1');
+            } catch (err) {
+                if (err.code === 'ER_NO_SUCH_TABLE') {
+                    console.log("⚠️ Table game_questions missing. Creating...");
+                    await pool.execute(`
+                        CREATE TABLE game_questions (
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            game_type VARCHAR(50) NOT NULL,
+                            question_text TEXT NOT NULL,
+                            answers LONGTEXT NOT NULL COMMENT 'JSON array',
+                            correct_index INT NOT NULL,
+                            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                        )
+                    `);
+
+                } else {
+                    throw err;
+                }
+            }
+
+            // Data is now managed via SQL script (database/update_keo_co.sql)
+        };
+
+        await ensureTableAndData();
+
+        const [rows] = await pool.execute(
+            'SELECT * FROM game_questions WHERE game_type = ? ORDER BY RAND() LIMIT 20',
+            [gameType]
+        );
+
+        const questions = rows.map(q => {
+            let parsedAnswers = [];
+            try {
+                parsedAnswers = typeof q.answers === 'string' ? JSON.parse(q.answers) : q.answers;
+            } catch (e) { parsedAnswers = []; }
+            return {
+                q: q.question_text,
+                a: parsedAnswers,
+                c: q.correct_index
+            };
+        });
+
+        // If empty (maybe other game type), return empty
+        res.json({ success: true, data: questions });
+
+    } catch (error) {
+        console.error("Loi lay cau hoi:", error);
+        res.status(500).json({ success: false, message: 'Lỗi lấy câu hỏi' });
+    }
+};

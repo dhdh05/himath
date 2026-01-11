@@ -1,285 +1,251 @@
-/* Viet So Panel Styles */
-.viet-so-panel {
-    padding: 20px;
-    max-width: 900px;
-    margin: 0 auto;
-    text-align: center;
-    font-family: 'Nunito', sans-serif;
-    animation: fadeIn 0.5s ease-out;
-}
-
-.viet-so-header {
-    margin-bottom: 20px;
-}
-
-.viet-so-header h1 {
-    color: #2c3e50;
-    font-size: 2.2em;
-    margin-bottom: 10px;
-}
-
-.viet-so-header p {
-    color: #2d3436;
-    font-size: 1.2em;
-    font-weight: 600;
-}
-
-/* --- MODE SELECTION (NEW) --- */
-.mode-selection {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 20px 0;
-}
-
-.mode-card {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    /* Bóng nhẹ đẹp */
-    cursor: pointer;
-    transition: all 0.3s ease;
+/* Tap Viet So Style */
+.viet-so-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 20px;
+    flex-direction: column;
+    min-height: 100%;
+    width: 100%;
+}
+
+/* SELECTION MENU */
+.selection-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+.level-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
     border: 3px solid transparent;
-    text-align: left;
 }
 
-.mode-card:hover {
+.level-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    border-color: #74b9ff;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border-color: #4a6bff;
 }
 
-.mode-icon {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
+.level-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.level-card h3 {
+    margin: 10px 0;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.level-card p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* LEVEL CONTAINERS */
+.hidden-level {
+    display: none;
+    /* Controlled by JS */
+}
+
+/* Common Drawing Container */
+.drawing-container {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+}
+
+.level-header {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5em;
-    color: white;
-    flex-shrink: 0;
+    position: relative;
+    margin-bottom: 20px;
 }
 
-/* Màu sắc từng icon */
-.icon-add-vi {
-    background: linear-gradient(135deg, #00b894, #00cec9);
-    box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+.back-btn {
+    position: absolute;
+    left: 0;
+    background: #f1f2f6;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #2c3e50;
 }
 
-.icon-add-en {
-    background: linear-gradient(135deg, #0984e3, #74b9ff);
-    box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4);
+.back-btn:hover {
+    background: #dfe6e9;
 }
 
-.icon-sub-vi {
-    background: linear-gradient(135deg, #e17055, #fab1a0);
-    box-shadow: 0 5px 15px rgba(225, 112, 85, 0.4);
-}
-
-.icon-sub-en {
-    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
-}
-
-.icon-mix-vi {
-    background: linear-gradient(135deg, #e67e22, #f39c12);
-    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
-}
-
-.icon-mix-en {
-    background: linear-gradient(135deg, #8e44ad, #9b59b6);
-    box-shadow: 0 5px 15px rgba(142, 68, 173, 0.4);
-}
-
-.mode-info h3 {
-    margin: 0 0 5px 0;
-    font-size: 1.4em;
-    color: #2d3436;
-}
-
-.mode-info p {
+.drawing-container h2 {
+    color: #333;
     margin: 0;
-    color: #636e72;
-    font-size: 0.95em;
+    font-size: 1.25rem;
 }
 
-/* --- GAME AREA (Ẩn/Hiện) --- */
-.game-area {
-    display: none;
-    /* Mặc định ẩn */
+/* MATH QUESTION L2 */
+.math-question {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-family: monospace;
+    letter-spacing: 2px;
 }
 
-.game-area.active {
-    display: block;
-    animation: slideUp 0.4s ease-out;
+/* Quan trọng: Để 2 canvas chồng lên nhau chính xác */
+.canvas-wrapper {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 10px auto 20px;
+    border: 3px dashed #ccc;
+    border-radius: 20px;
+    cursor: crosshair;
+    background-color: #fff;
+    overflow: hidden;
 }
 
-.btn-back {
+.canvas-wrapper canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#bgCanvas {
+    z-index: 1;
+}
+
+#drawCanvas {
+    z-index: 2;
+}
+
+#writeCanvas {
+    z-index: 2;
+    position: relative;
+}
+
+/* Level 2 canvas */
+
+.controls {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.number-selector {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    background: #f1f2f6;
+    padding: 10px 20px;
+    border-radius: 50px;
+}
+
+.btn-nav-num {
     background: #dfe6e9;
     border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
     cursor: pointer;
-    font-weight: bold;
-    color: #636e72;
-    margin-bottom: 15px;
+    display: grid;
+    place-items: center;
     transition: 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    color: #636e72;
 }
 
-.btn-back:hover {
+.btn-nav-num:hover {
     background: #b2bec3;
     color: #2d3436;
 }
 
-/* CANVAS CONTAINER */
-.canvas-container {
-    position: relative;
-    width: 280px;
-    /* Thu nhỏ lại để vừa màn hình */
-    height: 280px;
-    margin: 10px auto 20px;
-    /* Giảm margin */
-    background-color: #000;
-    border-radius: 20px;
-    border: 8px solid #FFC107;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
-    cursor: crosshair;
-    overflow: hidden;
-}
-
-canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    touch-action: none;
-}
-
-/* MATH PROBLEM DISPLAY */
-.math-question {
-    font-size: 3em;
-    /* Giảm font nhẹ */
-    font-weight: 900;
-    color: #2d3436;
-    margin: 5px 0 15px;
-    /* Giảm margin */
-    background: white;
-    padding: 10px 30px;
-    border-radius: 15px;
-    box-shadow: 0 6px 0 #e17055;
-    border: 4px solid #fab1a0;
-    display: inline-block;
-    letter-spacing: 3px;
-}
-
-/* CONTROLS */
-.controls-area {
+.btn-row {
     display: flex;
+    gap: 10px;
+    width: 100%;
     justify-content: center;
-    gap: 15px;
-    margin-bottom: 15px;
-    /* Giảm margin dưới */
 }
 
-.btn-game {
-    padding: 10px 25px;
-    /* Nút gọn hơn */
+.btn-action {
+    padding: 12px 24px;
     border: none;
-    border-radius: 50px;
-    font-size: 1.1em;
-    font-weight: bold;
+    border-radius: 12px;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 1rem;
+    transition: 0.2s;
+    font-weight: 700;
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-.btn-game:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    flex: 1;
+    justify-content: center;
+    max-width: 150px;
+    color: white;
+    /* Ensure text visible */
 }
 
 .btn-clear {
     background-color: #ff7675;
-    color: white;
+    box-shadow: 0 4px 0 #d63031;
+}
+
+.btn-clear:active {
+    transform: translateY(4px);
+    box-shadow: none;
 }
 
 .btn-check {
     background-color: #00b894;
-    color: white;
+    box-shadow: 0 4px 0 #006266;
 }
 
-/* RESULT AREA */
-.result-area {
-    min-height: 80px;
-    font-size: 1.5em;
+.btn-check:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+.btn-action:hover {
+    opacity: 0.95;
+    transform: translateY(-2px);
+}
+
+.btn-action:active {
+    transform: translateY(2px);
+}
+
+.message {
+    margin-top: 20px;
     font-weight: bold;
-    color: #2d3436;
-}
-
-.prediction-score {
-    font-size: 0.8em;
-    color: #b2bec3;
-    margin-top: 5px;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes bounce {
-
-    0%,
-    20%,
-    50%,
-    80%,
-    100% {
-        transform: translateY(0);
-    }
-
-    40% {
-        transform: translateY(-10px);
-    }
-
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
-/* Hiệu ứng ánh xanh lá khi đúng (Ported from Claude folder) */
-.correct-glow {
-    box-shadow: 0 0 20px #00b894, 0 0 40px #00b894 !important;
-    border-color: #00b894 !important;
-}
-
-/* Hiệu ứng ánh đỏ khi sai (Ported from Claude folder) */
-.wrong-glow {
-    box-shadow: 0 0 20px #d63031, 0 0 40px #d63031 !important;
-    border-color: #d63031 !important;
+    min-height: 24px;
+    font-size: 1.1rem;
+    padding: 8px;
+    border-radius: 8px;
 }

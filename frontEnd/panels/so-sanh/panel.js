@@ -201,6 +201,8 @@ export function mount(container) {
 
     updateNumbersDisplay();
     resetUI();
+    // Doc cau hoi moi
+    speakText(`Số ${leftNumber} so với số ${rightNumber} thì thế nào nhỉ?`);
   }
 
   function updateNumbersDisplay() {

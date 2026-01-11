@@ -4,116 +4,263 @@
 
 /* TV / Large Screens (> 1920px) */
 @media (min-width: 1921px) {
+
   /* Chan-le game */
   .chanle-game .game-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
   }
-  
+
   .chanle-game .number-display .current-number {
     width: 200px;
     height: 200px;
     font-size: 5.5rem;
   }
-  
+
   /* Practice nhan ngon */
   .practice-nhan-panel .ai-container {
     max-width: 1200px;
     height: 680px;
     margin: 0 auto;
   }
-  
+
   .practice-nhan-panel .question-section .question-box {
     font-size: 48px;
     padding: 20px 30px;
   }
+
+  /* Hoc so */
+  .hocso-container .number-icon {
+    width: 160px;
+    height: 160px;
+    font-size: 5.5rem;
+  }
+
+  .hocso-container .image-wrapper {
+    max-width: 600px;
+    height: 300px;
+  }
+
+  /* Hoc chu so */
+  .hoc-chu-so-container .number-icon {
+    width: 170px;
+    height: 170px;
+    font-size: 6.2rem;
+  }
+
+  .hoc-chu-so-container .icons-wrapper {
+    min-height: 260px;
+  }
+
+  /* Practice tinh toan */
+  .practice-container .math-expression .number,
+  .practice-container .math-expression .question-mark {
+    width: 90px;
+    height: 90px;
+    font-size: 2.2rem;
+  }
+
+  /* Hung tao */
+  .hungtao-panel .game-wrapper {
+    max-width: 460px;
+  }
+
+  /* Dino math */
+  .dino-panel canvas {
+    height: 22rem;
+  }
 }
 
-/* Desktop Large (1440px - 1920px) */
+/* Desktop Large (1441px - 1920px) */
 @media (min-width: 1441px) and (max-width: 1920px) {
   .chanle-game .number-display .current-number {
     width: 180px;
     height: 180px;
     font-size: 5rem;
   }
-  
+
   .practice-nhan-panel .ai-container {
     max-width: 1000px;
     height: 600px;
   }
-  
+
   .practice-nhan-panel .question-section .question-box {
     font-size: 44px;
+  }
+
+  /* Hoc so */
+  .hocso-container .number-icon {
+    width: 140px;
+    height: 140px;
+    font-size: 5rem;
+  }
+
+  .hocso-container .image-wrapper {
+    max-width: 520px;
+    height: 270px;
+  }
+
+  /* Hoc chu so */
+  .hoc-chu-so-container .number-icon {
+    width: 150px;
+    height: 150px;
+    font-size: 5.8rem;
+  }
+
+  .hoc-chu-so-container .icons-wrapper {
+    min-height: 240px;
+  }
+
+  /* Practice tinh toan */
+  .practice-container .math-expression .number,
+  .practice-container .math-expression .question-mark {
+    width: 85px;
+    height: 85px;
+    font-size: 2.1rem;
+  }
+
+  /* Hung tao */
+  .hungtao-panel .game-wrapper {
+    max-width: 420px;
+  }
+
+  /* Dino math */
+  .dino-panel canvas {
+    height: 20rem;
+  }
+}
+
+/* Laptop / Small Desktop (1025px - 1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+
+  /* Chan-le */
+  .chanle-game .number-display .current-number {
+    width: 165px;
+    height: 165px;
+    font-size: 4.5rem;
+  }
+
+  /* Practice nhan ngon */
+  .practice-nhan-panel .ai-container {
+    max-width: 900px;
+    height: 550px;
+  }
+
+  .practice-nhan-panel .question-section .question-box {
+    font-size: 40px;
+    padding: 16px 24px;
+  }
+
+  /* Hoc so */
+  .hocso-container .number-icon {
+    width: 130px;
+    height: 130px;
+    font-size: 4.8rem;
+  }
+
+  .hocso-container .image-wrapper {
+    max-width: 500px;
+    height: 260px;
+  }
+
+  /* Hoc chu so */
+  .hoc-chu-so-container .number-icon {
+    width: 140px;
+    height: 140px;
+    font-size: 5.4rem;
+  }
+
+  .hoc-chu-so-container .icons-wrapper {
+    min-height: 220px;
+  }
+
+  /* Practice tinh toan */
+  .practice-container .math-expression .number,
+  .practice-container .math-expression .question-mark {
+    width: 78px;
+    height: 78px;
+    font-size: 2rem;
+  }
+
+  /* Hung tao */
+  .hungtao-panel .game-wrapper {
+    max-width: 400px;
+  }
+
+  /* Dino math */
+  .dino-panel canvas {
+    height: 19rem;
   }
 }
 
 /* Tablet Landscape (900px - 1024px) */
 @media (min-width: 900px) and (max-width: 1024px) {
+
   /* Chan-le */
   .chanle-game .game-container {
     padding: 10px;
   }
-  
+
   .chanle-game .number-display .current-number {
     width: 150px;
     height: 150px;
     font-size: 4rem;
   }
-  
+
   .chanle-game .target-label h2 {
     font-size: 1.6rem;
   }
-  
+
   /* Practice nhan ngon */
   .practice-nhan-panel .ai-container {
     height: 500px;
   }
-  
+
   .practice-nhan-panel .question-section {
     min-height: 160px;
     padding: 18px;
   }
-  
+
   .practice-nhan-panel .question-section .question-box {
     font-size: 36px;
     padding: 12px 20px;
   }
-  
+
   /* Ghep so */
   .ghepso-game .game-main {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .ghepso-game .numbers-section,
   .ghepso-game .icons-section {
     flex: 1;
   }
-  
+
   /* Hoc so */
   .hocso-container .number-icon {
     width: 120px;
     height: 120px;
     font-size: 4.5rem;
   }
-  
+
   .hocso-container .image-wrapper {
     max-width: 480px;
     height: 250px;
   }
-  
+
   /* Hoc chu so */
   .hoc-chu-so-container .number-icon {
     width: 130px;
     height: 130px;
     font-size: 5rem;
   }
-  
+
   .hoc-chu-so-container .icons-wrapper {
     min-height: 200px;
   }
-  
+
   /* Practice tinh toan */
   .practice-container .math-expression .number,
   .practice-container .math-expression .question-mark {
@@ -121,12 +268,12 @@
     height: 70px;
     font-size: 1.9rem;
   }
-  
+
   /* Hung tao */
   .hungtao-panel .game-wrapper {
     max-width: 400px;
   }
-  
+
   /* Dino math */
   .dino-panel canvas {
     height: 18rem;
@@ -135,18 +282,19 @@
 
 /* Tablet Portrait (768px - 900px) */
 @media (min-width: 768px) and (max-width: 900px) {
+
   /* Chan-le */
   .chanle-game .game-area {
     flex-direction: column;
     gap: 12px;
     padding: 10px;
   }
-  
+
   .chanle-game .target-box {
     width: 100%;
     min-height: 180px;
   }
-  
+
   .chanle-game .number-display {
     position: relative;
     left: auto;
@@ -156,61 +304,61 @@
     width: 100%;
     margin: 0;
   }
-  
+
   .chanle-game .number-display .current-number {
     width: 140px;
     height: 140px;
     font-size: 3.5rem;
     margin: 10px auto;
   }
-  
+
   /* Practice nhan ngon */
   .practice-nhan-panel .ai-container {
     height: 480px;
   }
-  
+
   .practice-nhan-panel .question-section {
     min-height: 150px;
     padding: 15px;
   }
-  
+
   .practice-nhan-panel .question-section .question-box {
     font-size: 32px;
     padding: 12px 18px;
   }
-  
+
   /* Ghep so */
   .ghepso-game .game-main {
     flex-direction: column;
   }
-  
+
   .ghepso-game .numbers-container {
     grid-template-columns: repeat(4, 1fr);
   }
-  
+
   /* Hoc so */
   .hocso-container .number-icon {
     width: 110px;
     height: 110px;
     font-size: 4.2rem;
   }
-  
+
   .hocso-container .image-wrapper {
     max-width: 450px;
     height: 240px;
   }
-  
+
   /* Hoc chu so */
   .hoc-chu-so-container .number-icon {
     width: 120px;
     height: 120px;
     font-size: 4.8rem;
   }
-  
+
   .hoc-chu-so-container .icons-wrapper {
     min-height: 180px;
   }
-  
+
   /* Practice tinh toan */
   .practice-container .math-expression .number,
   .practice-container .math-expression .question-mark {
@@ -218,12 +366,12 @@
     height: 65px;
     font-size: 1.7rem;
   }
-  
+
   /* Hung tao */
   .hungtao-panel .game-wrapper {
     max-width: 380px;
   }
-  
+
   /* Dino math */
   .dino-panel canvas {
     height: 17rem;
@@ -232,111 +380,112 @@
 
 /* Mobile Landscape / Small Tablet (600px - 768px) */
 @media (min-width: 600px) and (max-width: 768px) {
+
   /* Chan-le */
   .chanle-game .game-container {
     padding: 8px;
   }
-  
+
   .chanle-game .game-stats {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
-  
+
   .chanle-game .game-area {
     flex-direction: column;
     gap: 10px;
     padding: 8px;
   }
-  
+
   .chanle-game .target-box {
     width: 100%;
     min-height: 160px;
     padding: 14px;
   }
-  
+
   .chanle-game .target-label h2 {
     font-size: 1.4rem;
   }
-  
+
   .chanle-game .number-display {
     position: relative;
     order: -1;
     width: 100%;
     margin: 0;
   }
-  
+
   .chanle-game .number-display .current-number {
     width: 120px;
     height: 120px;
     font-size: 3rem;
     margin: 8px auto;
   }
-  
+
   /* Practice nhan ngon */
   .practice-nhan-panel .ai-container {
     height: 450px;
   }
-  
+
   .practice-nhan-panel .question-section {
     min-height: 140px;
     padding: 12px;
   }
-  
+
   .practice-nhan-panel .question-section .question-box {
     font-size: 28px;
     padding: 10px 16px;
   }
-  
+
   .practice-nhan-panel .question-section .speak-btn {
     width: 40px;
     height: 40px;
     font-size: 16px;
   }
-  
+
   /* Ghep so */
   .ghepso-game .game-main {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .ghepso-game .numbers-container {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   /* Dem so */
   .demso-container .icons-display {
     gap: 20px;
     padding: 14px;
   }
-  
+
   .demso-container .icon-item {
     width: 50px;
     height: 50px;
   }
-  
+
   /* Hoc so */
   .hocso-container .number-icon {
     width: 100px;
     height: 100px;
     font-size: 3.8rem;
   }
-  
+
   .hocso-container .image-wrapper {
     max-width: 420px;
     height: 220px;
   }
-  
+
   /* Hoc chu so */
   .hoc-chu-so-container .number-icon {
     width: 110px;
     height: 110px;
     font-size: 4.5rem;
   }
-  
+
   .hoc-chu-so-container .icons-wrapper {
     min-height: 160px;
   }
-  
+
   /* Practice tinh toan */
   .practice-container .math-expression .number,
   .practice-container .math-expression .question-mark {
@@ -344,12 +493,12 @@
     height: 60px;
     font-size: 1.6rem;
   }
-  
+
   /* Hung tao */
   .hungtao-panel .game-wrapper {
     max-width: 360px;
   }
-  
+
   /* Dino math */
   .dino-panel canvas {
     height: 16rem;
@@ -363,7 +512,7 @@
     flex-wrap: wrap;
     gap: 6px;
   }
-  
+
   .feature-children a {
     flex: 1 1 calc(50% - 3px);
     min-width: 120px;
@@ -376,7 +525,7 @@
   .feature-children {
     gap: 6px;
   }
-  
+
   .feature-children a {
     flex: 1 1 100%;
     min-width: auto;
@@ -385,155 +534,68 @@
   }
 }
 
-/* Desktop Large (1440px - 1920px) - Additional panels */
-@media (min-width: 1441px) and (max-width: 1920px) {
-  /* Hoc so */
-  .hocso-container .number-icon {
-    width: 140px;
-    height: 140px;
-    font-size: 5rem;
-  }
-  
-  .hocso-container .image-wrapper {
-    max-width: 520px;
-    height: 270px;
-  }
-  
-  /* Hoc chu so */
-  .hoc-chu-so-container .number-icon {
-    width: 150px;
-    height: 150px;
-    font-size: 5.8rem;
-  }
-  
-  .hoc-chu-so-container .icons-wrapper {
-    min-height: 240px;
-  }
-  
-  /* Practice tinh toan */
-  .practice-container .math-expression .number,
-  .practice-container .math-expression .question-mark {
-    width: 85px;
-    height: 85px;
-    font-size: 2.1rem;
-  }
-  
-  /* Hung tao */
-  .hungtao-panel .game-wrapper {
-    max-width: 420px;
-  }
-  
-  /* Dino math */
-  .dino-panel canvas {
-    height: 20rem;
-  }
-}
-
-/* TV / Large Screens (> 1920px) - Additional panels */
-@media (min-width: 1921px) {
-  /* Hoc so */
-  .hocso-container .number-icon {
-    width: 160px;
-    height: 160px;
-    font-size: 5.5rem;
-  }
-  
-  .hocso-container .image-wrapper {
-    max-width: 600px;
-    height: 300px;
-  }
-  
-  /* Hoc chu so */
-  .hoc-chu-so-container .number-icon {
-    width: 170px;
-    height: 170px;
-    font-size: 6.2rem;
-  }
-  
-  .hoc-chu-so-container .icons-wrapper {
-    min-height: 260px;
-  }
-  
-  /* Practice tinh toan */
-  .practice-container .math-expression .number,
-  .practice-container .math-expression .question-mark {
-    width: 90px;
-    height: 90px;
-    font-size: 2.2rem;
-  }
-  
-  /* Hung tao */
-  .hungtao-panel .game-wrapper {
-    max-width: 460px;
-  }
-  
-  /* Dino math */
-  .dino-panel canvas {
-    height: 22rem;
-  }
-}
-
 /* Mobile Portrait (< 600px) */
 @media (max-width: 600px) {
+
   /* Chan-le */
   .chanle-game .game-container {
     padding: 8px;
     min-height: 380px;
   }
-  
+
   .chanle-game .game-header h1 {
     font-size: 1rem;
   }
-  
+
   .chanle-game .game-stats {
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
     margin-bottom: 8px;
   }
-  
+
   .chanle-game .stat {
     padding: 6px;
     min-height: 40px;
   }
-  
+
   .chanle-game .stat-label {
     font-size: 0.7rem;
   }
-  
+
   .chanle-game .stat-value {
     font-size: 1rem;
   }
-  
+
   .chanle-game .game-area {
     flex-direction: column;
     gap: 8px;
     padding: 8px;
     min-height: 280px;
   }
-  
+
   .chanle-game .target-box {
     width: 100%;
     min-height: 140px;
     padding: 12px;
     border-radius: 12px;
   }
-  
+
   .chanle-game .target-label h2 {
     font-size: 1.3rem;
   }
-  
+
   .chanle-game .target-instruction {
     font-size: 0.9rem;
     padding: 5px 10px;
   }
-  
+
   .chanle-game .number-display {
     position: relative;
     order: -1;
     width: 100%;
     margin: 0;
   }
-  
+
   .chanle-game .number-display .current-number {
     width: 100px;
     height: 100px;
@@ -541,192 +603,192 @@
     border: 8px solid white;
     margin: 8px auto;
   }
-  
+
   .chanle-game .number-label {
     font-size: 0.9rem;
     padding: 5px 12px;
     margin-top: 8px;
   }
-  
+
   .chanle-game .game-controls {
     flex-direction: column;
     gap: 8px;
     margin-top: 10px;
   }
-  
+
   .chanle-game .next-btn,
   .chanle-game .restart-btn {
     width: 100%;
     padding: 8px 16px;
   }
-  
+
   /* Practice nhan ngon */
   .practice-nhan-panel {
     margin-top: 1rem;
   }
-  
+
   .practice-nhan-panel .ai-container {
     height: 420px;
     max-width: 100%;
   }
-  
+
   .practice-nhan-panel .question-section {
     min-height: 120px;
     padding: 12px;
     gap: 10px;
   }
-  
+
   .practice-nhan-panel .question-section .hud {
     font-size: 13px;
     padding: 8px 12px;
     flex-direction: column;
     gap: 6px;
   }
-  
+
   .practice-nhan-panel .question-section .stats-group {
     gap: 12px;
   }
-  
+
   .practice-nhan-panel .question-section .question-box {
     font-size: 24px;
     padding: 10px 14px;
     gap: 10px;
   }
-  
+
   .practice-nhan-panel .question-section .speak-btn {
     width: 36px;
     height: 36px;
     font-size: 14px;
   }
-  
+
   .practice-nhan-panel .camera-section {
     min-height: 280px;
   }
-  
+
   /* Ghep so */
   .ghepso-game .game-container {
     padding: 10px;
   }
-  
+
   .ghepso-game .game-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .ghepso-game .game-title h1 {
     font-size: 1rem;
   }
-  
+
   .ghepso-game .game-stats {
     flex-direction: column;
     gap: 6px;
     width: 100%;
   }
-  
+
   .ghepso-game .stat-box {
     width: 100%;
     min-width: auto;
   }
-  
+
   .ghepso-game .game-main {
     flex-direction: column;
     gap: 8px;
     margin-top: 8px;
   }
-  
+
   .ghepso-game .numbers-container {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
-  
+
   .ghepso-game .number-item {
     font-size: 1.4rem;
     padding: 8px;
     min-height: 50px;
   }
-  
+
   /* Dem so */
   .demso-container .game-container {
     padding: 10px;
   }
-  
+
   .demso-container .game-stats {
     grid-template-columns: repeat(3, 1fr);
     gap: 6px;
   }
-  
+
   .demso-container .stat {
     padding: 5px;
   }
-  
+
   .demso-container .stat-label {
     font-size: 0.65rem;
   }
-  
+
   .demso-container .stat-value {
     font-size: 0.9rem;
   }
-  
+
   .demso-container .question-box {
     font-size: 0.85rem;
     padding: 6px 8px;
     height: 45px;
   }
-  
+
   .demso-container .icons-display {
     gap: 16px;
     padding: 12px;
     min-height: 180px;
     height: auto;
   }
-  
+
   .demso-container .icon-item {
     width: 48px;
     height: 48px;
   }
-  
+
   /* So sanh */
   .sosanh-game .game-container {
     padding: 10px;
   }
-  
+
   .sosanh-game .comparison-buttons {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .sosanh-game .comparison-btn {
     width: 100%;
     padding: 14px;
     font-size: 1.3rem;
   }
-  
+
   /* Xep so */
   .xepso-game .game-container {
     padding: 10px;
   }
-  
+
   .xepso-game .sortable-list {
     gap: 8px;
   }
-  
+
   .xepso-game .sortable-item {
     padding: 12px;
     font-size: 1.8rem;
   }
-  
+
   /* Users panel */
   .users-panel {
     padding: 12px;
   }
-  
+
   .users-panel .user-card {
     flex-direction: column;
     align-items: flex-start;
     padding: 14px;
   }
-  
+
   .users-panel .avatar-circle {
     width: 50px;
     height: 50px;
@@ -734,20 +796,20 @@
     margin-right: 0;
     margin-bottom: 10px;
   }
-  
+
   .users-panel .user-details h2 {
     font-size: 20px;
   }
-  
+
   .users-panel .status-card,
   .users-panel .history-card {
     padding: 14px;
   }
-  
+
   .users-panel .history-table {
     font-size: 13px;
   }
-  
+
   .users-panel .history-table th,
   .users-panel .history-table td {
     padding: 8px 6px;
@@ -756,340 +818,47 @@
 
 /* Small Mobile (< 480px) */
 @media (max-width: 480px) {
+
   /* Chan-le */
   .chanle-game .game-container {
     padding: 6px;
     min-height: 360px;
   }
-  
+
   .chanle-game .game-header h1 {
     font-size: 0.95rem;
   }
-  
+
   .chanle-game .game-stats {
     grid-template-columns: repeat(2, 1fr);
     gap: 5px;
   }
-  
+
   .chanle-game .stat {
     padding: 5px;
     min-height: 36px;
   }
-  
+
   .chanle-game .stat-icon {
     width: 30px;
     height: 30px;
     font-size: 0.85rem;
   }
-  
+
   .chanle-game .stat-label {
     font-size: 0.65rem;
   }
-  
+
   .chanle-game .stat-value {
     font-size: 0.9rem;
   }
-  
+
   .chanle-game .target-box {
     min-height: 120px;
     padding: 10px;
   }
-  
+
   .chanle-game .target-label h2 {
     font-size: 1.2rem;
   }
-  
-  .chanle-game .number-display .current-number {
-    width: 90px;
-    height: 90px;
-    font-size: 2.4rem;
-    border: 6px solid white;
-  }
-  
-  /* Practice nhan ngon */
-  .practice-nhan-panel .ai-container {
-    height: 380px;
-  }
-  
-  .practice-nhan-panel .question-section {
-    min-height: 110px;
-    padding: 10px;
-  }
-  
-  .practice-nhan-panel .question-section .question-box {
-    font-size: 20px;
-    padding: 8px 12px;
-  }
-  
-  .practice-nhan-panel .question-section .speak-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-  }
-  
-  /* Ghep so */
-  .ghepso-game .numbers-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-  }
-  
-  .ghepso-game .number-item {
-    font-size: 1.2rem;
-    padding: 6px;
-    min-height: 45px;
-  }
-  
-  /* Dem so */
-  .demso-container .icons-display {
-    gap: 12px;
-    padding: 10px;
-  }
-  
-  .demso-container .icon-item {
-    width: 44px;
-    height: 44px;
-  }
-  
-  /* Users panel */
-  .users-panel {
-    padding: 10px;
-  }
-  
-  .users-panel .user-card {
-    padding: 12px;
-  }
-  
-  .users-panel .status-card,
-  .users-panel .history-card {
-    padding: 12px;
-  }
-  
-  .users-panel .history-table {
-    font-size: 12px;
-  }
-  
-  .users-panel .history-table th,
-  .users-panel .history-table td {
-    padding: 6px 4px;
-  }
-  
-  /* Hoc so */
-  .hocso-container {
-    padding: 8px;
-    min-height: 400px;
-  }
-  
-  .hocso-container header h1 {
-    font-size: 1rem;
-  }
-  
-  .hocso-container .number-icon {
-    width: 80px;
-    height: 80px;
-    font-size: 3rem;
-    border-width: 4px;
-  }
-  
-  .hocso-container .number-name {
-    font-size: 1rem;
-  }
-  
-  .hocso-container .nav-btn {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .hocso-container .image-wrapper {
-    max-width: 100%;
-    height: 200px;
-  }
-  
-  .hocso-container .quick-numbers {
-    height: 60px;
-    padding: 6px;
-  }
-  
-  .hocso-container .number-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-  }
-  
-  /* Hoc chu so */
-  .hoc-chu-so-container {
-    padding: 8px;
-    min-height: 400px;
-  }
-  
-  .hoc-chu-so-container header h1 {
-    font-size: 1rem;
-  }
-  
-  .hoc-chu-so-container .number-icon {
-    width: 100px;
-    height: 100px;
-    font-size: 4rem;
-    border-width: 5px;
-  }
-  
-  .hoc-chu-so-container .number-name {
-    font-size: 1rem;
-  }
-  
-  .hoc-chu-so-container .nav-btn {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .hoc-chu-so-container .icons-wrapper {
-    min-height: 140px;
-    gap: 8px;
-    padding: 6px;
-  }
-  
-  .hoc-chu-so-container .icons-wrapper i {
-    font-size: 2rem !important;
-    margin: 4px !important;
-  }
-  
-  .hoc-chu-so-container .quick-numbers {
-    height: 72px;
-    bottom: 10px;
-    left: 8px;
-    right: 8px;
-  }
-  
-  .hoc-chu-so-container .number-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-  }
-  
-  /* Practice tinh toan */
-  .practice-container .game-container {
-    padding: 10px;
-  }
-  
-  .practice-container .selection-header h1 {
-    font-size: 1.4rem;
-  }
-  
-  .practice-container .option-card {
-    padding: 14px;
-    gap: 12px;
-  }
-  
-  .practice-container .option-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.3rem;
-  }
-  
-  .practice-container .math-expression .number,
-  .practice-container .math-expression .question-mark {
-    width: 50px;
-    height: 50px;
-    font-size: 1.4rem;
-  }
-  
-  .practice-container .math-expression .operator,
-  .practice-container .math-expression .equal {
-    font-size: 1.8rem;
-  }
-  
-  .practice-container .answers-grid {
-    grid-template-columns: 1fr;
-    height: auto;
-    gap: 10px;
-  }
-  
-  .practice-container .answer-btn {
-    font-size: 1.3rem;
-    padding: 12px;
-  }
-  
-  /* Hung tao */
-  .hungtao-panel {
-    padding: 12px;
-  }
-  
-  .hungtao-panel .game-wrapper {
-    max-width: 100%;
-    width: 100%;
-    height: auto;
-    min-height: 500px;
-  }
-  
-  .hungtao-panel .hud {
-    flex-direction: column;
-    gap: 6px;
-    align-items: flex-start;
-  }
-  
-  .hungtao-panel .score-board {
-    font-size: 16px;
-    padding: 4px 10px;
-  }
-  
-  .hungtao-panel .heart {
-    font-size: 18px;
-  }
-  
-  .hungtao-panel #question-text {
-    font-size: 24px;
-    padding: 6px 18px;
-  }
-  
-  .hungtao-panel h1 {
-    font-size: 28px;
-  }
-  
-  .hungtao-panel button {
-    padding: 10px 24px;
-    font-size: 18px;
-  }
-  
-  /* Dino math */
-  .dino-panel {
-    padding: 10px;
-    margin-top: 4rem;
-  }
-  
-  .dino-panel .game-container {
-    max-width: 100%;
-  }
-  
-  .dino-panel canvas {
-    height: 15rem;
-  }
-  
-  .dino-panel .hud {
-    font-size: 14px;
-    gap: 8px;
-  }
-  
-  .dino-panel .modal-content {
-    width: 90%;
-    max-width: 320px;
-    padding: 16px;
-  }
-  
-  .dino-panel .question-text {
-    font-size: 22px;
-  }
-  
-  .dino-panel .answers-grid {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-  
-  .dino-panel .answer-btn {
-    padding: 8px;
-    font-size: 14px;
-  }
-  
-  .dino-panel .heart {
-    font-size: 18px;
-  }
 }
-

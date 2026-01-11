@@ -5,6 +5,10 @@
     margin: 0 auto;
     animation: fadeIn 0.5s ease-out;
     font-family: 'Nunito', sans-serif;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scroll on iOS */
+    height: 100%;
 }
 
 .learning-header {

@@ -193,7 +193,7 @@ export function mount(container) {
     if (autoNextTimeout) { clearTimeout(autoNextTimeout); autoNextTimeout = null; }
 
     isAnswered = false;
-    currentNumber = Math.floor(Math.random() * 21); // So tu 0-20
+    currentNumber = Math.floor(Math.random() * 11); // So tu 0-10
     currentAnswer = currentNumber % 2 === 0 ? 'even' : 'odd';
 
     currentNumberElement.textContent = currentNumber;

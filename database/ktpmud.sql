@@ -2435,3 +2435,62 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table 'game_questions'
+--
+
+CREATE TABLE IF NOT EXISTS 'game_questions' (
+  'id' int(11) NOT NULL AUTO_INCREMENT,
+  'game_type' varchar(50) NOT NULL,
+  'question_text' text NOT NULL,
+  'answers' longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'JSON array',
+  'correct_index' int(11) NOT NULL,
+  'created_at' datetime DEFAULT current_timestamp(),
+  PRIMARY KEY ('id')
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table 'game_questions'
+--
+
+
+INSERT INTO `game_questions` (`game_type`, `question_text`, `answers`, `correct_index`) VALUES 
+('practice-keo-co', '5 + 3 = ?', '["8", "7", "9", "6"]', 0),
+('practice-keo-co', '2 + 2 = ?', '["3", "4", "5", "1"]', 1),
+('practice-keo-co', '1 + 4 = ?', '["6", "4", "5", "3"]', 2),
+('practice-keo-co', '6 + 4 = ?', '["9", "8", "11", "10"]', 3),
+('practice-keo-co', '1 + 1 = ?', '["2", "3", "1", "0"]', 0),
+('practice-keo-co', '4 + 4 = ?', '["8", "7", "9", "10"]', 0),
+('practice-keo-co', '7 + 3 = ?', '["10", "9", "8", "11"]', 0),
+('practice-keo-co', 'Tổ chim có 2 con, nở thêm 1 con. Hỏi có mấy con?', '["3", "2", "4", "1"]', 0),
+('practice-keo-co', '5 + ? = 10', '["5", "4", "6", "10"]', 0),
+('practice-keo-co', '0 + 9 = ?', '["9", "0", "10", "8"]', 0),
+('practice-keo-co', '10 - 4 = ?', '["5", "6", "4", "7"]', 1),
+('practice-keo-co', '5 - 2 = ?', '["3", "2", "4", "1"]', 0),
+('practice-keo-co', '3 - 1 = ?', '["2", "3", "1", "4"]', 0),
+('practice-keo-co', '9 - 5 = ?', '["4", "3", "5", "6"]', 0),
+('practice-keo-co', '6 - 0 = ?', '["6", "0", "5", "7"]', 0),
+('practice-keo-co', 'Có 3 cái kẹo, ăn 1 cái, còn mấy?', '["2", "1", "3", "0"]', 0),
+('practice-keo-co', '? - 2 = 3', '["5", "6", "1", "4"]', 0),
+('practice-keo-co', '8 - 8 = ?', '["0", "1", "8", "16"]', 0),
+('practice-keo-co', '10 ... 5', '[">", "<", "=", "?"]', 0),
+('practice-keo-co', '2 ... 8', '[">", "<", "=", "?"]', 1),
+('practice-keo-co', '8 ... 9', '["<", ">", "=", "?"]', 0),
+('practice-keo-co', '7 ... 7', '["=", ">", "<", "?"]', 0),
+('practice-keo-co', '3 ... 1', '[">", "<", "=", "?"]', 0),
+('practice-keo-co', 'Số nào bé nhất?', '["1", "5", "9", "3"]', 0),
+('practice-keo-co', 'Số nào lớn nhất?', '["8", "2", "6", "5"]', 0),
+('practice-keo-co', 'Số liền sau số 9 là số mấy?', '["8", "10", "11", "7"]', 1),
+('practice-keo-co', 'Số liền trước số 5 là số mấy?', '["4", "6", "3", "5"]', 0),
+('practice-keo-co', 'Điền số tiếp theo: 1, 2, 3, ...', '["4", "5", "6", "0"]', 0),
+('practice-keo-co', 'Điền số tiếp theo: 2, 4, 6, ...', '["8", "7", "9", "10"]', 0),
+('practice-keo-co', 'Đếm ngược: 10, 9, 8, ...', '["7", "6", "5", "11"]', 0),
+('practice-keo-co', 'Một bàn tay có mấy ngón?', '["5", "4", "10", "2"]', 0),
+('practice-keo-co', 'Hình vuông có mấy cạnh?', '["4", "3", "5", "2"]', 0),
+('practice-keo-co', 'Hình tam giác có mấy cạnh?', '["3", "4", "2", "5"]', 0);
+
+
+

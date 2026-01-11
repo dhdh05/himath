@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
@@ -18,6 +19,9 @@ const rewardRoutes = require('./routes/rewardRoutes');
 dotenv.config();
 
 const app = express();
+
+// SECURITY MIDDLEWARE (Manually added for max security)
+app.use(require('./middleware/security'));
 
 // Middleware
 // CORS Configuration - cau hinh CORS cho phep frontend goi API
@@ -60,7 +64,21 @@ app.use('/api/achievements', achievementRoutes);
 app.use('/api/rewards', rewardRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/goals', require('./routes/goalRoutes'));
+app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 app.use('/api/lessons', require('./routes/lessonRoutes'));
+
+// --- SERVE FRONTEND (SPA Support) ---
+// Serve static files from frontEnd directory
+app.use(express.static(path.join(__dirname, '../../frontEnd')));
+
+// Handle SPA fallback: Any route not starting with /api returns index.html
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API Not Found' });
+  }
+  res.sendFile(path.join(__dirname, '../../frontEnd/index.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {

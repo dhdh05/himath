@@ -401,7 +401,18 @@ export function mount(container) {
 
 	// store cleanup
 	container._practiceNhanCleanup = () => {
+		// 1. Stop MediaPipe Camera
 		try { if (camera && typeof camera.stop === 'function') camera.stop(); } catch (e) { }
+
+		// 2. Force stop video tracks (Release hardware)
+		if (videoElement && videoElement.srcObject) {
+			try {
+				const tracks = videoElement.srcObject.getTracks();
+				tracks.forEach(track => track.stop());
+				videoElement.srcObject = null;
+			} catch (e) { }
+		}
+
 		try { if (hands && typeof hands.close === 'function') hands.close(); } catch (e) { }
 		container.innerHTML = '';
 

@@ -518,7 +518,7 @@
   function hideAuthOverlay() { if (authOverlayEl) authOverlayEl.hidden = true; }
 
   // protected areas by page key
-  const PROTECTED_KEYS = new Set(['digits-hoc-so', 'digits-ghep-so', 'digits-chan-le', 'digits-dem-so', 'compare-so-sanh', 'compare-xep-so', 'practice-tinh-toan', 'practice-nhan-ngon', 'games', 'games-dino']);
+  const PROTECTED_KEYS = new Set(['digits-hoc-so', 'digits-ghep-so', 'digits-chan-le', 'digits-dem-so', 'compare-so-sanh', 'compare-xep-so', 'practice-tinh-toan', 'practice-nhan-ngon', 'practice-viet-so', 'practice-keo-co', 'games', 'games-dino']);
   // Handle both forms
   // handle login and register with localStorage (demo only)
   // --- CODE MOI: XU LY DANG NHAP THAT ---
@@ -669,13 +669,29 @@
 
   // === RESTORE PAGE LOGIC ===
   setTimeout(() => {
-    const lastPage = localStorage.getItem('HM_LAST_PAGE');
-    const lastTitle = localStorage.getItem('HM_LAST_TITLE');
-    if (lastPage && lastPage !== 'home') {
-      renderPanel(lastPage, lastTitle || '');
+    // Check URL first
+    const pathKey = getPathKey();
+    let targetPage = 'home';
+    let targetTitle = '';
+
+    if (pathKey && pathKey !== 'home') {
+      targetPage = pathKey;
+      targetTitle = PAGE_TITLES[pathKey] || pathKey;
+    } else {
+      // Fallback to localStorage if at root
+      const lastPage = localStorage.getItem('HM_LAST_PAGE');
+      const lastTitle = localStorage.getItem('HM_LAST_TITLE');
+      if (lastPage && lastPage !== 'home') {
+        targetPage = lastPage;
+        targetTitle = lastTitle;
+      }
+    }
+
+    if (targetPage !== 'home') {
+      renderPanel(targetPage, targetTitle || '', false); // false = don't push state again
 
       // Restore active menu state
-      const activeEl = document.querySelector(`[data-page="${lastPage}"]`);
+      const activeEl = document.querySelector(`[data-page="${targetPage}"]`);
       if (activeEl) {
         document.querySelectorAll('.nav__item, .nav__subitem').forEach(el => el.classList.remove('is-active'));
         if (activeEl.classList.contains('nav__subitem')) activeEl.classList.add('is-active');
@@ -1421,6 +1437,11 @@
   const HOME_TRACK_COUNT = 5;
 
   function pickRandomHomeTrack() {
+    // Check for Spring Theme
+    if (document.body.classList.contains('theme-spring')) {
+      const springId = Math.floor(Math.random() * 2) + 1;
+      return `./assets/sound/sound_music_home_spring_${springId}.mp3`;
+    }
     const i = Math.floor(Math.random() * HOME_TRACK_COUNT) + 1;
     return `./assets/sound/sound_music_home_${i}.mp3`;
   }
@@ -1582,8 +1603,27 @@
   // ===== end snow effect =====
   // ===== end home music control =====
 
+  // Handle browser back/forward buttons
+  window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.key) {
+      const savedTitle = PAGE_TITLES[event.state.key] || event.state.key;
+      renderPanel(event.state.key, savedTitle, false); // false = do not push state again
+    } else {
+      // fallback to path check
+      const k = getPathKey();
+      if (k) renderPanel(k, PAGE_TITLES[k] || k, false);
+    }
+  });
+
   // Simple page render when clicking nav items or subitems
-  function renderPanel(key, title) {
+  function renderPanel(key, title, updateHistory = true) {
+    if (updateHistory) updateURL(key);
+
+    // Show chatbot only on homepage
+    const chatbot = document.getElementById('chatbot-container');
+    if (chatbot) {
+      chatbot.style.display = (key === 'home') ? 'block' : 'none';
+    }
     // Luu lai trang hien tai de F5 khong bi mat
     localStorage.setItem('HM_LAST_PAGE', key);
     localStorage.setItem('HM_LAST_TITLE', title || '');
@@ -1783,6 +1823,22 @@
       return;
     }
 
+    if (key === 'practice-keo-co') {
+      content.innerHTML = '<div class="loading">Đang tải...</div>';
+      import('./panels/practice-keo-co/panel.js').then(mod => {
+        if (content._mountedPanel && typeof content._mountedPanel.unmount === 'function') {
+          try { content._mountedPanel.unmount(content); } catch (e) { console.warn('Error during panel unmount', e); }
+          delete content._mountedPanel;
+        }
+        mod.mount(content);
+        content._mountedPanel = mod;
+      }).catch(err => {
+        console.error('Failed to load practice-keo-co panel', err);
+        content.innerHTML = '<div class="panel"><h2>Lỗi khi tải panel</h2></div>';
+      });
+      return;
+    }
+
     if (key === 'games-dino') {
       content.innerHTML = '<div class="loading">Đang tải...</div>';
       import('./panels/dino-math/panel.js').then(mod => {
@@ -1938,6 +1994,8 @@
     'practice-tinh-toan': 'Luyện tập — Tính toán',
     'practice-nhan-ngon': 'Luyện tập — Tính bằng ngón tay',
     'practice-so-sanh': 'Luyện tập — So sánh',
+    'practice-viet-so': 'Luyện tập — Bé tập viết số',
+    'practice-keo-co': 'Luyện tập — Kéo Co Math',
     'games': 'Trò chơi',
     'games-dino': 'Trò chơi — Khủng long giỏi toán',
     'learning': 'Góc Học Tập',
@@ -1949,6 +2007,57 @@
     'compare': 'Phép so sánh',
     'practice': 'Luyện tập'
   };
+
+  // URL configurations
+  const PATH_MAP = {
+    'home': '/home',
+    // Hoc Chu So
+    'digits': '/hoc-chu-so',
+    'digits-hoc-so': '/hoc-chu-so/hoc-so',
+    'digits-ghep-so': '/hoc-chu-so/ghep-so',
+    'digits-chan-le': '/hoc-chu-so/chan-le',
+    'digits-dem-hinh': '/hoc-chu-so/dem-hinh',
+    'digits-dem-so': '/hoc-chu-so/dem-so',
+    // Phep So Sanh
+    'compare': '/phep-so-sanh',
+    'compare-so-sanh': '/phep-so-sanh/so-sanh',
+    'compare-xep-so': '/phep-so-sanh/xep-so',
+    // Luyen Tap
+    'practice': '/luyen-tap',
+    'practice-tinh-toan': '/luyen-tap/tinh-toan',
+    'practice-nhan-ngon': '/luyen-tap/nhan-ngon',
+    'practice-so-sanh': '/luyen-tap/so-sanh',
+    'practice-viet-so': '/luyen-tap/viet-so',
+    'practice-keo-co': '/luyen-tap/keo-co',
+    // Games
+    'games': '/tro-choi',
+    'games-dino': '/tro-choi/khung-long',
+    // Others
+    'learning': '/goc-hoc-tap',
+    'users': '/nguoi-dung',
+    'leaderboard': '/bang-xep-hang',
+    'achievements': '/thanh-tich',
+    'rewards': '/phan-thuong',
+    'about-us': '/ve-chung-to'
+  };
+
+  function updateURL(key) {
+    const path = PATH_MAP[key];
+    if (path && window.location.pathname !== path) {
+      // Use pushState to update URL without reloading
+      window.history.pushState({ key: key }, '', path);
+    }
+  }
+
+  function getPathKey() {
+    const path = window.location.pathname;
+    if (path === '/' || path === '/index.html') return 'home';
+    // Find key by path
+    for (const [k, p] of Object.entries(PATH_MAP)) {
+      if (p === path) return k;
+    }
+    return null;
+  }
 
   // Click handler for any element that carries data-page.
   // If the clicked element is a dropdown toggle (has class nav__item--btn or attribute data-dropdown)

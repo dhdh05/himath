@@ -165,9 +165,9 @@ export function mount(container) {
     if (autoNextTimeout) { clearTimeout(autoNextTimeout); autoNextTimeout = null; }
     questionNumberElement.textContent = questionNumber;
 
-    // create 6 unique numbers 1-20, sorted ascending
+    // create 6 unique numbers 1-10, sorted ascending
     const numbers = new Set();
-    while (numbers.size < 6) numbers.add(getRandomNumber(1, 20));
+    while (numbers.size < 6) numbers.add(getRandomNumber(1, 10));
     currentSequence = Array.from(numbers).sort((a, b) => a - b);
 
     // choose 2-4 random hidden positions

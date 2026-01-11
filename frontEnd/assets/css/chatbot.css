@@ -1,0 +1,224 @@
+/* Chatbot Container */
+#chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    font-family: 'Nunito', sans-serif;
+    touch-action: none;
+    /* Prevent scroll while dragging */
+}
+
+/* Toggle Button (Icon) */
+#chatbot-toggle {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    transition: transform 0.2s;
+    user-select: none;
+    color: white;
+    font-size: 28px;
+    position: relative;
+}
+
+#chatbot-toggle i {
+    pointer-events: none;
+}
+
+#chatbot-toggle:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+/* Chat Window */
+#chatbot-window {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    width: 300px;
+    /* Reduced width for better mobile fit */
+    height: 400px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform-origin: bottom right;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    transform: scale(0);
+    pointer-events: none;
+}
+
+#chatbot-window.open {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* Window Header */
+.chat-header {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    padding: 12px 15px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: grab;
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Messages Area */
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f9fbff;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Scrollbar styling */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+}
+
+/* Message Bubbles */
+.message {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.bot {
+    background: white;
+    border: 1px solid #eee;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.message.user {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+}
+
+/* Input Area */
+.chat-input-area {
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 12px;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.chat-input-area input:focus {
+    border-color: #FF8E53;
+}
+
+.chat-input-area button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    font-size: 18px;
+    padding: 6px 8px;
+    transition: all 0.2s;
+    border-radius: 50%;
+}
+
+.chat-input-area button:hover {
+    color: #FF6B6B;
+    background: #fff0eb;
+}
+
+.chat-input-area button.send-btn {
+    color: #FF6B6B;
+}
+
+.recording {
+    color: #ff3b30 !important;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Typing indicator */
+.typing-indicator {
+    font-style: italic;
+    color: #999;
+    font-size: 12px;
+    margin-left: 5px;
+    display: none;
+}
+
+.typing-indicator.active {
+    display: block;
+}

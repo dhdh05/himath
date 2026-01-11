@@ -7,10 +7,13 @@
   background-color: #c1edff;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
+  overflow: visible;
+  /* Changed from hidden to show quick-numbers */
   padding: 4px;
   display: flex;
   flex-direction: column;
+  position: relative;
+  /* For absolute positioned quick-numbers */
 }
 
 .hoc-chu-so-container header {
@@ -42,7 +45,8 @@
   gap: 12px;
   padding-top: 6px;
   position: relative;
-  padding-bottom: 120px;
+  padding-bottom: 90px;
+  /* Reduced from 120px so quick-numbers is fully visible */
 }
 
 .hoc-chu-so-container .audio-section {

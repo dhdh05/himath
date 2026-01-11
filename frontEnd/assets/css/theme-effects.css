@@ -1,0 +1,999 @@
+/* --- Theme Effects CSS --- */
+
+/* --- THEME MENU (Popup from Topbar) --- */
+.theme-menu {
+    position: absolute;
+    top: 60px;
+    /* Below topbar */
+    right: 80px;
+    /* Align near the theme button */
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 9999;
+    transform-origin: top right;
+    transition: all 0.2s ease;
+    min-width: 180px;
+
+    /* Hidden state */
+    opacity: 0;
+    transform: scale(0.9) translateY(-10px);
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.theme-menu.show {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: all;
+    visibility: visible;
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    transition: background 0.2s;
+    width: 100%;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.theme-option:hover {
+    background-color: #f0f0f0;
+}
+
+.theme-option span {
+    font-size: 18px;
+}
+
+/* --- THEME BACKGROUNDS --- */
+
+/* Mùa đông */
+body.theme-winter {
+    /* Gradient Background for Body */
+    background: linear-gradient(to bottom, #00c6ff, #0072ff) !important;
+}
+
+/* Mùa xuân */
+body.theme-spring {
+    /* Gradient Background for Body */
+    background: linear-gradient(to bottom, #ff416c, #ff4b1f) !important;
+}
+
+/* Mùa thu */
+body.theme-autumn {
+    /* Gradient Background for Body - Màu vàng cam mùa thu */
+    background: linear-gradient(to bottom, #f7971e, #ffd200, #ff6b35) !important;
+}
+
+/* Thay đổi snowball thành bí ngô/lá úa cho theme autumn */
+body.theme-autumn .snowball-inner {
+    background: radial-gradient(circle at 30% 30%, #ff8c00, #ff6b35, #ff4500) !important;
+    /* Gradient cam đậm như bí ngô */
+}
+
+body.theme-autumn .snowball-inner::before {
+    content: '🎃';
+    /* Icon bí ngô */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+}
+
+/* When a theme is active, make the main .app container transparent 
+   so the body background shows through the gaps */
+body.theme-winter .app,
+body.theme-spring .app,
+body.theme-autumn .app {
+    background-color: transparent !important;
+    /* Was #292670 */
+    background-image: none !important;
+    /* Remove the Radial Gradients of original app */
+}
+
+/* Keep the Content and Sidebar readable */
+/* Use a semi-transparent dark/blue background to blend with themes but keep contrast */
+body.theme-winter .content,
+body.theme-winter .sidebar,
+body.theme-spring .content,
+body.theme-spring .sidebar,
+body.theme-autumn .content,
+body.theme-autumn .sidebar {
+    /* Slightly more transparent than original to see theme */
+    /* Original Content: linear-gradient(to bottom, #2f80ed, #56ccf2) */
+    /* We keep it mostly opaque but let it be a bit glassy if desired. 
+        Actually, let's keep it SOLID to match "FE cũ" request, just changing the outer wallpaper. */
+    /* No override needed for content/sidebar internal colors *unless* user wants glassiness. */
+    /* Let's try adding a glass effect */
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.15) !important;
+    /* Glassy Logic */
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* Override content specifically for autumn with orange gradient */
+body.theme-autumn .content {
+    background: linear-gradient(to bottom, #ffb74d, #ffa726) !important;
+}
+
+/* Fix Topbar transparency in themes */
+body.theme-winter .topbar,
+body.theme-spring .topbar,
+body.theme-autumn .topbar {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* --- FALLING OBJECTS --- */
+.falling-obj {
+    position: absolute;
+    top: -50px;
+    pointer-events: none;
+    user-select: none;
+    z-index: -1;
+    /* Behind content */
+}
+
+.falling-obj.snow {
+    color: #fff !important;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+.falling-obj.leaf {
+    filter: hue-rotate(10deg) saturate(1.3);
+    /* Tăng độ ấm màu cho lá */
+}
+
+@keyframes fallAndSpin {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    100% {
+        transform: translateY(110vh) rotate(360deg);
+    }
+}
+
+/* --- BUTTERFLY --- */
+.butterfly {
+    position: absolute;
+    font-size: 1.5rem;
+    pointer-events: none;
+    z-index: 9998;
+}
+
+@keyframes flyAcross {
+    0% {
+        transform: translateX(-10vw) translateY(0) rotate(15deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(110vw) translateY(0) rotate(15deg);
+        opacity: 0;
+    }
+}
+
+/* --- ACORN (Quả dẻ/Bánh trung thu mùa thu) --- */
+.acorn {
+    position: absolute;
+    top: -100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff8dc, #ffd700, #daa520);
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.15),
+        inset -3px -3px 10px rgba(0, 0, 0, 0.1),
+        inset 3px 3px 10px rgba(255, 255, 255, 0.7);
+    z-index: 9997;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.acorn:hover {
+    transform: scale(1.1);
+}
+
+.acorn-icon {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+.acorn-text {
+    font-size: 8px;
+    font-weight: bold;
+    color: #8b4513;
+    text-align: center;
+    line-height: 1.1;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    display: none;
+    /* Ẩn ban đầu */
+}
+
+/* Hiệu ứng khi đập vỡ */
+.acorn.broken {
+    animation: shake 0.3s ease-in-out;
+}
+
+.acorn-text.pop-text {
+    animation: popUp 0.5s ease-out forwards;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateX(-5px) rotate(-10deg);
+    }
+
+    75% {
+        transform: translateX(5px) rotate(10deg);
+    }
+}
+
+@keyframes popUp {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes rollDown {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0.8;
+    }
+}
+
+/* --- SPRING THEME OVERRIDES (Blue -> Red/Orange) --- */
+
+/* Sidebar Navigation Items */
+body.theme-spring .nav__item {
+    background-color: #ff9a9e !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    color: #9c0000 !important;
+    /* Dark red text */
+}
+
+body.theme-spring .nav__item:hover {
+    background-color: #ffc3a0 !important;
+}
+
+body.theme-spring .nav__item.is-active {
+    background-color: #ffe5b4 !important;
+    /* light peach */
+    color: #d32f2f !important;
+    border-color: #ffeb3b !important;
+}
+
+/* Sidebar Icons */
+body.theme-spring .nav__icon {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #b71c1c !important;
+}
+
+/* Sidebar Subitems */
+body.theme-spring .nav__subitem.is-active {
+    background-color: #ffe0b2 !important;
+    color: #bf360c !important;
+    border-color: #ffcc80 !important;
+}
+
+body.theme-spring .nav__subitem:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Logo / Brand */
+body.theme-spring .brand__mark {
+    background: linear-gradient(135deg, rgba(255, 235, 59, 0.4), rgba(255, 87, 34, 0.3)) !important;
+    border-color: rgba(255, 193, 7, 0.4) !important;
+}
+
+body.theme-spring .brand__mark i {
+    color: #fffde7 !important;
+}
+
+/* Topbar Buttons */
+body.theme-spring .icon-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+body.theme-spring .icon-btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Avatar Border */
+body.theme-spring .avatar {
+    border-color: #ffccbc !important;
+}
+
+/* Feature Cards (Optional - if you want to taint them red too, 
+   but they have their own colors usually. Let's just tint the container if needed) */
+
+/* Hero Badge */
+body.theme-spring .hero-badge__orb {
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.45), rgba(255, 82, 82, 0.35) 45%, rgba(255, 193, 7, 0.22)) !important;
+}
+
+/* Sidebar Footer Chip/Link */
+body.theme-spring .sidebar__hint {
+    color: #ffebee !important;
+}
+
+/* Scrollbars */
+body.theme-spring .nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* --- INNER CONTENT OVERRIDES (Spring) --- */
+/* Fix blue background in lesson/practice panels */
+body.theme-spring .main-area,
+body.theme-spring .practice-mode,
+body.theme-spring .game-container {
+    background-color: rgba(255, 243, 224, 0.6) !important;
+    /* light orange peach glass */
+    border: 1px solid rgba(255, 171, 145, 0.4);
+}
+
+body.theme-spring .question-card {
+    background-color: #fff3e0 !important;
+    border-color: #ffccbc !important;
+}
+
+body.theme-spring .option-btn {
+    background-color: #fff !important;
+    border-color: #ffab91 !important;
+    color: #d84315 !important;
+}
+
+body.theme-spring .option-btn:hover {
+    background-color: #ffccbc !important;
+}
+
+/* Control buttons (Next/Prev) */
+body.theme-spring .control-btn {
+    background-color: #ff7043 !important;
+    /* deeper orange */
+    color: white !important;
+}
+
+/* Progress bar inside lessons */
+body.theme-spring .progress-bar-container {
+    background-color: #ffe0b2 !important;
+}
+
+body.theme-spring .progress-fill {
+    background-color: #ff5722 !important;
+    /* deep orange */
+}
+
+/* --- BUTTONS & PILLS (Spring) --- */
+/* --- BUTTONS & PILLS (Spring) --- */
+body.theme-spring .btn--primary {
+    background: linear-gradient(135deg, #ff9800, #f44336) !important;
+    border-color: #ffccbc !important;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4) !important;
+}
+
+body.theme-spring .btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.6) !important;
+}
+
+body.theme-spring .hero__pill {
+    background-color: #ffcc80 !important;
+    color: #bf360c !important;
+    border-color: rgba(255, 87, 34, 0.2) !important;
+}
+
+/* --- HOC SO CONTAINER RESTORE (Spring) --- */
+body.theme-spring .hocso-container {
+    background-color: rgba(255, 243, 224, 0.95) !important;
+    border: 1px solid #ffccbc !important;
+    box-shadow: 0 8px 20px rgba(216, 67, 21, 0.1) !important;
+}
+
+/* --- ABOUT US PANEL OVERRIDES (Spring) --- */
+body.theme-spring .about-us-panel {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #ffccbc !important;
+}
+
+body.theme-spring .viet-so-container h1 {
+    color: #ffd700 !important;
+    text-shadow: 1px 1px 2px #d32f2f;
+}
+
+body.theme-spring .about-us-title {
+    color: #d84315 !important;
+}
+
+body.theme-spring .member-avatar i {
+    color: #ff5722 !important;
+}
+
+body.theme-spring .member-avatar {
+    background: #fff3e0 !important;
+}
+
+body.theme-spring .contact-info {
+    background: #fff3e0 !important;
+    border-color: #ffe0b2 !important;
+}
+
+body.theme-spring .contact-item i {
+    color: #ff5722 !important;
+}
+
+body.theme-spring .contact-item a:hover {
+    color: #d84315 !important;
+    border-bottom-color: #d84315 !important;
+}
+
+/* --- HOC SO PANEL OVERRIDES (Spring) --- */
+body.theme-spring .hocso-container {
+    background-color: rgba(255, 243, 224, 0.95) !important;
+    border: 1px solid #ffccbc !important;
+}
+
+body.theme-spring .hocso-container header {
+    border-bottom: 1px solid #ffccbc !important;
+}
+
+body.theme-spring .hocso-container header h1 {
+    color: #d84315 !important;
+}
+
+body.theme-spring .hocso-container .audio-btn {
+    background: linear-gradient(to right, #ff9800, #ff5722) !important;
+    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.25) !important;
+}
+
+body.theme-spring .hocso-container .number-icon {
+    color: #d84315 !important;
+    border-color: #ffe0b2 !important;
+    box-shadow: 0 6px 18px rgba(216, 67, 21, 0.15) !important;
+    background-color: #fff3e0 !important;
+}
+
+body.theme-spring .hocso-container .nav-btn {
+    background: linear-gradient(to right, #ff9800, #ff5722) !important;
+}
+
+body.theme-spring .hocso-container .nav-btn:disabled {
+    background: linear-gradient(to right, #ffe0b2, #ffccbc) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+body.theme-spring .hocso-container .quick-numbers {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%) !important;
+    border-color: #ffccbc !important;
+}
+
+body.theme-spring .hocso-container .number-btn {
+    border-color: #ff5722 !important;
+    color: #d84315 !important;
+    background-color: #fff !important;
+}
+
+body.theme-spring .hocso-container .number-btn:hover,
+body.theme-spring .hocso-container .number-btn.active {
+    background-color: #ff5722 !important;
+    color: #fff !important;
+    border-color: #e64a19 !important;
+}
+
+/* Force override any lingering blue backgrounds */
+body.theme-spring .hocso-container,
+body.theme-spring .hocso-container main,
+body.theme-spring .hocso-container .audio-section,
+body.theme-spring .hocso-container .number-section,
+body.theme-spring .hocso-container .image-section,
+body.theme-spring .hocso-container .number-nav-container,
+body.theme-spring .hocso-container .number-display-container {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    /* Remove shadows that might look blue */
+    border: none !important;
+}
+
+/* Re-apply border to main container only if needed, but we handled it above */
+
+
+/* --- FEATURE CARDS (Spring) --- */
+/* The default is a gradient or weird blue. Let's make them warm layout. */
+body.theme-spring .feature {
+    /* Using a warm glassy look or solid warm color */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 224, 178, 0.8)) !important;
+    border-color: rgba(255, 171, 145, 0.4) !important;
+    box-shadow: 0 10px 25px rgba(216, 67, 21, 0.15) !important;
+}
+
+body.theme-spring .feature:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, #fff, #ffccbc) !important;
+}
+
+body.theme-spring .feature__title {
+    color: #bf360c !important;
+}
+
+body.theme-spring .feature__desc {
+    color: #d84315 !important;
+}
+
+/* Fix icons inside features if needed (background circles) */
+body.theme-spring .feature__icon {
+    /* Let them keep their individual colors, usually looks okay, 
+      or we can force a warm background backing */
+    background: rgba(255, 87, 34, 0.1) !important;
+    border: 1px solid rgba(255, 87, 34, 0.2);
+}
+
+
+/* --- GARDEN -- */
+#bottom-garden {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    pointer-events: none;
+    z-index: -1;
+    /* Behind content */
+}
+
+.plant-container {
+    position: absolute;
+    bottom: -10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: bottom center;
+    animation: cycleBloom 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes cycleBloom {
+    0% {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+
+    10% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+
+    90% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+}
+
+.stem {
+    width: 4px;
+    background-color: #a3d55f;
+    border-radius: 2px;
+}
+
+.leaf {
+    position: absolute;
+    width: 15px;
+    height: 8px;
+    background-color: #96c93d;
+    border-radius: 0 10px 0 10px;
+}
+
+.leaf.left {
+    left: -12px;
+    top: 40%;
+    transform: rotate(-20deg);
+}
+
+.leaf.right {
+    right: -12px;
+    top: 60%;
+    transform: rotate(20deg) scaleX(-1);
+}
+
+.flower-head {
+    font-size: 2rem;
+    margin-bottom: -5px;
+    z-index: 2;
+    animation: sway 3s ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+    from {
+        transform: rotate(-10deg);
+    }
+
+    to {
+        transform: rotate(10deg);
+    }
+}
+
+/* --- SPRING THEME: SNOWBALL -> RED ENVELOPE --- */
+body.theme-spring .snowball-inner {
+    background: radial-gradient(circle at 30% 30%, #ff4b1f, #ff9068);
+    box-shadow:
+        inset -10px -10px 20px rgba(0, 0, 0, 0.2),
+        0 0 15px rgba(255, 75, 31, 0.6);
+    border: 2px solid #ffd700;
+    /* Gold border */
+    border-radius: 12px;
+    /* Rectangle with rounded corners */
+    width: 60px;
+    /* Adjust shape */
+    height: 80px;
+    transform: rotate(-10deg);
+}
+
+body.theme-spring .snowball-inner::after {
+    content: '福';
+    /* Fu character (Luck) */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffd700;
+    font-size: 32px;
+    font-weight: bold;
+    font-family: serif;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+body.theme-spring .instruction-text {
+    /* Hide the original text 'Đừng đập vỡ Snow Ball' */
+    font-size: 0 !important;
+}
+
+body.theme-spring .instruction-text::after {
+    /* Show replacement text */
+    content: "Chúc mừng năm mới!";
+    font-size: 16px;
+    /* Restore font size */
+    color: #ffd700;
+    text-shadow: 1px 1px 2px #d32f2f;
+    display: block;
+}
+
+/* Hide the original white glow/shadow in spring theme */
+body.theme-spring .shadow-blur {
+    background: rgba(255, 215, 0, 0.4);
+    /* Gold glow */
+}
+
+/* ===================================
+   AUTUMN THEME COLOR OVERRIDES
+   =================================== */
+
+/* Sidebar Navigation Items - Autumn Orange/Yellow */
+body.theme-autumn .nav__item {
+    background-color: #ffb74d !important;
+    border-color: rgba(255, 167, 38, 0.4) !important;
+    color: #e65100 !important;
+}
+
+body.theme-autumn .nav__item:hover {
+    background-color: #ffa726 !important;
+}
+
+body.theme-autumn .nav__item.is-active {
+    background-color: #ffe082 !important;
+    color: #f57c00 !important;
+    border-color: #ffb300 !important;
+}
+
+/* Sidebar Icons */
+body.theme-autumn .nav__icon {
+    background: rgba(255, 193, 7, 0.25) !important;
+    color: #e65100 !important;
+}
+
+/* Sidebar Subitems */
+body.theme-autumn .nav__subitem.is-active {
+    background-color: #ffcc80 !important;
+    color: #e65100 !important;
+    border-color: #ffb74d !important;
+}
+
+body.theme-autumn .nav__subitem:hover {
+    background: rgba(255, 167, 38, 0.2) !important;
+}
+
+/* Logo / Brand */
+body.theme-autumn .brand__mark {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.4), rgba(255, 152, 0, 0.3)) !important;
+    border-color: rgba(255, 160, 0, 0.4) !important;
+}
+
+body.theme-autumn .brand__mark i {
+    color: #fff8e1 !important;
+}
+
+/* Topbar Buttons */
+body.theme-autumn .icon-btn {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+body.theme-autumn .icon-btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Avatar Border */
+body.theme-autumn .avatar {
+    border-color: #ffcc80 !important;
+}
+
+/* Stat Cards */
+body.theme-autumn .stat-card {
+    background: linear-gradient(135deg, #ffe082, #ffb74d) !important;
+    border-color: #ffa726 !important;
+}
+
+/* Practice Cards */
+body.theme-autumn .practice-card {
+    background-color: rgba(255, 224, 130, 0.95) !important;
+    border-color: #ffb74d !important;
+}
+
+body.theme-autumn .practice-card:hover {
+    background-color: rgba(255, 183, 77, 0.95) !important;
+    box-shadow: 0 8px 30px rgba(255, 152, 0, 0.3) !important;
+}
+
+/* Feature Cards - đổi từ cyan sang orange */
+body.theme-autumn .feature {
+    background: linear-gradient(135deg, #ffb74d, #ffa726) !important;
+    border-color: rgba(255, 152, 0, 0.3) !important;
+}
+
+body.theme-autumn .feature:hover {
+    box-shadow: 0 16px 30px rgba(255, 111, 0, 0.3) !important;
+}
+
+/* Card Badges */
+body.theme-autumn .card__badge {
+    background-color: #ff6f00 !important;
+    color: white !important;
+}
+
+/* Progress bar */
+body.theme-autumn .progress-bar-container {
+    background-color: #ffe0b2 !important;
+}
+
+body.theme-autumn .progress-fill {
+    background-color: #ff8f00 !important;
+}
+
+/* Buttons & Pills */
+body.theme-autumn .btn--primary {
+    background: linear-gradient(135deg, #ffa726, #ff6f00) !important;
+    border-color: #ffcc80 !important;
+    box-shadow: 0 4px 15px rgba(255, 111, 0, 0.4) !important;
+}
+
+body.theme-autumn .btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 111, 0, 0.6) !important;
+}
+
+body.theme-autumn .hero__pill {
+    background-color: #ffcc80 !important;
+    color: #e65100 !important;
+    border-color: rgba(255, 111, 0, 0.2) !important;
+}
+
+/* Hoc So Container */
+body.theme-autumn .hocso-container {
+    background-color: rgba(255, 243, 224, 0.95) !important;
+    border: 1px solid #ffcc80 !important;
+    box-shadow: 0 8px 20px rgba(255, 111, 0, 0.1) !important;
+}
+
+/* About Us Panel */
+body.theme-autumn .about-us-panel {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #ffcc80 !important;
+}
+
+body.theme-autumn .viet-so-container h1 {
+    color: #ffa726 !important;
+    text-shadow: 2px 2px 4px rgba(230, 81, 0, 0.3);
+}
+
+body.theme-autumn .about-us-title {
+    color: #ff8f00 !important;
+    text-shadow: 1px 1px 3px rgba(255, 111, 0, 0.3);
+}
+
+/* Instruction Text for Pumpkin */
+body.theme-autumn .instruction-text {
+    color: #ff6f00 !important;
+    text-shadow: 1px 1px 2px rgba(255, 152, 0, 0.5);
+}
+
+/* Shadow blur for pumpkin */
+body.theme-autumn .shadow-blur {
+    background: rgba(255, 152, 0, 0.4);
+}
+
+/* Fix text colors for readability on orange background */
+body.theme-autumn .hero__title>span,
+body.theme-autumn .hero__greeting {
+    background: linear-gradient(90deg, #8b4513, #d2691e) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+}
+
+body.theme-autumn .hero__desc {
+    color: #5d4037 !important;
+    /* Dark brown */
+}
+
+/* Make all text in content readable */
+body.theme-autumn .content {
+    color: #3e2723 !important;
+    /* Very dark brown */
+}
+
+/* ===== GLOBAL GAME PANEL OVERRIDES FOR AUTUMN ===== */
+/* Override all cyan/blue colors in game panels */
+body.theme-autumn .game-container,
+body.theme-autumn .panel-container,
+body.theme-autumn .viet-so-container,
+body.theme-autumn .so-sanh-container {
+    background: linear-gradient(to bottom, #fff3e0, #ffe0b2) !important;
+    /* Light orange background */
+}
+
+/* Override cyan buttons to orange */
+body.theme-autumn button[style*="background"][style*="rgb(0, 196, 255)"],
+body.theme-autumn button[style*="background"][style*="#00c4ff"],
+body.theme-autumn .btn-blue,
+body.theme-autumn .option-btn {
+    background: linear-gradient(135deg, #ffb74d, #ffa726) !important;
+    color: #3e2723 !important;
+}
+
+/* Override headers */
+body.theme-autumn h1[style*="color"],
+body.theme-autumn h2[style*="color"],
+body.theme-autumn .panel-title {
+    color: #ff8f00 !important;
+    text-shadow: 2px 2px 4px rgba(230, 81, 0, 0.3) !important;
+}
+
+/* ===== SPECIFIC PANEL OVERRIDES ===== */
+/* So Sanh (Comparison) Panel */
+body.theme-autumn .sosanh-container .game-container {
+    background-color: #ffe0b2 !important;
+    /* Light orange */
+}
+
+body.theme-autumn .sosanh-container .game-header h1 {
+    color: #ff8f00 !important;
+}
+
+body.theme-autumn .sosanh-container .stat {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%) !important;
+}
+
+body.theme-autumn .sosanh-container .stat-value {
+    color: #ff8f00 !important;
+}
+
+body.theme-autumn .sosanh-container .right-box {
+    background: linear-gradient(135deg, #ffa726, #ff8f00) !important;
+    border-color: #ff8f00 !important;
+}
+
+body.theme-autumn .sosanh-container .answer-btn {
+    background-color: #ffb74d !important;
+}
+
+body.theme-autumn .sosanh-container .answer-btn:hover {
+    background-color: #ffa726 !important;
+    box-shadow: 0 8px 25px rgba(255, 152, 0, 0.6) !important;
+}
+
+/* Hoc Chu So (Learn Numbers 0-10) Panel */
+body.theme-autumn .hoc-chu-so-container {
+    background-color: #ffe0b2 !important;
+}
+
+body.theme-autumn .hoc-chu-so-container header h1 {
+    color: #ff8f00 !important;
+}
+
+body.theme-autumn .hoc-chu-so-container .audio-btn {
+    background: linear-gradient(to right, #ffa726, #ff8f00) !important;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3) !important;
+}
+
+body.theme-autumn .hoc-chu-so-container .number-icon {
+    color: #ff8f00 !important;
+    border-color: #ffe0b2 !important;
+}
+
+body.theme-autumn .hoc-chu-so-container .nav-btn {
+    background: linear-gradient(to right, #ffa726, #ff8f00) !important;
+}
+
+body.theme-autumn .hoc-chu-so-container .nav-btn:disabled {
+    background: linear-gradient(to right, #ffcc80, #ffe0b2) !important;
+}
+
+body.theme-autumn .hoc-chu-so-container .quick-numbers {
+    background-color: #ffcc80 !important;
+}
+
+body.theme-autumn .hoc-chu-so-container .number-btn {
+    border-color: #ff8f00 !important;
+    color: #ff8f00 !important;
+}
+
+body.theme-autumn .hoc-chu-so-container .number-btn:hover,
+body.theme-autumn .hoc-chu-so-container .number-btn.active {
+    background-color: #ff8f00 !important;
+    color: white !important;
+}

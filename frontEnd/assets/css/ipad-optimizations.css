@@ -1,0 +1,177 @@
+/* ========================================
+   iPAD OPTIMIZATION CSS
+   For 10" (768x1024) and 13" (1024x1366) iPads
+   ======================================== */
+
+/* ===== GLOBAL TOUCH IMPROVEMENTS ===== */
+* {
+    -webkit-tap-highlight-color: transparent;
+    /* Remove blue tap highlight */
+    -webkit-touch-callout: none;
+    /* Disable callout menu */
+}
+
+/* Better touch target sizes (min 44x44px for touch) */
+button,
+.nav__item,
+.feature,
+.lesson-card,
+.number-btn,
+.answer-btn,
+.quiz-option {
+    min-height: 44px !important;
+    min-width: 44px !important;
+}
+
+/* ===== PREVENT UNWANTED ZOOM/SCROLL ===== */
+html {
+    -webkit-text-size-adjust: 100%;
+    /* Prevent font scaling */
+    touch-action: manipulation;
+    /* Disable double-tap zoom */
+}
+
+/* ===== SMOOTH SCROLLING FOR PANELS THAT NEED IT ===== */
+.learning-panel {
+    -webkit-overflow-scrolling: touch !important;
+    overflow-y: auto !important;
+    height: 100%;
+}
+
+/* ===== iPAD 10 INCH (768x1024) ===== */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {
+
+    /* Sidebar width adjustment */
+    .sidebar {
+        width: 220px !important;
+    }
+
+    /* Feature cards grid */
+    .features {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+
+    /* Game canvas sizes */
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+/* ===== iPAD 13 INCH (1024x1366) ===== */
+@media only screen and (min-device-width: 1024px) and (max-device-width: 1366px) and (orientation: portrait) {
+
+    /* Feature cards grid */
+    .features {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* ===== LANDSCAPE ORIENTATION ===== */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1366px) and (orientation: landscape) {
+
+    /* Sidebar stays visible */
+    .sidebar {
+        transform: translateX(0) !important;
+    }
+
+    /* Feature cards grid */
+    .features {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+
+/* ===== DRAG & DROP IMPROVEMENTS ===== */
+/* Better visual feedback for draggable items */
+[draggable="true"],
+.draggable,
+.number-btn {
+    cursor: grab !important;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+[draggable="true"]:active,
+.draggable:active {
+    cursor: grabbing !important;
+    opacity: 0.7;
+}
+
+/* ===== CANVAS TOUCH IMPROVEMENTS ===== */
+canvas {
+    touch-action: none;
+    /* Disable browser gestures */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ===== MODAL FIXES FOR iPAD ===== */
+.video-modal,
+.quiz-section {
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.modal-wrapper {
+    max-width: 90vw !important;
+    max-height: 90vh !important;
+}
+
+/* ===== FIX DOUBLE-TAP ZOOM ON BUTTONS ===== */
+button,
+.btn,
+.icon-btn {
+    touch-action: manipulation !important;
+}
+
+/* ===== CHATBOT POSITION FIX ===== */
+.chatbot-container {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+}
+
+/* ===== SNOWBALL/PUMPKIN FIX ===== */
+.fun-zone-container {
+    touch-action: manipulation !important;
+    user-select: none !important;
+}
+
+/* ===== PREVENT TEXT SELECTION DURING DRAG ===== */
+.game-container *,
+.panel-container * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+/* But allow selection in input fields */
+input,
+textarea,
+[contenteditable="true"] {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+}
+
+/* ===== FIX VIEWPORT HEIGHT ON iPAD ===== */
+/* Only apply to touch devices/tablets */
+@media only screen and (max-width: 1366px) and (pointer: coarse) {
+    .app {
+        height: 100vh;
+        height: -webkit-fill-available;
+    }
+
+    .content {
+        max-height: calc(100vh - 120px);
+        max-height: calc(-webkit-fill-available - 120px);
+    }
+}
+
+/* ===== IMPROVE TOUCH ACCURACY ===== */
+/* Add padding to small touch targets */
+.nav__chev,
+.close-modal-btn,
+.quiz-close-btn {
+    padding: 10px !important;
+}
