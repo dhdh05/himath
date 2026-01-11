@@ -23,77 +23,79 @@ body {
     /* Prevent bouncy scroll */
     background: radial-gradient(1200px 600px at 15% 8%, rgba(86, 204, 242, .12), transparent 55%),
         linear-gradient(160deg, #0b1022, #101a38) !important;
-    /* Ensure dark background */
 }
 
 /* --- IPHONE / MOBILE (Portrait < 768px) --- */
 @media only screen and (max-width: 767px) {
 
-    /* 1. Layout: Sidebar as Overlay */
+    /* 1. App Layout: Overlay Mode */
     .app {
         height: var(--app-height);
         display: block;
-        /* Ease grid constraints */
         position: relative;
         overflow: hidden;
     }
 
-    /* 2. Topbar: Fixed at top */
+    /* 2. Topbar: Fixed at top, High Z-Index to remain clickable */
     .topbar {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         height: 60px;
-        z-index: 100;
+        z-index: 1200;
+        /* Topmost to allow toggling */
         border-radius: 0 0 20px 20px;
         padding: 0 10px;
         margin: 0;
-        /* Ensure background is opaque enough */
-        background: rgba(16, 26, 56, 0.85);
+        background: rgba(16, 26, 56, 0.95);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* 3. Sidebar: Slide-in Drawer */
+    /* 3. Sidebar: Slide-in Drawer (Below Topbar) */
     .sidebar {
         position: fixed !important;
-        top: 0;
+        top: 60px;
+        /* Start below Topbar */
         bottom: 0;
         left: 0;
         width: 280px !important;
-        z-index: 1001 !important;
+        z-index: 1100 !important;
+        /* Below Topbar, Above Backdrop */
         margin: 0 !important;
         border-radius: 0 24px 24px 0 !important;
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
         transform: translateX(0);
+        /* Visible state */
         transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
         display: flex !important;
-        /* Override display:none */
     }
 
-    /* Sidebar Hidden State (Default logic in main.js triggers this class) */
+    /* Sidebar Hidden State (Default on Mobile) */
+    /* Main.js adds this class on mobile init */
     .app.sidebar-hidden .sidebar {
         transform: translateX(-100%);
-        display: flex !important;
-        /* Keep it flex but moved away */
     }
 
     /* Overlay backdrop when sidebar is open */
     .app:not(.sidebar-hidden)::after {
         content: '';
         position: fixed;
-        inset: 0;
+        top: 60px;
+        bottom: 0;
+        left: 0;
+        right: 0;
         background: rgba(0, 0, 0, 0.5);
         z-index: 1000;
         backdrop-filter: blur(2px);
     }
 
-    /* 4. Content: Full screen, scrollable */
+    /* 4. Content: Scrollable Area */
     .content {
         position: absolute;
         top: 60px;
-        /* Below topbar */
+        /* Start below Topbar */
         bottom: 0;
         left: 0;
         right: 0;
@@ -102,7 +104,6 @@ body {
         padding: 15px !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
-        /* Ensure gradient */
         background: linear-gradient(to bottom, #2f80ed, #56ccf2) !important;
         z-index: 1;
         padding-bottom: 40px !important;
@@ -120,7 +121,6 @@ body {
         align-items: center;
         padding: 12px 16px;
         min-height: 80px;
-        /* Transparent white card */
         background: rgba(255, 255, 255, 0.15);
         border: 1px solid rgba(255, 255, 255, 0.2);
         width: 100%;
@@ -140,16 +140,14 @@ body {
         margin-bottom: 4px;
         text-align: left;
         color: white;
-        /* Ensure text is readable */
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     }
 
     .feature__desc {
         display: none;
-        /* Simplify on mobile */
     }
 
-    /* 6. Typography & Hero */
+    /* 6. Typography */
     .hero__title {
         font-size: 1.4rem;
         flex-wrap: wrap;
@@ -167,20 +165,21 @@ body {
         padding: 12px;
     }
 
-    /* 7. Toggle Button Icon Rotation */
+    /* 7. Icon Rotation for Toggle Button */
     .topbar__hide i {
         transition: transform 0.3s;
     }
 
-    /* When sidebar is hidden (default), arrow points Right to indicate 'Open' */
     .app.sidebar-hidden .topbar__hide i {
         transform: rotate(180deg);
     }
 
-    /* When sidebar is visible, arrow points Left to indicate 'Close' */
+    /* Points Right (> Open) */
     .app:not(.sidebar-hidden) .topbar__hide i {
         transform: rotate(0deg);
     }
+
+    /* Points Left (< Close) */
 }
 
 /* --- LARGE MOBILE / TABLET (Landscape) --- */
@@ -206,7 +205,6 @@ body {
 @media only screen and (min-width: 768px) and (max-width: 1024px) {
     .app {
         grid-template-columns: 220px 1fr;
-        /* Custom sidebar width */
     }
 
     .sidebar {
