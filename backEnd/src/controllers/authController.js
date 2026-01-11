@@ -162,6 +162,17 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Kiem tra ket noi Email ngay khi khoi dong
+transporter.verify(function (error, success) {
+    if (error) {
+        console.error("❌ Email Config Error:", error.message);
+        console.error("   Make sure EMAIL_USER and EMAIL_PASS are correct in .env");
+        console.error("   If using Gmail, use App Password (https://myaccount.google.com/apppasswords)");
+    } else {
+        console.log("✅ Email Server is ready to take our messages");
+    }
+});
+
 // 4. Forgot Password (Send OTP via Email)
 exports.requestPasswordReset = async (req, res) => {
     try {

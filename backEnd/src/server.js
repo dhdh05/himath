@@ -4,6 +4,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 
+dotenv.config();
+
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
 const gameRoutes = require('./routes/gameRoutes');
@@ -13,10 +15,6 @@ const streakRoutes = require('./routes/streakRoutes');
 const leaderboardRoutes = require('./routes/leaderboardRoutes');
 const achievementRoutes = require('./routes/achievementRoutes');
 const rewardRoutes = require('./routes/rewardRoutes');
-
-
-
-dotenv.config();
 
 const app = express();
 
@@ -81,7 +79,7 @@ app.get('*', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`✅ Server dang chay tai http://localhost:${PORT}`);
   console.log(`📡 API Endpoints:`);
   console.log(`   - Auth: /api/auth/login, /api/auth/register`);
@@ -96,6 +94,17 @@ app.listen(PORT, () => {
   console.log(`   - Notifications: /api/notifications`);
   console.log(`   - Goals: /api/goals`);
   console.log(`\n💡 Frontend can mo bang http://localhost:5500 hoac Live Server`);
+
+  // --- DATABASE CONNECTION CHECK ---
+  try {
+    const db = require('./config/db');
+    await db.execute('SELECT 1');
+    console.log('✅ DATABASE CONNECTION SUCCESSFUL');
+  } catch (err) {
+    console.error('❌ DATABASE CONNECTION FAILED:', err.message);
+    console.error('   Hint: Tren Render/Vercel, ban KHONG THE ket noi den localhost/XAMPP cua may ban.');
+    console.error('   Giai phap: Ban phai tao Database tren Cloud (Aiven, Supabase, Railway...) va cau hinh bien moi truong DB_HOST.');
+  }
 });
 
 
