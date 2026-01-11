@@ -20,7 +20,9 @@
         CHECK_IN: `${API_BASE_URL}/api/auth/check-in`,
         FORGOT_PASSWORD: `${API_BASE_URL}/api/auth/forgot-password`,
         RESET_PASSWORD: `${API_BASE_URL}/api/auth/reset-password`,
-        UPDATE_INFO: `${API_BASE_URL}/api/auth/update-info`
+        UPDATE_INFO: `${API_BASE_URL}/api/auth/update-info`,
+        FORGOT_PIN: `${API_BASE_URL}/api/auth/forgot-pin`,
+        RESET_PIN_OTP: `${API_BASE_URL}/api/auth/reset-pin-otp`
       },
       GAMES: {
         LEVELS: (gameType) => `${API_BASE_URL}/api/games/levels/${gameType}`,

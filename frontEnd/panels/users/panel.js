@@ -239,7 +239,7 @@ export function mount(container) {
 
     try {
       // Goi API Verify PIN
-      const apiUrl = window.API_CONFIG?.ENDPOINTS?.PARENTS?.VERIFY_PIN || 'http://localhost:3000/api/parents/verify-pin';
+      const apiUrl = window.API_CONFIG?.ENDPOINTS?.PARENTS?.VERIFY_PIN || '/api/parents/verify-pin';
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
       const res = await fetch(apiUrl, {
         method: 'POST',
@@ -283,7 +283,8 @@ export function mount(container) {
   qs('#sendPinOtpBtn').addEventListener('click', async () => {
     msgDiv.textContent = 'Đang gửi...';
     try {
-      const res = await fetch('http://localhost:3000/api/auth/forgot-pin', {
+      const apiUrl = window.API_CONFIG?.ENDPOINTS?.AUTH?.FORGOT_PIN || '/api/auth/forgot-pin';
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: studentId })
@@ -313,7 +314,8 @@ export function mount(container) {
 
     msgDiv.textContent = 'Đang xử lý...';
     try {
-      const res = await fetch('http://localhost:3000/api/auth/reset-pin-otp', {
+      const apiUrl = window.API_CONFIG?.ENDPOINTS?.AUTH?.RESET_PIN_OTP || '/api/auth/reset-pin-otp';
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: studentId, otp, new_pin: newPin })
@@ -366,7 +368,8 @@ export function mount(container) {
       if (!newDob) return alert("Vui lòng chọn ngày sinh!");
 
       try {
-        const res = await fetch('http://localhost:3000/api/auth/update-info', {
+        const apiUrl = window.API_CONFIG?.ENDPOINTS?.AUTH?.UPDATE_INFO || '/api/auth/update-info';
+        const res = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: studentId, dob: newDob })
@@ -622,7 +625,8 @@ export function mount(container) {
       cp_msg.style.color = 'blue';
 
       try {
-        const res = await fetch('http://localhost:3000/api/auth/forgot-pin', {
+        const apiUrl = window.API_CONFIG?.ENDPOINTS?.AUTH?.FORGOT_PIN || '/api/auth/forgot-pin';
+        const res = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: studentId })
@@ -672,7 +676,8 @@ export function mount(container) {
       // Since we don't have a combined API, we call verify-pin first
       try {
         if (oldPin) {
-          const vRes = await fetch('http://localhost:3000/api/parents/verify-pin', {
+          const apiUrl = window.API_CONFIG?.ENDPOINTS?.PARENTS?.VERIFY_PIN || '/api/parents/verify-pin';
+          const vRes = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ student_id: studentId, pin: oldPin })
@@ -690,7 +695,8 @@ export function mount(container) {
         }
 
         // 2. If Old PIN OK, Call Reset PIN with OTP
-        const res = await fetch('http://localhost:3000/api/auth/reset-pin-otp', {
+        const apiUrl = window.API_CONFIG?.ENDPOINTS?.AUTH?.RESET_PIN_OTP || '/api/auth/reset-pin-otp';
+        const res = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: studentId, otp, new_pin: newPin })
@@ -717,7 +723,7 @@ export function mount(container) {
 
   async function loadStats() {
     try {
-      const apiUrl = window.API_CONFIG?.ENDPOINTS?.PARENTS?.STATS?.(studentId) || `http://localhost:3000/api/parents/stats/${studentId}`;
+      const apiUrl = window.API_CONFIG?.ENDPOINTS?.PARENTS?.STATS?.(studentId) || `/api/parents/stats/${studentId}`;
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
 
       console.log('📊 Loading stats for student:', studentId);
