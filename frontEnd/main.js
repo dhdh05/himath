@@ -1633,13 +1633,16 @@
     // control global home music: stop when navigating away
     if (key === 'home') {
       content.style.overflowY = 'hidden';
+      // Resume theme effects on home
+      try { if (window.ThemeEffects) window.ThemeEffects.resume(); } catch (e) { }
     } else {
       content.style.overflowY = 'auto';
     }
     if (key !== 'home') {
-
       try { stopHomeMusic(); } catch (e) { }
       try { removeContentSnow(); } catch (e) { }
+      // Stop theme effects (falling objects) on other pages
+      try { if (window.ThemeEffects) window.ThemeEffects.pause(); } catch (e) { }
     }
 
     // cleanup any active panel-specific listeners, timers, or mounted modules
@@ -1823,8 +1826,10 @@
       return;
     }
 
-    if (key === 'practice-keo-co') {
+    // Allow both keys to mount the same panel
+    if (key === 'practice-keo-co' || key === 'games-keo-co') {
       content.innerHTML = '<div class="loading">Đang tải...</div>';
+      // Load from the existing practice-keo-co folder (we won't rename the folder to avoid breaking other things)
       import('./panels/practice-keo-co/panel.js').then(mod => {
         if (content._mountedPanel && typeof content._mountedPanel.unmount === 'function') {
           try { content._mountedPanel.unmount(content); } catch (e) { console.warn('Error during panel unmount', e); }
@@ -1833,7 +1838,7 @@
         mod.mount(content);
         content._mountedPanel = mod;
       }).catch(err => {
-        console.error('Failed to load practice-keo-co panel', err);
+        console.error('Failed to load practice-keo-co panel for games-keo-co', err);
         content.innerHTML = '<div class="panel"><h2>Lỗi khi tải panel</h2></div>';
       });
       return;
@@ -1996,6 +2001,7 @@
     'practice-so-sanh': 'Luyện tập — So sánh',
     'practice-viet-so': 'Luyện tập — Bé tập viết số',
     'practice-keo-co': 'Luyện tập — Kéo Co Math',
+    'games-keo-co': 'Trò chơi — Kéo Co Math',
     'games': 'Trò chơi',
     'games-dino': 'Trò chơi — Khủng long giỏi toán',
     'learning': 'Góc Học Tập',
@@ -2032,6 +2038,7 @@
     // Games
     'games': '/tro-choi',
     'games-dino': '/tro-choi/khung-long',
+    'games-keo-co': '/tro-choi/keo-co',
     // Others
     'learning': '/goc-hoc-tap',
     'users': '/nguoi-dung',

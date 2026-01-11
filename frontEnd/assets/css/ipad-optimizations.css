@@ -32,12 +32,12 @@ html {
 }
 
 /* ===== SMOOTH SCROLLING FOR PANELS THAT NEED IT ===== */
+/* ===== SMOOTH SCROLLING FOR PANELS THAT NEED IT ===== */
 .learning-panel {
-    -webkit-overflow-scrolling: touch !important;
-    overflow-y: auto !important;
-    height: 100%;
+    height: auto !important;
+    overflow: visible !important;
+    /* Do not trap scroll, let .content handle it */
     touch-action: pan-y !important;
-    /* Enable swipe scrolling */
 }
 
 /* ===== iPAD 10 INCH (768x1024) ===== */

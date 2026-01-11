@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (themeName === 'winter') {
                 instructionText.textContent = 'Đừng đập vỡ Snow Ball';
             } else if (themeName === 'spring') {
-                instructionText.textContent = 'Đừng xé rách bao Lì Xì'; 
+                instructionText.textContent = 'Đừng xé rách bao Lì Xì';
             } else {
                 instructionText.textContent = 'Đừng đập vỡ Snow Ball';
             }
@@ -270,5 +270,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- SỰ KIỆN ---
 
+    // Expose API for main.js to control
+    window.ThemeEffects = {
+        pause: () => {
+            if (activeInterval) clearInterval(activeInterval);
+            if (butterflyInterval) clearInterval(butterflyInterval);
+            // Remove dynamic elements
+            document.querySelectorAll('.falling-obj').forEach(el => el.remove());
+            document.querySelectorAll('.butterfly').forEach(el => el.remove());
+            document.querySelectorAll('.acorn').forEach(el => el.remove());
+            // Note: We keep the background class (e.g. theme-spring) for consistent color scheme
+        },
+        resume: () => {
+            const saved = localStorage.getItem('hm_theme');
+            if (saved) startTheme(saved);
+        }
+    };
+
+    // Initial Check: If not home, pause animations immediately (keep background)
+    const path = window.location.pathname;
+    const isHome = path === '/' || path === '/index.html' || path === '/home';
+    if (!isHome) {
+        window.ThemeEffects.pause();
+    }
 
 });
