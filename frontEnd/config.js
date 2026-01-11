@@ -7,8 +7,8 @@
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:3000'
       : (window.location.hostname.includes('render.com')
-        ? window.location.origin  // Tu dong lay domain hien tai (vi du: https://himath.onrender.com)
-        : 'https://your-backend-domain.com'));
+        ? 'https://himath-be.onrender.com' // Explicit Backend URL provided by user
+        : 'https://himath-be.onrender.com')); // Default fallback to prod backend if unknown msg
 
   // Export ra window object de cac file khac co the dung
   window.API_CONFIG = {

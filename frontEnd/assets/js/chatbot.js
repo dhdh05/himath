@@ -152,7 +152,12 @@
         typingIndicator.classList.add('active');
 
         try {
-            const res = await fetch('/api/chatbot/chat', {
+            // Use FULL URL from config to fetch from correct Backend
+            const apiUrl = (window.API_CONFIG && window.API_CONFIG.BASE_URL)
+                ? `${window.API_CONFIG.BASE_URL}/api/chatbot/chat`
+                : '/api/chatbot/chat';
+
+            const res = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: text })
