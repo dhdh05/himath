@@ -163,8 +163,15 @@ textarea,
     }
 
     .content {
-        max-height: calc(100vh - 120px);
-        max-height: calc(-webkit-fill-available - 120px);
+        height: 100% !important;
+        -webkit-overflow-scrolling: touch !important;
+        overflow-y: auto !important;
+        touch-action: pan-y !important;
+    }
+
+    .nav {
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-y !important;
     }
 }
 
