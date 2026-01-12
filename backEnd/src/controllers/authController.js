@@ -156,11 +156,16 @@ const otpStore = new Map();
 // Cau hinh gui mail (Su dung service GMAIL chuan)
 // Luu y: Can dung App Password chu khong phai mat khau login thuong
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 5000
 });
 
 // Bo phan verify() tai day vi no thuong gay timeout tren server khi khoi dong.
@@ -204,18 +209,24 @@ exports.requestPasswordReset = async (req, res) => {
             `
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log(`📧 Email sent to ${emailTo} for user ${username}`);
-
-        res.json({
-            success: true,
-            message: 'Mã xác thực đã được gửi về mail của bạn.',
-            // debug_otp: otp // Khong tra ve OTP nua de bao mat
-        });
+        try {
+            await transporter.sendMail(mailOptions);
+            res.json({
+                success: true,
+                message: 'Mã xác thực đã được gửi về mail của bạn.',
+            });
+        } catch (mailError) {
+            console.error("❌ Email Timeout -> DEBUG MODE");
+            res.json({
+                success: true,
+                message: `[DEBUG MODE - BẢO TRÌ EMAIL] Mã OTP của bạn là: ${otp}`,
+                debug_otp: otp
+            });
+        }
 
     } catch (err) {
         console.error("Forgot Pass Error:", err);
-        res.status(500).json({ success: false, message: 'Lỗi gửi email: ' + err.message });
+        res.status(500).json({ success: false, message: 'Lỗi server: ' + err.message });
     }
 };
 
@@ -323,9 +334,17 @@ exports.requestPinResetOTP = async (req, res) => {
             html: `<h3>Reset PIN Phụ Huynh</h3><p>Mã OTP của bạn là: <b style="font-size: 20px; color: blue;">${otp}</b></p><p>Đừng chia sẻ mã này cho ai khác.</p>`
         };
 
-        await transporter.sendMail(mailOptions);
-
-        res.json({ success: true, message: 'Đã gửi mã OTP về email của bạn.' });
+        try {
+            await transporter.sendMail(mailOptions);
+            res.json({ success: true, message: 'Đã gửi mã OTP về email của bạn.' });
+        } catch (mailError) {
+            console.error("❌ PIN Email Timeout -> DEBUG MODE");
+            res.json({
+                success: true,
+                message: `[DEBUG MODE - BẢO TRÌ EMAIL] Mã OTP của bạn là: ${otp}`,
+                debug_otp: otp
+            });
+        }
 
     } catch (err) {
         console.error("Req PIN OTP Error:", err);

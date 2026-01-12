@@ -224,11 +224,105 @@ export function mount(container) {
       el.dataset.number = number;
       el.dataset.id = `xep-drag-${index}`;
       el.draggable = true;
+      // Mouse events
       el.addEventListener('dragstart', handleDragStart);
       el.addEventListener('dragend', handleDragEnd);
+      // Touch events
+      el.addEventListener('touchstart', handleTouchStart, { passive: false });
+      el.addEventListener('touchmove', handleTouchMove, { passive: false });
+      el.addEventListener('touchend', handleTouchEnd);
       draggableNumbersContainer.appendChild(el);
     });
   }
+
+  // --- TOUCH HANDLERS (for iPad/Mobile) ---
+  let touchDragItem = null; // The original element being touched
+  let touchClone = null;   // The visual clone moving with finger
+  let touchOffsetX = 0;
+  let touchOffsetY = 0;
+
+  function handleTouchStart(e) {
+    if (e.target.classList.contains('used')) return;
+    const touch = e.touches[0];
+    const target = e.target;
+
+    // Prevent default to stop scrolling/zooming while dragging
+    e.preventDefault();
+
+    touchDragItem = target;
+    draggedNumber = {
+      element: target,
+      number: parseInt(target.dataset.number),
+      id: target.dataset.id
+    };
+
+    // Create a clone for visual feedback
+    const rect = target.getBoundingClientRect();
+    touchOffsetX = touch.clientX - rect.left;
+    touchOffsetY = touch.clientY - rect.top;
+
+    touchClone = target.cloneNode(true);
+    touchClone.classList.add('dragging-clone');
+    touchClone.style.position = 'fixed'; // Use fixed to be relative to viewport
+    touchClone.style.left = `${rect.left}px`;
+    touchClone.style.top = `${rect.top}px`;
+    touchClone.style.width = `${rect.width}px`;
+    touchClone.style.height = `${rect.height}px`;
+    touchClone.style.zIndex = '9999';
+    touchClone.style.pointerEvents = 'none'; // Critical: allow touch to pass through to elements below
+    touchClone.style.opacity = '0.9';
+
+    document.body.appendChild(touchClone);
+    target.classList.add('dragging');
+  }
+
+  function handleTouchMove(e) {
+    if (!touchDragItem || !touchClone) return;
+    e.preventDefault(); // critical for ios
+
+    const touch = e.touches[0];
+    const x = touch.clientX - touchOffsetX;
+    const y = touch.clientY - touchOffsetY;
+
+    touchClone.style.left = `${x}px`;
+    touchClone.style.top = `${y}px`;
+
+    // Highlight drop zones
+    // Not strictly necessary but nice to have. 
+    // Since we used pointer-events: none on clone, elementFromPoint works.
+  }
+
+  function handleTouchEnd(e) {
+    if (!touchDragItem) return;
+    e.preventDefault();
+
+    const touch = e.changedTouches[0];
+    // Hide clone temporarily to find what's underneath
+    if (touchClone) {
+      touchClone.style.display = 'none';
+      // Check element below
+      const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      touchClone.style.display = 'block'; // Restore if needed, though we remove it immediately
+
+      if (elemBelow) {
+        const slot = elemBelow.closest('.number-slot.empty');
+        if (slot) {
+          checkAnswer(slot, draggedNumber);
+        }
+      }
+
+      // Cleanup clone
+      document.body.removeChild(touchClone);
+      touchClone = null;
+    }
+
+    if (touchDragItem) {
+      touchDragItem.classList.remove('dragging');
+      touchDragItem = null;
+    }
+    draggedNumber = null;
+  }
+
 
   // drag handlers (scoped)
   function handleDragStart(e) {
@@ -245,23 +339,30 @@ export function mount(container) {
     e.preventDefault();
     if (!draggedNumber) return;
     const slot = e.target.closest('.number-slot.empty'); if (!slot) return;
+    checkAnswer(slot, draggedNumber);
+  }
+
+  // Common logic for both Drag/Drop and Touch
+  function checkAnswer(slot, currentDraggedItem) {
+    if (!slot || !currentDraggedItem) return;
+
     slot.classList.remove('drag-over');
     const correctValue = parseInt(slot.dataset.correctValue);
-    const isCorrect = draggedNumber.number === correctValue;
+    const isCorrect = currentDraggedItem.number === correctValue;
 
     if (isCorrect) {
-      slot.textContent = draggedNumber.number;
-      slot.classList.remove('empty'); slot.classList.add('correct'); slot.dataset.filled = 'true'; slot.dataset.currentValue = draggedNumber.number;
-      draggedNumber.element.classList.add('used'); draggedNumber.element.draggable = false;
-      const numberIndex = draggableNumbers.indexOf(draggedNumber.number);
+      slot.textContent = currentDraggedItem.number;
+      slot.classList.remove('empty'); slot.classList.add('correct'); slot.dataset.filled = 'true'; slot.dataset.currentValue = currentDraggedItem.number;
+
+      currentDraggedItem.element.classList.add('used');
+      currentDraggedItem.element.draggable = false;
+
+      // Remove from available list logic
+      const numberIndex = draggableNumbers.indexOf(currentDraggedItem.number);
       if (numberIndex > -1) draggableNumbers.splice(numberIndex, 1);
 
-      // Check completion relative to Total Slots (6)
-      const totalSlots = 6;
-      // We need to count how many slots are filled/correct. 
-      // The slot.classList.remove('empty') makes it filled.
-      // Let's count filled slots:
       const filledCount = container.querySelectorAll('.number-slot[data-filled="true"]').length;
+      const totalSlots = 6;
 
       playSoundFile('sound_correct_answer_bit.mp3').then(() => {
         if (filledCount === totalSlots) checkIfCompleted();
@@ -269,12 +370,19 @@ export function mount(container) {
 
     } else {
       slot.classList.add('incorrect-drop');
-      setTimeout(() => { slot.classList.remove('incorrect-drop'); draggedNumber.element.classList.remove('dragging'); draggedNumber.element.style.transform = ''; }, 500);
+      setTimeout(() => {
+        slot.classList.remove('incorrect-drop');
+        if (currentDraggedItem.element) {
+          currentDraggedItem.element.classList.remove('dragging');
+          currentDraggedItem.element.style.transform = '';
+        }
+      }, 500);
       wrongCount++; updateStats();
       playSoundFile('sound_wrong_answer_bit.mp3');
     }
     draggedNumber = null;
   }
+
 
   function handleDragEnd() { if (draggedNumber && draggedNumber.element) draggedNumber.element.classList.remove('dragging'); document.querySelectorAll('.number-slot.drag-over').forEach(s => s.classList.remove('drag-over')); draggedNumber = null; }
 

@@ -382,7 +382,168 @@ export function mount(container) {
   }
 
 
-  function handleTouchStart(e) { if (!isGameActive) { e.preventDefault(); return; } const touch = e.touches[0]; draggedNumber = { element: e.target, number: parseInt(e.target.dataset.number), id: e.target.dataset.id }; draggedNumber.element.classList.add('dragging'); const touchMove = (moveEvent) => { if (!draggedNumber) return; const t = moveEvent.touches[0]; const icons = container.querySelectorAll('.icon-item:not(.completed)'); let closest = null; let minD = Infinity; icons.forEach(icon => { const r = icon.getBoundingClientRect(); const cx = r.left + r.width / 2; const cy = r.top + r.height / 2; const d = Math.hypot(t.clientX - cx, t.clientY - cy); if (d < 120 && d < minD) { minD = d; closest = icon; } }); if (currentIconHighlighted && currentIconHighlighted !== closest) currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect'); if (closest) { currentIconHighlighted = closest; const answer = parseInt(closest.dataset.answer); if (draggedNumber.number === answer) { closest.classList.remove('highlight-incorrect'); closest.classList.add('highlight-correct'); } else { closest.classList.remove('highlight-correct'); closest.classList.add('highlight-incorrect'); } } else if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect'); currentIconHighlighted = null; } }; const touchEnd = (endEvent) => { if (!draggedNumber) return; const t = endEvent.changedTouches[0]; const icons = container.querySelectorAll('.icon-item:not(.completed)'); let closest = null; let minD = Infinity; icons.forEach(icon => { const r = icon.getBoundingClientRect(); const cx = r.left + r.width / 2; const cy = r.top + r.height / 2; const d = Math.hypot(t.clientX - cx, t.clientY - cy); if (d < 120 && d < minD) { minD = d; closest = icon; } }); if (closest) { const idx = parseInt(closest.dataset.id.split('-')[2]); const answer = parseInt(closest.dataset.answer); if (draggedNumber.number === answer) { const pts = 10 * (levelConfig[level] ? levelConfig[level].scoreMultiplier : 1); score += pts; scoreEl.textContent = score; closest.classList.add('completed'); currentGameData[idx].placedNumber = draggedNumber.number; container.querySelector(`#g-answer-${idx}`).textContent = draggedNumber.number; draggedNumber.element.classList.add('used'); draggedNumber.element.draggable = false; resetTimer(); checkLevelCompletion(); } else { closest.classList.add('highlight-incorrect'); timeLeft -= (levelConfig[level] ? levelConfig[level].timeDecrement : 0); if (timeLeft < 0) timeLeft = 0; timerEl.textContent = timeLeft; if (timeLeft <= 0) endLevel(false); setTimeout(() => closest.classList.remove('highlight-incorrect'), 500); } } if (currentIconHighlighted) { currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect'); currentIconHighlighted = null; } draggedNumber.element.classList.remove('dragging'); draggedNumber = null; document.removeEventListener('touchmove', touchMove); document.removeEventListener('touchend', touchEnd); }; document.addEventListener('touchmove', touchMove, { passive: false }); document.addEventListener('touchend', touchEnd); e.preventDefault(); }
+  // --- TOUCH HANDLERS (Improved with Visual Clone) ---
+  let touchDragItem = null;
+  let touchClone = null;
+  let touchOffsetX = 0;
+  let touchOffsetY = 0;
+
+  function handleTouchStart(e) {
+    if (!isGameActive) return;
+    const target = e.target;
+    // Ensure we are touching a draggable number
+    if (!target.classList.contains('number-item') || target.classList.contains('used')) return;
+
+    e.preventDefault();
+    const touch = e.touches[0];
+
+    // Setup Game State
+    draggedNumber = {
+      element: target,
+      number: parseInt(target.dataset.number),
+      id: target.dataset.id
+    };
+    touchDragItem = target;
+    target.classList.add('dragging');
+
+    // Create Visual Clone
+    const rect = target.getBoundingClientRect();
+    touchOffsetX = touch.clientX - rect.left;
+    touchOffsetY = touch.clientY - rect.top;
+
+    touchClone = target.cloneNode(true);
+    touchClone.classList.add('dragging-clone'); // Ensure css styling if needed, or inline below
+    touchClone.style.position = 'fixed';
+    touchClone.style.left = `${rect.left}px`;
+    touchClone.style.top = `${rect.top}px`;
+    touchClone.style.width = `${rect.width}px`;
+    touchClone.style.height = `${rect.height}px`;
+    touchClone.style.zIndex = '9999';
+    touchClone.style.pointerEvents = 'none'; // Critical
+    touchClone.style.opacity = '0.9';
+    touchClone.style.transform = 'scale(1.1)'; // Slight pop
+
+    document.body.appendChild(touchClone);
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+  }
+
+  function handleTouchMove(e) {
+    if (!touchDragItem || !touchClone) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+
+    // Move Clone
+    const x = touch.clientX - touchOffsetX;
+    const y = touch.clientY - touchOffsetY;
+    touchClone.style.left = `${x}px`;
+    touchClone.style.top = `${y}px`;
+
+    // Hint Logic (Highlighting)
+    touchClone.style.display = 'none'; // Hide to check below
+    const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+    touchClone.style.display = 'block';
+
+    const icon = elemBelow ? elemBelow.closest('.icon-item') : null;
+
+    // Reset previous highlight if moved away
+    if (currentIconHighlighted && currentIconHighlighted !== icon) {
+      currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect');
+      currentIconHighlighted = null;
+    }
+
+    if (icon && !icon.classList.contains('completed')) {
+      currentIconHighlighted = icon;
+      const answer = parseInt(icon.dataset.answer);
+      if (draggedNumber.number === answer) {
+        icon.classList.remove('highlight-incorrect');
+        icon.classList.add('highlight-correct');
+      } else {
+        icon.classList.remove('highlight-correct');
+        icon.classList.add('highlight-incorrect');
+      }
+    }
+  }
+
+  function handleTouchEnd(e) {
+    e.preventDefault();
+
+    // Check Drop
+    let droppedIcon = null;
+    if (touchClone) {
+      touchClone.style.display = 'none';
+      const touch = e.changedTouches[0];
+      const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      touchClone.style.display = 'block';
+      if (elemBelow) droppedIcon = elemBelow.closest('.icon-item');
+    }
+
+    // Cleanup Clone
+    if (touchClone) {
+      document.body.removeChild(touchClone);
+      touchClone = null;
+    }
+
+    // Cleanup Listeners
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+
+    // Process Drop Logic
+    if (droppedIcon && !droppedIcon.classList.contains('completed')) {
+      const idx = parseInt(droppedIcon.dataset.id.split('-')[2]);
+      const answer = parseInt(droppedIcon.dataset.answer);
+
+      if (draggedNumber.number === answer) {
+        // Correct
+        const pts = 10 * (levelConfig[level] ? levelConfig[level].scoreMultiplier : 1);
+        score += pts;
+        scoreEl.textContent = score;
+
+        droppedIcon.classList.add('completed');
+        droppedIcon.classList.remove('highlight-correct', 'highlight-incorrect'); // Clear hints
+
+        currentGameData[idx].placedNumber = draggedNumber.number;
+        container.querySelector(`#g-answer-${idx}`).textContent = draggedNumber.number;
+
+        draggedNumber.element.classList.add('used');
+        draggedNumber.element.draggable = false;
+
+        resetTimer();
+
+        // Stats
+        try { if (window.HiMathStats) window.HiMathStats.recordAttempt('digits-ghep-so', { level, chosen: draggedNumber.number, answer, correct: true }); } catch (e) { }
+
+        playSoundFile('sound_correct_answer_bit.mp3').then(() => checkLevelCompletion());
+
+      } else {
+        // Incorrect
+        droppedIcon.classList.add('highlight-incorrect');
+        timeLeft -= (levelConfig[level] ? levelConfig[level].timeDecrement : 0);
+        if (timeLeft < 0) timeLeft = 0;
+        timerEl.textContent = timeLeft;
+        if (timeLeft <= 0) endLevel(false);
+
+        // Stats
+        try { if (window.HiMathStats) window.HiMathStats.recordAttempt('digits-ghep-so', { level, chosen: draggedNumber.number, answer, correct: false }); } catch (e) { }
+
+        playSoundFile('sound_wrong_answer_bit.mp3');
+        setTimeout(() => droppedIcon.classList.remove('highlight-incorrect'), 500);
+      }
+    }
+
+    // Reset State
+    if (currentIconHighlighted) {
+      currentIconHighlighted.classList.remove('highlight-correct', 'highlight-incorrect');
+      currentIconHighlighted = null;
+    }
+    if (touchDragItem) {
+      touchDragItem.classList.remove('dragging');
+      touchDragItem = null;
+    }
+    draggedNumber = null;
+  }
+
 
   function startTimer() { clearInterval(timerInterval); timerInterval = setInterval(() => { if (!isGameActive) { clearInterval(timerInterval); return; } timeLeft--; timerEl.textContent = timeLeft; if (timeLeft <= 10) timerEl.classList.add('timer-warning'); if (timeLeft <= 0) endLevel(false); }, 1000); }
   function resetTimer() { timeLeft = levelConfig[level] ? levelConfig[level].timePerMove : 60; timerEl.textContent = timeLeft; timerEl.classList.remove('timer-warning'); }
@@ -500,6 +661,12 @@ export function mount(container) {
     container.removeEventListener('dragover', dragMoveHandler);
     container.removeEventListener('drop', handleDrop);
     container.removeEventListener('click', handleRootClick);
+
+    // Explicitly remove global touch listeners if they were somehow left over 
+    // (though handleTouchEnd removes them, checking here is safe)
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+
     restartBtn.removeEventListener('click', initGame);
     retryLevelBtn?.removeEventListener('click', handleRetry);
     nextLevelBtn?.removeEventListener('click', handleNextLevel);

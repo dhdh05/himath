@@ -374,43 +374,114 @@ export function mount(container) {
   }
 
   // --- TOUCH EVENTS (Mobile) ---
-  function initTouchEvents() {
-    let touchStartX = 0; let touchStartY = 0;
+  // --- TOUCH EVENTS (Mobile) - Visual Clone Implementation ---
+  let touchDragItem = null;
+  let touchClone = null;
+  let touchOffsetX = 0;
+  let touchOffsetY = 0;
 
-    function touchStartHandler(e) {
-      if (!isGameActive || isAnswered) return;
-      const touch = e.touches[0]; touchStartX = touch.clientX; touchStartY = touch.clientY;
-      currentNumberElement.classList.add('dragging'); e.preventDefault();
-    }
+  function handleTouchStart(e) {
+    if (!isGameActive || isAnswered) return;
+    const target = e.target;
+    if (!target.classList.contains('current-number')) return;
 
-    function touchEndHandler(e) {
-      if (!isGameActive || isAnswered || !currentNumberElement.classList.contains('dragging')) return;
-      const touch = e.changedTouches[0];
-      const deltaX = touch.clientX - touchStartX;
+    e.preventDefault();
+    const touch = e.touches[0];
 
-      if (Math.abs(deltaX) > 50) {
-        let userAnswer = ''; let targetBox = null;
-        // Keo sang trai (< -50) la Chan (Even Box o ben trai trong CSS layout thuong thay, hoa check HTML structure)
-        // Trong HTML: evenBox (trai), oddBox (phai)
-        if (deltaX < -50) { userAnswer = 'even'; targetBox = evenBox; }
-        else if (deltaX > 50) { userAnswer = 'odd'; targetBox = oddBox; }
+    touchDragItem = target;
+    target.classList.add('dragging');
 
-        if (targetBox) {
-          const isCorrect = userAnswer === currentAnswer;
-          processResult(isCorrect, targetBox);
-        }
-      }
-      currentNumberElement.classList.remove('dragging');
-      evenBox.classList.remove('drag-over');
-      oddBox.classList.remove('drag-over');
-      e.preventDefault();
-    }
+    // Create Visual Clone
+    const rect = target.getBoundingClientRect();
+    touchOffsetX = touch.clientX - rect.left;
+    touchOffsetY = touch.clientY - rect.top;
 
-    currentNumberElement.addEventListener('touchstart', touchStartHandler, { passive: false });
-    currentNumberElement.addEventListener('touchend', touchEndHandler, { passive: false });
+    touchClone = target.cloneNode(true);
+    touchClone.classList.add('dragging-clone');
+    touchClone.style.position = 'fixed';
+    touchClone.style.left = `${rect.left}px`;
+    touchClone.style.top = `${rect.top}px`;
+    touchClone.style.width = `${rect.width}px`;
+    touchClone.style.height = `${rect.height}px`;
+    touchClone.style.zIndex = '9999';
+    touchClone.style.pointerEvents = 'none'; // Critical
+    touchClone.style.opacity = '0.9';
 
-    container._clTouch = { touchStartHandler, touchEndHandler };
+    document.body.appendChild(touchClone);
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
   }
+
+  function handleTouchMove(e) {
+    if (!touchDragItem || !touchClone) return;
+    e.preventDefault(); // prevent scroll
+    const touch = e.touches[0];
+
+    touchClone.style.left = `${touch.clientX - touchOffsetX}px`;
+    touchClone.style.top = `${touch.clientY - touchOffsetY}px`;
+
+    // Highlight Box Logic
+    touchClone.style.display = 'none';
+    const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+    touchClone.style.display = 'block';
+
+    if (elemBelow) {
+      if (elemBelow.closest('.even-box')) {
+        evenBox.classList.add('drag-over');
+        oddBox.classList.remove('drag-over');
+      } else if (elemBelow.closest('.odd-box')) {
+        oddBox.classList.add('drag-over');
+        evenBox.classList.remove('drag-over');
+      } else {
+        evenBox.classList.remove('drag-over');
+        oddBox.classList.remove('drag-over');
+      }
+    }
+  }
+
+  function handleTouchEnd(e) {
+    if (!touchDragItem) return;
+    e.preventDefault();
+
+    let droppedBox = null;
+    let userAnswer = '';
+
+    if (touchClone) {
+      touchClone.style.display = 'none';
+      const touch = e.changedTouches[0];
+      const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      touchClone.style.display = 'block';
+
+      if (elemBelow) {
+        if (elemBelow.closest('.even-box')) { droppedBox = evenBox; userAnswer = 'even'; }
+        else if (elemBelow.closest('.odd-box')) { droppedBox = oddBox; userAnswer = 'odd'; }
+      }
+
+      document.body.removeChild(touchClone);
+      touchClone = null;
+    }
+
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+
+    touchDragItem.classList.remove('dragging');
+    evenBox.classList.remove('drag-over');
+    oddBox.classList.remove('drag-over');
+    touchDragItem = null;
+
+    if (droppedBox) {
+      const isCorrect = userAnswer === currentAnswer;
+      processResult(isCorrect, droppedBox);
+    }
+  }
+
+  function initTouchEvents() {
+    if (currentNumberElement) {
+      currentNumberElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+    }
+  }
+
 
   // Events Wiring
   currentNumberElement.addEventListener('dragstart', handleDragStart);
@@ -438,10 +509,13 @@ export function mount(container) {
     oddBox.removeEventListener('drop', handleDrop);
     restartBtn.removeEventListener('click', initGame);
 
-    if (container._clTouch) {
-      currentNumberElement.removeEventListener('touchstart', container._clTouch.touchStartHandler);
-      currentNumberElement.removeEventListener('touchend', container._clTouch.touchEndHandler);
+    if (currentNumberElement) {
+      currentNumberElement.removeEventListener('touchstart', handleTouchStart);
     }
+    // Remove global listeners to be safe
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+
 
     try { if (currentAudio) { currentAudio.pause(); currentAudio = null; } } catch (e) { }
     try { if (window.HiMathStats) window.HiMathStats.endPage('digits-chan-le'); } catch (e) { }
