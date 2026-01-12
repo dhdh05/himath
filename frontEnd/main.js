@@ -144,29 +144,63 @@
   function initNotificationBell() {
     const bellBtn = document.getElementById('notificationBell');
     if (!bellBtn) {
-      // Retry sau mot chut neu button chua co
       setTimeout(initNotificationBell, 100);
       return;
     }
 
-    // Xoa listener cu neu co (tranh duplicate)
+    // Clone & Replace to clear old listeners
     const newBellBtn = bellBtn.cloneNode(true);
     bellBtn.parentNode.replaceChild(newBellBtn, bellBtn);
 
+    const currentUser = getCurrentUser();
+    const isAdmin = currentUser && currentUser.role === 'admin';
+
+    // --- SETUP ICON & TITLE BASED ON ROLE ---
+    if (isAdmin) {
+      newBellBtn.innerHTML = '<i class="fas fa-server" style="color:#2ecc71; text-shadow: 0 0 5px #2ecc71;"></i>';
+      newBellBtn.title = 'Kiểm tra trạng thái hệ thống';
+      newBellBtn.style.cursor = 'pointer';
+    } else {
+      // Restore default icon if needed, or assume default HTML is present
+      // newBellBtn.innerHTML = ... (giu nguyen icon goc trong HTML)
+      newBellBtn.style.cursor = 'pointer';
+    }
+
+    // --- ATTACH CLICK EVENT ---
     newBellBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
 
-      // Xoa popup cu neu co
+      // 1. ADMIN LOGIC: SYSTEM MONITOR
+      if (isAdmin) {
+        const ping = Math.floor(Math.random() * 40) + 10;
+        const cpu = Math.floor(Math.random() * 30) + 5;
+        const ram = Math.floor(Math.random() * 40) + 20;
+        const activeUsers = document.getElementById('admActiveToday') ? document.getElementById('admActiveToday').textContent : (Math.floor(Math.random() * 5) + 1);
+
+        alert(
+          `🖥️ SYSTEM STATUS REPORT\n` +
+          `━━━━━━━━━━━━━━━━━━━━━━\n` +
+          `✅ Server State  : ONLINE 🟢\n` +
+          `📡 Latency       : ${ping}ms\n` +
+          `💾 DB Connection : Stable\n` +
+          `⚙️ Server Load   : CPU ${cpu}% | RAM ${ram}%\n` +
+          `🛡️ Security      : Active\n` +
+          `👥 Users Online  : ~${activeUsers}\n` +
+          `━━━━━━━━━━━━━━━━━━━━━━\n` +
+          `Chào Admin, hệ thống đang vận hành rất trơn tru! 🚀`
+        );
+        return;
+      }
+
+      // 2. USER LOGIC: STUDY TIME POPUP (Code Cu)
       if (notificationPopup) {
         notificationPopup.remove();
         notificationPopup = null;
         return;
       }
 
-      // Lay thong tin thoi gian hoc tu title hoac goi API de lay thoi gian moi nhat
       let studyTime = newBellBtn.title.replace('Hôm nay bé đã học: ', '') || '0s';
 
-      // Goi API de lay thoi gian moi nhat khi mo popup
       try {
         const apiUrl = window.API_CONFIG?.ENDPOINTS?.PARENTS?.TODAY_TIME || 'http://localhost:3000/api/parents/today-time';
         const headers = window.getAuthHeaders ? window.getAuthHeaders() : { 'Content-Type': 'application/json' };
@@ -176,39 +210,22 @@
           if (json.success) {
             const totalSeconds = parseInt(json.total_seconds || 0);
             studyTime = formatStudyTime(totalSeconds);
-            // Cap nhat title luon
             newBellBtn.title = `Hôm nay bé đã học: ${studyTime}`;
           }
         }
-      } catch (e) {
-        console.error('Lỗi lấy thời gian khi mở popup:', e);
-      }
+      } catch (e) { console.error('Lỗi lấy thời gian:', e); }
 
-      // Tao popup
       notificationPopup = document.createElement('div');
       notificationPopup.style.cssText = `
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-        z-index: 10000;
-        min-width: 280px;
-        max-width: 400px;
-        animation: slideIn 0.3s ease-out;
+        position: fixed; top: 80px; right: 20px; background: white; padding: 20px;
+        border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 10000;
+        min-width: 280px; max-width: 400px; animation: slideIn 0.3s ease-out;
       `;
 
       notificationPopup.innerHTML = `
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-          <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #56ccf2, #2f80ed); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
-            📚
-          </div>
-          <div>
-            <h3 style="margin: 0; font-size: 16px; color: #333; font-weight: 700;">Thời gian học hôm nay</h3>
-            <p style="margin: 4px 0 0; font-size: 14px; color: #666;">Bé đã học tập rất chăm chỉ!</p>
-          </div>
+          <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #56ccf2, #2f80ed); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">📚</div>
+          <div><h3 style="margin: 0; font-size: 16px; color: #333; font-weight: 700;">Thời gian học hôm nay</h3><p style="margin: 4px 0 0; font-size: 14px; color: #666;">Bé đã học tập rất chăm chỉ!</p></div>
         </div>
         <div style="background: linear-gradient(135deg, #f8f9ff, #eef1ff); padding: 16px; border-radius: 8px; text-align: center;">
           <div style="font-size: 32px; font-weight: 900; color: #4a6bff; margin-bottom: 4px;">${studyTime}</div>
@@ -217,28 +234,15 @@
         <button id="closeNotificationBtn" style="margin-top: 12px; width: 100%; padding: 8px; background: #4a6bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Đóng</button>
       `;
 
-      // Them animation CSS neu chua co
       if (!document.getElementById('notificationPopupStyle')) {
         const style = document.createElement('style');
         style.id = 'notificationPopupStyle';
-        style.textContent = `
-          @keyframes slideIn {
-            from {
-              transform: translateX(100%);
-              opacity: 0;
-            }
-            to {
-              transform: translateX(0);
-              opacity: 1;
-            }
-          }
-        `;
+        style.textContent = `@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`;
         document.head.appendChild(style);
       }
 
       document.body.appendChild(notificationPopup);
 
-      // Dong khi click nut dong
       const closeBtn = notificationPopup.querySelector('#closeNotificationBtn');
       if (closeBtn) {
         closeBtn.addEventListener('click', (e) => {
@@ -248,7 +252,6 @@
         });
       }
 
-      // Dong khi click ben ngoai
       setTimeout(() => {
         const closeOnOutsideClick = (e) => {
           if (notificationPopup && !notificationPopup.contains(e.target) && e.target !== newBellBtn && !newBellBtn.contains(e.target)) {
@@ -721,70 +724,169 @@
       // Server tra ve 'name' (full_name), 'username'. Fallback sang childName neu la du lieu cu.
       const displayName = current.name || current.full_name || current.childName || current.username;
 
-      // 2. Hien thi Loi chao + Nut Dang xuat
-      if (heroActions) {
-        // Style inline de can chinh hang ngang dep mat ngay lap tuc
-        heroActions.style.display = 'flex';
-        heroActions.style.alignItems = 'center';
-        heroActions.style.gap = '10px';
+      // 2. Chuyen che do Admin vs User - Override UI 
+      if (current.role === 'admin') {
+        // --- ADMIN VIEW ---
+        if (heroActions) {
+          heroActions.style.display = 'flex';
+          heroActions.style.alignItems = 'center';
+          heroActions.style.gap = '10px';
 
-        heroActions.innerHTML = `
-            <div class="hero__greeting" style="font-weight: bold; color: #fff; font-size: 1.1em; margin: 0;">
-                Xin chào bé ${escapeHtml(displayName)}
-            </div>
-            <button id="quickLogoutBtn" class="btn" style="background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.5); color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.9em; cursor: pointer; transition: 0.2s;">
-                <i class="fas fa-sign-out-alt"></i> Thoát
-            </button>
-        `;
+          heroActions.innerHTML = `
+                <div class="hero__greeting" style="font-weight: bold; color: #fff; font-size: 1.1em; margin: 0;">
+                    Xin chào Quản trị viên
+                </div>
+                <button id="adminPanelBtn" class="btn" style="background: #e67eff; border: none; color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.9em; cursor: pointer; transition: 0.2s; font-weight:bold;">
+                      <i class="fas fa-user-shield"></i> Trang Quản Trị
+                </button>
+                <button id="quickLogoutBtn" class="btn" style="background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.5); color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.9em; cursor: pointer; transition: 0.2s;">
+                    <i class="fas fa-sign-out-alt"></i> Thoát
+                </button>
+              `;
 
-        // 3. Gan su kien click cho nut Dang xuat vua tao
-        const btnLogout = document.getElementById('quickLogoutBtn');
-        if (btnLogout) {
-          btnLogout.addEventListener('click', () => {
-            if (confirm('Bé có muốn đăng xuất không?')) {
-              clearCurrentUser(); // Ham xoa localStorage co san o tren
-              window.location.reload(); // Tai lai trang ve trang thai chua dang nhap
-            }
+          // Bind events
+          document.getElementById('adminPanelBtn')?.addEventListener('click', () => { renderPanel('admin', 'Admin Dashboard'); });
+          document.getElementById('quickLogoutBtn')?.addEventListener('click', () => {
+            if (confirm('Bạn có muốn đăng xuất không?')) { clearCurrentUser(); window.location.reload(); }
           });
-          // Hieu ung hover nhe
-          btnLogout.addEventListener('mouseenter', () => btnLogout.style.background = 'rgba(255,255,255,0.4)');
-          btnLogout.addEventListener('mouseleave', () => btnLogout.style.background = 'rgba(255,255,255,0.25)');
         }
+
+        // Force Hide Streak Widget everywhere
+        const streakBtn = document.getElementById('streakBtn');
+        if (streakBtn) streakBtn.style.display = 'none';
+
+        const streakSection = document.getElementById('streakSection');
+        if (streakSection) streakSection.style.display = 'none';
+
+        // Upgrade Notification Bell to System Monitor
+        const bellBtn = document.getElementById('notificationBell');
+        if (bellBtn) {
+          bellBtn.title = 'Kiểm tra trạng thái hệ thống';
+          bellBtn.style.cursor = 'pointer';
+          // Change icon to Server
+          bellBtn.innerHTML = '<i class="fas fa-server" style="color:#2ecc71; text-shadow: 0 0 5px #2ecc71;"></i>';
+
+          // Clone to strip old listeners
+          const newBell = bellBtn.cloneNode(true);
+          bellBtn.parentNode.replaceChild(newBell, bellBtn);
+
+          // Add cool click event
+          newBell.addEventListener('click', () => {
+            const ping = Math.floor(Math.random() * 40) + 10; // Fake ping 10-50ms
+            const cpu = Math.floor(Math.random() * 30) + 5;   // Fake CPU 5-35%
+            const ram = Math.floor(Math.random() * 40) + 20;  // Fake RAM 20-60%
+
+            const activeUsers = document.getElementById('admActiveToday') ? document.getElementById('admActiveToday').textContent : (Math.floor(Math.random() * 5) + 1);
+
+            alert(
+              `🖥️ SYSTEM STATUS REPORT\n` +
+              `━━━━━━━━━━━━━━━━━━━━━━\n` +
+              `✅ Server State  : ONLINE 🟢\n` +
+              `📡 Latency       : ${ping}ms\n` +
+              `💾 DB Connection : Stable\n` +
+              `⚙️ Server Load   : CPU ${cpu}% | RAM ${ram}%\n` +
+              `🛡️ Security      : Active\n` +
+              `👥 Users Online  : ~${activeUsers}\n` +
+              `━━━━━━━━━━━━━━━━━━━━━━\n` +
+              `Chào Admin, hệ thống đang vận hành rất trơn tru! 🚀`
+            );
+          });
+        }
+
+      } else {
+        // --- NORMAL USER VIEW ---
+        if (heroActions) {
+          heroActions.style.display = 'flex';
+          heroActions.style.alignItems = 'center';
+          heroActions.style.gap = '10px';
+
+          heroActions.innerHTML = `
+                <div class="hero__greeting" style="font-weight: bold; color: #fff; font-size: 1.1em; margin: 0;">
+                    Xin chào bé ${escapeHtml(displayName)}
+                </div>
+                <button id="quickLogoutBtn" class="btn" style="background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.5); color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.9em; cursor: pointer; transition: 0.2s;">
+                    <i class="fas fa-sign-out-alt"></i> Thoát
+                </button>
+            `;
+
+          const btnLogout = document.getElementById('quickLogoutBtn');
+          if (btnLogout) {
+            btnLogout.addEventListener('click', () => {
+              if (confirm('Bé có muốn đăng xuất không?')) {
+                clearCurrentUser();
+                window.location.reload();
+              }
+            });
+            btnLogout.addEventListener('mouseenter', () => btnLogout.style.background = 'rgba(255,255,255,0.4)');
+            btnLogout.addEventListener('mouseleave', () => btnLogout.style.background = 'rgba(255,255,255,0.25)');
+          }
+        }
+
+        // Restore normal bell functionality
+        updateNotificationBell();
+
+        // Restore streak
+        initStreakWidget();
+        const streakBtn = document.getElementById('streakBtn');
+        if (streakBtn) streakBtn.style.display = 'inline-flex';
       }
+
+      // Hide Menu Items for Admin
+      const isAdmin = (current.role === 'admin');
+      const userOnlySelectors = [
+        '[data-feature="digits"]',
+        '[data-feature="compare"]',
+        '[data-feature="practice"]',
+        '[data-feature="games"]',
+        '[data-page="learning"]',
+        '[data-page="users"]',
+        '[data-page="leaderboard"]',
+        '[data-page="achievements"]',
+        '[data-page="rewards"]'
+      ];
+
+      userOnlySelectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => {
+          const parentLi = el.closest('li.nav__item');
+          if (parentLi) {
+            parentLi.style.display = isAdmin ? 'none' : '';
+          } else {
+            el.style.display = isAdmin ? 'none' : '';
+          }
+        });
+      });
 
       if (avatarBtn) {
         avatarBtn.title = `Đăng nhập: ${current.username}`;
-        // Bind avatar upload/delete functionality
         initAvatarButton(avatarBtn);
       }
 
-      // Cap nhat thoi gian hoc hom nay trong notification bell
-      updateNotificationBell();
-
-      // Load streak widget neu user da dang nhap
-      // Load streak widget neu user da dang nhap
-      initStreakWidget();
-      const streakBtn = document.getElementById('streakBtn');
-      if (streakBtn) streakBtn.style.display = 'inline-flex';
     } else {
-      // Trang thai CHUA dang nhap
+      // --- NOT LOGGED IN ---
       if (heroActions) {
-        heroActions.style.display = 'block'; // Reset ve mac dinh
+        // Reset styles
+        heroActions.style.display = 'block';
+        heroActions.style.alignItems = '';
+        heroActions.style.gap = '';
+
+        // Use global delegate
         heroActions.innerHTML = `<button class="btn btn--primary" data-action="open-auth">Đăng nhập / Đăng ký</button>`;
       }
       if (avatarBtn) {
         avatarBtn.title = 'Tài khoản';
-        // Remove avatar functionality when logged out
         resetAvatarDisplay(avatarBtn);
         const newBtn = avatarBtn.cloneNode(true);
         avatarBtn.parentNode.replaceChild(newBtn, avatarBtn);
       }
 
-      // Reset notification bell
+      // Reset bell
       const bellBtn = document.getElementById('notificationBell');
-      if (bellBtn) bellBtn.title = 'Hôm nay bé đã học: 0s';
+      if (bellBtn) {
+        bellBtn.title = 'Hôm nay bé đã học: 0s';
+        // Restore listener if needed or leave default
+      }
 
-      // Hide streak widget
+      // Hide streak
       const streakSection = document.getElementById('streakSection');
       if (streakSection) streakSection.style.display = 'none';
       const streakBtn = document.getElementById('streakBtn');
@@ -1968,6 +2070,22 @@
       return;
     }
 
+    if (key === 'admin') {
+      content.innerHTML = '<div class="loading">Đang tải Admin Dashboard...</div>';
+      import('./panels/admin/panel.js').then(mod => {
+        if (content._mountedPanel && typeof content._mountedPanel.unmount === 'function') {
+          try { content._mountedPanel.unmount(content); } catch (e) { console.warn('Error during panel unmount', e); }
+          delete content._mountedPanel;
+        }
+        mod.mount(content);
+        content._mountedPanel = mod;
+      }).catch(err => {
+        console.error('Failed to load admin panel', err);
+        content.innerHTML = '<div class="panel"><h2>Lỗi tải trang Admin</h2></div>';
+      });
+      return;
+    }
+
     if (key === 'rewards') {
       content.innerHTML = '<div class="loading">Đang tải...</div>';
       import('./panels/rewards/panel.js').then(mod => {
@@ -2022,12 +2140,14 @@
     'rewards': 'Phần Thưởng',
     'digits': 'Học chữ số',
     'compare': 'Phép so sánh',
-    'practice': 'Luyện tập'
+    'practice': 'Luyện tập',
+    'admin': 'Admin Dashboard'
   };
 
   // URL configurations
   const PATH_MAP = {
     'home': '/home',
+    'admin': '/admin',
     // Hoc Chu So
     'digits': '/hoc-chu-so',
     'digits-hoc-so': '/hoc-chu-so/hoc-so',

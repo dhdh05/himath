@@ -67,6 +67,8 @@ app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/goals', require('./routes/goalRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 app.use('/api/lessons', require('./routes/lessonRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes')); // NEW: Admin API
+
 
 // --- SERVE FRONTEND (SPA Support) ---
 // Serve static files from frontEnd directory

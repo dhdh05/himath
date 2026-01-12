@@ -58,43 +58,47 @@ export function mount(container) {
         </div>
       </div>
 
-      <div id="changePinModal" class="modal-backdrop" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
-        <div class="modal" role="dialog" style="max-width: 400px; width: 90%; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
-             <div class="modal--container__button">
-                <button class="modal__close" id="closeChangePinModal"><i class="fas fa-times"></i></button>
-             </div>
-             <div class="modal__header">
+      <div id="changePinModal" class="modal-backdrop" style="display:none;">
+        <div class="modal-pretty" role="dialog">
+             <!-- Decorative Butterfly -->
+             <div class="butterfly-deco butterfly-bottom">🦋</div>
+
+             <button class="modal__close-btn" id="closeChangeChangePinModal">
+                <i class="fas fa-times"></i>
+             </button>
+             
+             <div class="modal-header">
                 <h3>Đổi Mã PIN</h3>
-                <p style="font-size: 13px; color: #666;">Nhập mã PIN hiện tại và OTP để thiết lập PIN mới.</p>
+                <p>Nhập mã PIN hiện tại và OTP để thiết lập PIN mới.</p>
              </div>
              
              <!-- FORM -->
-             <div class="form-group" style="padding: 5px 0;">
-                <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:2px;">PIN Cũ</label>
-                <input type="password" id="cp_oldPin" class="pin-input" maxlength="4" placeholder="****" style="width:100%; height:36px; font-size:18px;" />
+             <div class="form-group" style="position:relative;">
+                <label>PIN Cũ</label>
+                <input type="password" id="cp_oldPin" class="pretty-input" maxlength="4" placeholder="• • • •" />
              </div>
 
-             <div class="form-group" style="padding: 5px 0;">
-                <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:2px;">PIN Mới</label>
-                <input type="password" id="cp_newPin" class="pin-input" maxlength="4" placeholder="****" style="width:100%; height:36px; font-size:18px;" />
+             <div class="form-group" style="margin-top:15px;">
+                <label>PIN Mới</label>
+                <input type="password" id="cp_newPin" class="pretty-input" maxlength="4" placeholder="• • • •" />
              </div>
 
-             <div class="form-group" style="padding: 5px 0;">
-                <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:2px;">Xác nhận PIN Mới</label>
-                <input type="password" id="cp_confirmPin" class="pin-input" maxlength="4" placeholder="****" style="width:100%; height:36px; font-size:18px;" />
+             <div class="form-group" style="margin-top:15px;">
+                <label>Xác nhận PIN Mới</label>
+                <input type="password" id="cp_confirmPin" class="pretty-input" maxlength="4" placeholder="• • • •" />
              </div>
 
-             <div class="form-group" style="padding: 5px 0; border-top: 1px dashed #eee; margin-top: 5px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="font-weight:bold; font-size:13px;">Mã OTP (Email)</label>
-                    <button id="cp_sendOtpBtn" class="small-btn" style="background:#007bff; color:white; padding: 2px 8px; font-size: 12px;">Gửi mã</button>
+             <div class="form-group" style="margin-top:20px; padding-top:15px; border-top: 1px dashed #eee;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <label style="margin:0;">Mã OTP (Email)</label>
+                    <button id="cp_sendOtpBtn" class="btn-small-pretty">Lấy mã OTP</button>
                 </div>
-                <input type="text" id="cp_otp" class="pin-input" placeholder="Nhập 6 số OTP" style="width:100%; height:36px; font-size:18px; margin-top:5px;" />
+                <input type="text" id="cp_otp" class="pretty-input" placeholder="Nhập 6 số OTP" style="letter-spacing: 2px; text-align:center; font-weight:bold;" />
              </div>
 
-             <div id="cp_msg" style="font-size:13px; margin-bottom:10px; min-height:18px;"></div>
+             <div id="cp_msg" style="font-size:13px; margin: 15px 0; min-height:18px; text-align:center; font-weight:600;"></div>
 
-             <button id="cp_submitBtn" class="btn btn--primary" style="width:100%;">Lưu Thay Đổi</button>
+             <button id="cp_submitBtn" class="btn-primary-pretty">Lưu Thay Đổi</button>
         </div>
       </div>
       
@@ -585,7 +589,7 @@ export function mount(container) {
 
   // CHANGE PIN MODAL LOGIC
   const changePinModal = qs('#changePinModal');
-  const closeChangePinBtn = qs('#closeChangePinModal');
+  const closeChangePinBtn = qs('#closeChangeChangePinModal');
   const changePinBtn = qs('#changePinBtn');
 
   // Input Fields

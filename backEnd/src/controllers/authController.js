@@ -2,6 +2,7 @@ const pool = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const emailService = require('../services/emailService'); // Import email service shared
 dotenv.config();
 
 // 1. Dang nhap
@@ -35,6 +36,10 @@ exports.login = async (req, res) => {
         } else {
             // Password la plain text (data cu) -> so sanh truc tiep
             isMatch = password === user.password;
+        }
+
+        if (user.is_blocked) {
+            return res.status(403).json({ success: false, message: 'Tài khoản này đã bị khóa. Vui lòng liên hệ Admin.' });
         }
 
         if (!isMatch) {
@@ -146,30 +151,8 @@ exports.resetPin = async (req, res) => {
     }
 };
 
-const nodemailer = require('nodemailer');
-
-// Luu tru OTP tam thoi trong bo nho (Username -> {otp, expires})
-// Luu y: Se mat khi khoi dong lai server. De ben vung hon nen luu vao Redis hoac Database.
+// OTP LocalStore
 const otpStore = new Map();
-
-// Cau hinh gui mail
-// Cau hinh gui mail (Su dung service GMAIL chuan)
-// Luu y: Can dung App Password chu khong phai mat khau login thuong
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    connectionTimeout: 5000,
-    greetingTimeout: 5000,
-    socketTimeout: 5000
-});
-
-// Bo phan verify() tai day vi no thuong gay timeout tren server khi khoi dong.
-// Chung ta se check loi truc tiep khi gui mail.
 
 // 4. Forgot Password (Send OTP via Email)
 exports.requestPasswordReset = async (req, res) => {
@@ -193,12 +176,8 @@ exports.requestPasswordReset = async (req, res) => {
         });
 
         const emailTo = user.email;
-
-        const mailOptions = {
-            from: `"Hi Math Support" <${process.env.EMAIL_USER}>`,
-            to: emailTo,
-            subject: `[Hi Math] Mã xác thực reset mật khẩu cho ${username}`,
-            html: `
+        const subject = `[Hi Math] Mã xác thực reset mật khẩu cho ${username}`;
+        const html = `
                 <h3>Yêu cầu đặt lại mật khẩu</h3>
                 <p>Xin chào <b>${user.full_name}</b>,</p>
                 <p>Bạn (hoặc ai đó) đã yêu cầu đặt lại mật khẩu cho tài khoản: <b>${username}</b></p>
@@ -206,20 +185,19 @@ exports.requestPasswordReset = async (req, res) => {
                 <h1 style="color: #4a6bff; letter-spacing: 5px;">${otp}</h1>
                 <p>Mã này sẽ hết hạn sau 5 phút.</p>
                 <p>Nếu không phải bạn, vui lòng bỏ qua email này.</p>
-            `
-        };
+            `;
 
         try {
-            await transporter.sendMail(mailOptions);
+            await emailService.sendEmail(emailTo, subject, html);
             res.json({
                 success: true,
                 message: 'Mã xác thực đã được gửi về mail của bạn.',
             });
         } catch (mailError) {
-            console.error("❌ Email Timeout -> DEBUG MODE");
+            console.error("❌ Email Error -> DEBUG MODE:", mailError);
             res.json({
                 success: true,
-                message: `[DEBUG MODE - BẢO TRÌ EMAIL] Mã OTP của bạn là: ${otp}`,
+                message: `[DEBUG MODE - LỖI EMAIL] Mã OTP của bạn là: ${otp}`,
                 debug_otp: otp
             });
         }
@@ -327,21 +305,17 @@ exports.requestPinResetOTP = async (req, res) => {
         otpStore.set(key, { otp, expires: Date.now() + 5 * 60 * 1000 });
 
         // Gui Email
-        const mailOptions = {
-            from: `"Hi Math Support" <${process.env.EMAIL_USER}>`,
-            to: user.email,
-            subject: `[Hi Math] Mã xác thực Reset PIN`,
-            html: `<h3>Reset PIN Phụ Huynh</h3><p>Mã OTP của bạn là: <b style="font-size: 20px; color: blue;">${otp}</b></p><p>Đừng chia sẻ mã này cho ai khác.</p>`
-        };
+        const subject = `[Hi Math] Mã xác thực Reset PIN`;
+        const html = `<h3>Reset PIN Phụ Huynh</h3><p>Mã OTP của bạn là: <b style="font-size: 20px; color: blue;">${otp}</b></p><p>Đừng chia sẻ mã này cho ai khác.</p>`;
 
         try {
-            await transporter.sendMail(mailOptions);
+            await emailService.sendEmail(user.email, subject, html);
             res.json({ success: true, message: 'Đã gửi mã OTP về email của bạn.' });
         } catch (mailError) {
-            console.error("❌ PIN Email Timeout -> DEBUG MODE");
+            console.error("❌ PIN Email Error -> DEBUG MODE:", mailError);
             res.json({
                 success: true,
-                message: `[DEBUG MODE - BẢO TRÌ EMAIL] Mã OTP của bạn là: ${otp}`,
+                message: `[DEBUG MODE - LỖI EMAIL] Mã OTP của bạn là: ${otp}`,
                 debug_otp: otp
             });
         }

@@ -1,175 +1,31 @@
-/* Users Panel Styles */
+/* Main Container Styles */
 .users-panel {
-    padding: 20px;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    color: #333;
+    min-height: 80vh;
+    /* Ensure full height feel */
+    font-family: 'Nunito', sans-serif;
+    padding: 20px;
 }
 
-/* PIN SCREEN */
+/* 1. PIN SCREEN (LOCK SCREEN) */
 .pin-screen {
-    text-align: center;
-    padding-top: 50px;
-}
-
-.pin-input {
-    font-size: 30px;
-    letter-spacing: 10px;
-    width: 200px;
-    text-align: center;
-    padding: 10px;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    margin: 20px 0;
-}
-
-.pin-btn {
-    background: #2196F3;
-    color: white;
-    border: none;
-    padding: 10px 30px;
-    font-size: 18px;
+    background: white;
     border-radius: 20px;
-    cursor: pointer;
-}
-
-.pin-error {
-    color: red;
-    margin-top: 10px;
-    display: none;
-}
-
-/* DASHBOARD */
-.dashboard {
-    animation: fadeIn 0.5s;
-}
-
-/* CARD: INFO */
-.user-card {
-    display: flex;
-    align-items: center;
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.avatar-circle {
-    width: 60px;
-    height: 60px;
-    background: #FFC107;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    color: white;
-    margin-right: 20px;
-}
-
-.user-details h2 {
-    margin: 0;
-    font-size: 24px;
-    color: #333;
-}
-
-.user-details p {
-    margin: 5px 0 0;
-    color: #666;
-}
-
-/* CARD: TIME STATUS BAR */
-.status-card {
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
-.status-title {
-    font-weight: bold;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.progress-bg {
-    height: 20px;
-    background: #eee;
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-}
-
-.progress-fill {
-    height: 100%;
-    width: 0%;
-    transition: width 1s ease, background 0.5s;
-}
-
-.status-message {
-    margin-top: 10px;
-    font-weight: bold;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    /* Softer shadow */
+    padding: 50px 30px;
     text-align: center;
-}
-
-/* Colors */
-.color-low {
-    background: #FF9800;
-}
-
-.color-good {
-    background: #4CAF50;
-}
-
-.color-high {
-    background: #F44336;
-}
-
-/* TABLE: HISTORY */
-.history-card {
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.history-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-.history-table th {
-    text-align: left;
-    color: #888;
-    padding: 10px;
-    border-bottom: 2px solid #eee;
-}
-
-.history-table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.tag {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.tag-game {
-    background: #E3F2FD;
-    color: #2196F3;
+    max-width: 450px;
+    margin: 50px auto;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.5s ease-out;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(20px);
     }
 
     to {
@@ -178,145 +34,350 @@
     }
 }
 
-/* NEW STYLES FOR TABS */
+.pin-screen h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #2f80ed, #56ccf2);
+    /* Blue gradient text */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pin-input {
+    padding: 15px;
+    border: 2px solid #eef1f6;
+    border-radius: 12px;
+    width: 240px;
+    font-size: 24px;
+    letter-spacing: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+    background: #f8f9fc;
+    transition: all 0.3s;
+    color: #333;
+}
+
+.pin-input:focus {
+    border-color: #56ccf2;
+    box-shadow: 0 0 0 4px rgba(86, 204, 242, 0.15);
+    background: white;
+    outline: none;
+}
+
+.pin-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #2f80ed, #56ccf2);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(47, 128, 237, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+
+.pin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(47, 128, 237, 0.4);
+}
+
+.pin-btn:active {
+    transform: translateY(1px);
+}
+
+.pin-error {
+    color: #ff4757;
+    margin-top: 15px;
+    font-weight: 600;
+    display: none;
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+/* 2. CHANGE PIN MODAL - THE "PRETTY" ONE */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(45, 52, 54, 0.6);
+    /* Darker backdrop */
+    backdrop-filter: blur(5px);
+    /* Blur effect */
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s;
+}
+
+.modal-pretty {
+    background: #ffffff;
+    width: 90%;
+    max-width: 420px;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    /* For decorative elements */
+    animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Decorative Header Gradient */
+.modal-pretty::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(to right, #ff9f43, #ff6b6b);
+    /* Orange gradient like Login */
+}
+
+.modal__close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #f1f2f6;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7f8fa6;
+    transition: all 0.2s;
+    z-index: 2;
+}
+
+.modal__close-btn:hover {
+    background: #dfe4ea;
+    color: #ff4757;
+    transform: rotate(90deg);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 24px;
+    color: #2f3542;
+    font-weight: 800;
+    text-align: center;
+}
+
+.modal-header p {
+    text-align: center;
+    color: #747d8c;
+    margin-top: 5px;
+    margin-bottom: 25px;
+}
+
+/* Form Styles mimicking Login */
+.form-group label {
+    font-weight: 700;
+    color: #57606f;
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.pretty-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #f1f2f6;
+    border-radius: 12px;
+    font-size: 16px;
+    background: #f8f9fa;
+    color: #2f3542;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    /* Important */
+}
+
+.pretty-input:focus {
+    background: #fff;
+    border-color: #ff9f43;
+    /* Focus color orange */
+    box-shadow: 0 0 0 4px rgba(255, 159, 67, 0.1);
+    outline: none;
+}
+
+/* Buttons */
+.btn-primary-pretty {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff9f43, #ff6b6b);
+    /* Orange Gradient */
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    transition: all 0.2s;
+    margin-top: 10px;
+}
+
+.btn-primary-pretty:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.btn-small-pretty {
+    background: #2ed573;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-small-pretty:hover {
+    background: #26af61;
+}
+
+/* Dashboard Styles (Existing ones refined) */
+.dashboard {
+    animation: fadeIn 0.4s;
+}
+
+.user-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border: 1px solid white;
+}
+
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #a8e6cf, #dcedc1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    color: #fff;
+    margin-right: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: 4px solid white;
+}
+
+.user-details h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
 .tabs {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
+    background: #f1f2f6;
+    padding: 5px;
+    border-radius: 12px;
+    width: fit-content;
 }
 
 .tab-btn {
-    background: none;
-    border: none;
     padding: 10px 20px;
-    font-size: 16px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #747d8c;
     cursor: pointer;
-    color: #666;
-    font-weight: bold;
-    border-radius: 20px;
-    transition: 0.3s;
+    transition: all 0.2s;
 }
 
 .tab-btn.active {
-    background: #E3F2FD;
-    color: #2196F3;
+    background: white;
+    color: #2f3542;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.tab-btn:hover {
-    background: #f0f0f0;
-}
-
+.status-card,
+.history-card,
 .card-section {
     background: white;
+    border-radius: 16px;
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
     margin-bottom: 20px;
+    border: 1px solid #f1f2f6;
 }
 
 .badge {
-    background: #F44336;
+    background: #ff4757;
     color: white;
     padding: 2px 6px;
     border-radius: 10px;
-    font-size: 12px;
-    margin-left: 5px;
+    font-size: 10px;
+    vertical-align: middle;
 }
 
-.small-btn {
-    background: #f0f0f0;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
+/* Butterfly Decoration (CSS only approach) */
+.butterfly-deco {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.8;
+    z-index: 1;
 }
 
-/* NOTIFICATIONS */
-.notif-item {
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    gap: 15px;
-    align-items: start;
-    transition: 0.2s;
+.butterfly-bottom {
+    bottom: -10px;
+    right: 20px;
+    font-size: 24px;
+    transform: rotate(-15deg);
 }
 
-.notif-item.unread {
-    background: #f9fbfd;
-    border-left: 3px solid #2196F3;
-}
-
-.notif-icon {
-    width: 40px;
-    height: 40px;
-    background: #E3F2FD;
-    color: #2196F3;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.notif-content h4 {
-    margin: 0 0 5px;
-    font-size: 14px;
-}
-
-.notif-content p {
-    margin: 0;
-    font-size: 13px;
-    color: #666;
-}
-
-.notif-time {
-    font-size: 11px;
-    color: #999;
-    margin-top: 5px;
-}
-
-/* GOALS */
-.goal-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.goal-progress {
-    width: 100px;
-    height: 8px;
-    background: #eee;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-top: 5px;
-}
-
-.goal-fill {
-    height: 100%;
-    background: #4CAF50;
-    width: 0%;
-}
-
-.add-goal-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-}
-
-.action-btn {
-    background: #2196F3;
-    color: white;
-    border: none;
-    padding: 5px 15px;
-    border-radius: 5px;
-    cursor: pointer;
+.butterfly-input {
+    position: absolute;
+    right: 15px;
+    top: 40px;
+    font-size: 18px;
+    opacity: 0.5;
 }
