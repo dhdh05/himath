@@ -6,7 +6,9 @@
   const API_BASE_URL = window.API_BASE_URL ||
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:3000'
-      : ''); // Production: Use relative path (Monolithic)
+      : (window.location.hostname.includes('render.com')
+        ? 'https://himath-be.onrender.com' // Explicit Backend URL provided by user
+        : 'https://himath-be.onrender.com')); // Default fallback to prod backend if unknown msg
 
   // Export ra window object de cac file khac co the dung
   window.API_CONFIG = {
