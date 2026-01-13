@@ -119,7 +119,9 @@ export function mount(container) {
   const fetchStats = async () => {
     try {
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-      const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3000';
+      const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
+        ? window.API_CONFIG.BASE_URL
+        : 'http://localhost:3000';
       const res = await fetch(`${apiUrl}/api/admin/stats`, { headers });
       const data = await res.json();
 
@@ -136,7 +138,9 @@ export function mount(container) {
   const fetchUsers = async () => {
     try {
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-      const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3000';
+      const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
+        ? window.API_CONFIG.BASE_URL
+        : 'http://localhost:3000';
       const res = await fetch(`${apiUrl}/api/admin/users`, { headers });
       const data = await res.json();
 
@@ -158,7 +162,9 @@ export function mount(container) {
 
     try {
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-      const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3000';
+      const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
+        ? window.API_CONFIG.BASE_URL
+        : 'http://localhost:3000';
       const res = await fetch(`${apiUrl}/api/admin/login-history`, { headers });
       const data = await res.json();
 
@@ -244,7 +250,9 @@ export function mount(container) {
 
     try {
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-      const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3000';
+      const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
+        ? window.API_CONFIG.BASE_URL
+        : 'http://localhost:3000';
       const res = await fetch(`${apiUrl}/api/admin/users/${userId}`, { headers });
       const data = await res.json();
 
@@ -355,7 +363,9 @@ export function mount(container) {
 
         try {
           const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-          const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3000';
+          const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
+            ? window.API_CONFIG.BASE_URL
+            : 'http://localhost:3000';
           const res = await fetch(`${apiUrl}/api/admin/users/${u.user_id}/send-report`, {
             method: 'POST',
             headers: headers
@@ -389,7 +399,9 @@ export function mount(container) {
 
     try {
       const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-      const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3000';
+      const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
+        ? window.API_CONFIG.BASE_URL
+        : 'http://localhost:3000';
       const res = await fetch(`${apiUrl}/api/admin/users/${userId}/block`, {
         method: 'PUT',
         headers: headers,
