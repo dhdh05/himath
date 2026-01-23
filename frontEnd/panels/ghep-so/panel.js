@@ -243,7 +243,7 @@ export function mount(container) {
   };
 
   // state
-  let score = 0; let level = 1; let timeLeft = 60; let timerInterval = null; let isGameActive = true; let draggedNumber = null; let currentIconHighlighted = null; let dragMoveHandler = null; let currentGameData = []; let autoAdvanceTimeoutId = null;
+  let score = 0; let level = 1; let timeLeft = 60; let timerInterval = null; let isGameActive = true; let draggedNumber = null; let selectedNumberItem = null; let currentIconHighlighted = null; let dragMoveHandler = null; let currentGameData = []; let autoAdvanceTimeoutId = null;
 
   // dom
   const scoreEl = container.querySelector('#ghep-score');
@@ -299,7 +299,7 @@ export function mount(container) {
   function shuffleArray(arr) { const shuffled = [...arr]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
 
   function initGame() {
-    score = 0; timeLeft = levelConfig[level].timePerMove; isGameActive = true; scoreEl.textContent = score; levelEl.textContent = level; timerEl.textContent = timeLeft; currentGameData = [...(levelQuestions[level] || levelQuestions[1])]; shuffleGameData(); createNumbers(); createIcons(); startTimer(); initDragAndDrop(); hideModal(gameOverModal); hideModal(levelCompleteModal);
+    score = 0; timeLeft = levelConfig[level].timePerMove; isGameActive = true; selectedNumberItem = null; scoreEl.textContent = score; levelEl.textContent = level; timerEl.textContent = timeLeft; currentGameData = [...(levelQuestions[level] || levelQuestions[1])]; shuffleGameData(); createNumbers(); createIcons(); startTimer(); initDragAndDrop(); hideModal(gameOverModal); hideModal(levelCompleteModal);
 
     // Voice Instruction
     speakText("Bé hãy ghép số ở cột bên trái với ô chứa số lượng hình tương ứng ở cột bên phải nhé");
@@ -307,9 +307,9 @@ export function mount(container) {
 
   function shuffleGameData() { for (let i = currentGameData.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[currentGameData[i], currentGameData[j]] = [currentGameData[j], currentGameData[i]]; } }
 
-  function createNumbers() { numbersContainer.innerHTML = ''; const numbers = currentGameData.map(item => item.answer); const shuffled = shuffleArray(numbers); shuffled.forEach((num, idx) => { const el = document.createElement('div'); el.className = 'number-item'; el.textContent = num; el.draggable = true; el.dataset.number = num; el.dataset.id = `g-num-${idx}`; numbersContainer.appendChild(el); }); }
+  function createNumbers() { numbersContainer.innerHTML = ''; const numbers = currentGameData.map(item => item.answer); const shuffled = shuffleArray(numbers); shuffled.forEach((num, idx) => { const el = document.createElement('div'); el.className = 'number-item'; el.textContent = num; el.draggable = true; el.dataset.number = num; el.dataset.id = `g-num-${idx}`; el.addEventListener('click', handleNumberClick); numbersContainer.appendChild(el); }); }
 
-  function createIcons() { iconsContainer.innerHTML = ''; currentGameData.forEach((q, idx) => { const iconEl = document.createElement('div'); iconEl.className = 'icon-item'; iconEl.dataset.id = `g-icon-${idx}`; iconEl.dataset.answer = q.answer; let iconsHTML = ''; for (let i = 0; i < q.count; i++) iconsHTML += `<i class="${q.icon}" style="color:${getIconColor(q.iconType)}"></i>`; iconEl.innerHTML = `\n          <div class="icon-name">${q.iconType}</div>\n          <div class="icon-group">${iconsHTML}</div>\n          <div class="icon-answer" id="g-answer-${idx}">?</div>\n        `; iconsContainer.appendChild(iconEl); }); }
+  function createIcons() { iconsContainer.innerHTML = ''; currentGameData.forEach((q, idx) => { const iconEl = document.createElement('div'); iconEl.className = 'icon-item'; iconEl.dataset.id = `g-icon-${idx}`; iconEl.dataset.answer = q.answer; iconEl.addEventListener('click', handleIconClick); let iconsHTML = ''; for (let i = 0; i < q.count; i++) iconsHTML += `<i class="${q.icon}" style="color:${getIconColor(q.iconType)}"></i>`; iconEl.innerHTML = `\n          <div class="icon-name">${q.iconType}</div>\n          <div class="icon-group">${iconsHTML}</div>\n          <div class="icon-answer" id="g-answer-${idx}">?</div>\n        `; iconsContainer.appendChild(iconEl); }); }
 
   function getIconColor(type) { const map = { 'Táo': '#ff6b6b', 'Cam': '#FF9800', 'Chuối': '#FFC107', 'Dâu': '#f44336', 'Nho': '#9C27B0', 'Dưa hấu': '#4CAF50', 'Dứa': '#FF9800', 'Cherry': '#E91E63', 'Mận': '#9C27B0', 'Lê': '#8BC34A' }; return map[type] || '#4a6bff'; }
   function getIconColor(type) {
@@ -341,44 +341,93 @@ export function mount(container) {
     e.preventDefault();
     const icon = e.target.closest('.icon-item');
     if (!icon || icon.classList.contains('completed')) return;
-    const idx = parseInt(icon.dataset.id.split('-')[2]);
-    const answer = parseInt(icon.dataset.answer);
-    if (draggedNumber.number === answer) {
+
+    processAnswer(draggedNumber.number, draggedNumber.element, icon);
+    draggedNumber = null;
+  }
+
+  // --- CLICK TO MOVE LOGIC (iPad/Alternative) ---
+  function handleNumberClick(e) {
+    if (!isGameActive) return;
+    const item = e.target.closest('.number-item');
+    if (!item || item.classList.contains('used')) return;
+
+    if (selectedNumberItem === item) {
+      // Deselect
+      item.classList.remove('selected-clicked');
+      selectedNumberItem = null;
+    } else {
+      // Clear prev
+      if (selectedNumberItem) selectedNumberItem.classList.remove('selected-clicked');
+      // Select new
+      selectedNumberItem = item;
+      item.classList.add('selected-clicked');
+      // Optional: play click sound
+      try { playSoundFile('sound_click.mp3'); } catch (e) { }
+    }
+  }
+
+  function handleIconClick(e) {
+    if (!isGameActive || !selectedNumberItem) return;
+    const icon = e.target.closest('.icon-item');
+    if (!icon || icon.classList.contains('completed')) return;
+
+    const val = parseInt(selectedNumberItem.dataset.number);
+    processAnswer(val, selectedNumberItem, icon);
+  }
+
+  function processAnswer(numberVal, numberEl, iconEl) {
+    const idx = parseInt(iconEl.dataset.id.split('-')[2]);
+    const answer = parseInt(iconEl.dataset.answer);
+
+    if (numberVal === answer) {
       const pts = 10 * (levelConfig[level] ? levelConfig[level].scoreMultiplier : 1);
       score += pts; scoreEl.textContent = score;
-      icon.classList.add('completed');
-      currentGameData[idx].placedNumber = draggedNumber.number;
-      container.querySelector(`#g-answer-${idx}`).textContent = draggedNumber.number;
-      draggedNumber.element.classList.add('used'); draggedNumber.element.draggable = false;
+      iconEl.classList.add('completed');
+      currentGameData[idx].placedNumber = numberVal;
+      container.querySelector(`#g-answer-${idx}`).textContent = numberVal;
+
+      numberEl.classList.add('used');
+      numberEl.draggable = false;
+
+      // Clear Selection
+      numberEl.classList.remove('selected-clicked');
+      if (selectedNumberItem === numberEl) selectedNumberItem = null;
+
       resetTimer();
-      // Dung cho ca luc dung va sai (chi khac bien correct: true/false)
       try {
         if (window.HiMathStats) window.HiMathStats.recordAttempt('digits-ghep-so', {
           level: level,
-          chosen: draggedNumber.number,
+          chosen: numberVal,
           answer: answer,
-          correct: (draggedNumber.number === answer)
+          correct: true
         });
       } catch (e) { }
       playSoundFile('sound_correct_answer_bit.mp3').then(() => checkLevelCompletion());
     } else {
-      icon.classList.add('highlight-incorrect');
+      iconEl.classList.add('highlight-incorrect');
       timeLeft -= (levelConfig[level] ? levelConfig[level].timeDecrement : 0);
       if (timeLeft < 0) timeLeft = 0;
       timerEl.textContent = timeLeft;
       if (timeLeft <= 0) endLevel(false);
-      // Dung cho ca luc dung va sai (chi khac bien correct: true/false)
+
+      // Clear Selection (optional: maybe keep it selected so they can try another? User logic says: "điền giá trị và xóa trạng thái chọn" only if successful? No, usually deselect on fail too or user has to re-select. Let's keep duplicate selection for now logic mentioned "xóa trạng thái chọn" implies after action. I will remove selection on fail too to enforce steps, or keep it. User said "kiểm tra nếu có selectedNumber thì sẽ điền giá trị đó vào và xóa trạng thái chọn". Does not specify success/fail. I'll clear it.)
+      // Actually, if it fails, maybe keep it so they can put it elsewhere? 
+      // But specs say: "check selectedNumber -> fill -> clear".
+      // Since it's incorrect, we don't fill.
+      // I'll keep the selection active so they can try another Icon immediately without re-clicking the number. This is better UX.
+
       try {
         if (window.HiMathStats) window.HiMathStats.recordAttempt('digits-ghep-so', {
           level: level,
-          chosen: draggedNumber.number,
+          chosen: numberVal,
           answer: answer,
-          correct: (draggedNumber.number === answer)
+          correct: false
         });
-      } catch (e) { } playSoundFile('sound_wrong_answer_bit.mp3');
-      setTimeout(() => icon.classList.remove('highlight-incorrect'), 500);
+      } catch (e) { }
+      playSoundFile('sound_wrong_answer_bit.mp3');
+      setTimeout(() => iconEl.classList.remove('highlight-incorrect'), 500);
     }
-    draggedNumber = null;
   }
 
 
@@ -387,6 +436,8 @@ export function mount(container) {
   let touchClone = null;
   let touchOffsetX = 0;
   let touchOffsetY = 0;
+  let touchStartX = 0;
+  let touchStartY = 0;
 
   function handleTouchStart(e) {
     if (!isGameActive) return;
@@ -408,6 +459,8 @@ export function mount(container) {
 
     // Create Visual Clone
     const rect = target.getBoundingClientRect();
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
     touchOffsetX = touch.clientX - rect.left;
     touchOffsetY = touch.clientY - rect.top;
 
@@ -471,9 +524,16 @@ export function mount(container) {
 
     // Check Drop
     let droppedIcon = null;
+    const touch = e.changedTouches[0];
+
+    // Check for Tap (Click simulation) if movement is small
+    if (Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY) < 10) {
+      // Trigger Click Selection
+      handleNumberClick({ target: touchDragItem });
+    }
+
     if (touchClone) {
       touchClone.style.display = 'none';
-      const touch = e.changedTouches[0];
       const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
       touchClone.style.display = 'block';
       if (elemBelow) droppedIcon = elemBelow.closest('.icon-item');

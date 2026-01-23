@@ -85,6 +85,7 @@ export function mount(container) {
   let hiddenNumbers = [];
   let draggableNumbers = [];
   let draggedNumber = null;
+  let selectedSortItem = null;
   let correctSlotsCount = 0; // So slot da dien dung trong cau hien tai
   let autoNextTimeout = null;
   let startTime = null;
@@ -201,7 +202,11 @@ export function mount(container) {
         slot.addEventListener('dragover', handleDragOver);
         slot.addEventListener('dragenter', handleDragEnter);
         slot.addEventListener('dragleave', handleDragLeave);
+        slot.addEventListener('dragover', handleDragOver);
+        slot.addEventListener('dragenter', handleDragEnter);
+        slot.addEventListener('dragleave', handleDragLeave);
         slot.addEventListener('drop', handleDrop);
+        slot.addEventListener('click', handleSlotClick);
       } else {
         slot.classList.add('filled');
         slot.textContent = number;
@@ -227,6 +232,7 @@ export function mount(container) {
       // Mouse events
       el.addEventListener('dragstart', handleDragStart);
       el.addEventListener('dragend', handleDragEnd);
+      el.addEventListener('click', handleSortNumberClick);
       // Touch events
       el.addEventListener('touchstart', handleTouchStart, { passive: false });
       el.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -240,6 +246,8 @@ export function mount(container) {
   let touchClone = null;   // The visual clone moving with finger
   let touchOffsetX = 0;
   let touchOffsetY = 0;
+  let touchStartX = 0;
+  let touchStartY = 0;
 
   function handleTouchStart(e) {
     if (e.target.classList.contains('used')) return;
@@ -258,6 +266,8 @@ export function mount(container) {
 
     // Create a clone for visual feedback
     const rect = target.getBoundingClientRect();
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
     touchOffsetX = touch.clientX - rect.left;
     touchOffsetY = touch.clientY - rect.top;
 
@@ -297,6 +307,12 @@ export function mount(container) {
     e.preventDefault();
 
     const touch = e.changedTouches[0];
+
+    // Check for Tap
+    if (Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY) < 10) {
+      handleSortNumberClick({ target: touchDragItem });
+    }
+
     // Hide clone temporarily to find what's underneath
     if (touchClone) {
       touchClone.style.display = 'none';
@@ -342,6 +358,37 @@ export function mount(container) {
     checkAnswer(slot, draggedNumber);
   }
 
+  // --- CLICK TO MOVE LOGIC ---
+  function handleSortNumberClick(e) {
+    const el = e.target.closest('.draggable-number');
+    if (!el || el.classList.contains('used')) return;
+
+    if (selectedSortItem && selectedSortItem.element === el) {
+      // Deselect
+      el.classList.remove('selected-clicked');
+      selectedSortItem = null;
+    } else {
+      // Clear prev
+      if (selectedSortItem && selectedSortItem.element) selectedSortItem.element.classList.remove('selected-clicked');
+      // Select
+      selectedSortItem = {
+        element: el,
+        number: parseInt(el.dataset.number),
+        id: el.dataset.id
+      };
+      el.classList.add('selected-clicked');
+      try { playSoundFile('sound_click.mp3'); } catch (e) { }
+    }
+  }
+
+  function handleSlotClick(e) {
+    const slot = e.target.closest('.number-slot');
+    if (!slot || !slot.classList.contains('empty')) return;
+    if (!selectedSortItem) return;
+
+    checkAnswer(slot, selectedSortItem);
+  }
+
   // Common logic for both Drag/Drop and Touch
   function checkAnswer(slot, currentDraggedItem) {
     if (!slot || !currentDraggedItem) return;
@@ -356,6 +403,10 @@ export function mount(container) {
 
       currentDraggedItem.element.classList.add('used');
       currentDraggedItem.element.draggable = false;
+
+      // Cleanup Selection
+      currentDraggedItem.element.classList.remove('selected-clicked');
+      if (selectedSortItem && selectedSortItem.id === currentDraggedItem.id) selectedSortItem = null;
 
       // Remove from available list logic
       const numberIndex = draggableNumbers.indexOf(currentDraggedItem.number);
