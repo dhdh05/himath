@@ -572,28 +572,75 @@
           // B. Thong bao & Dong popup
           // C. Kiem tra Email va DOB
           if (!data.user.email || !data.user.dob) {
-            alert('⚠️ Vui lòng cập nhật thông tin còn thiếu (Email/Ngày sinh) để tiếp tục!');
-            closeAuth();
-            const upModal = document.getElementById('update-email-modal');
-            if (upModal) {
-              upModal.hidden = false;
-              // Dien san thong tin da co (neu co)
-              if (data.user.email) document.getElementById('update_email_input').value = data.user.email;
-              // Format DOB yyyy-MM-dd
-              if (data.user.dob) {
-                const d = new Date(data.user.dob);
-                const iso = d.toISOString().split('T')[0];
-                document.getElementById('update_dob_input').value = iso;
+            showInfoModal('Vui lòng cập nhật thông tin còn thiếu (Email/Ngày sinh) để tiếp tục!', 'Cập nhật thông tin', '⚠️', () => {
+              closeAuth();
+              const upModal = document.getElementById('update-email-modal');
+              if (upModal) {
+                upModal.hidden = false;
+                if (data.user.email) document.getElementById('update_email_input').value = data.user.email;
+                if (data.user.dob) {
+                  const d = new Date(data.user.dob);
+                  const iso = d.toISOString().split('T')[0];
+                  document.getElementById('update_dob_input').value = iso;
+                }
               }
-            }
+            });
             // KHONG RELOAD, cho update xong moi reload
           } else {
-            alert('✅ Xin chào ' + data.user.name + '! Đăng nhập thành công.');
+            // Custom Popup for Login Success
             closeAuth();
-            window.location.reload();
+            const modal = document.getElementById('generic-notification-modal');
+            const icon = document.getElementById('generic-notify-icon');
+            const title = document.getElementById('generic-notify-title');
+            const msg = document.getElementById('generic-notify-message');
+            const btnClose = document.getElementById('btnCloseGenericNotify');
+            const btnOk = document.getElementById('btnOkGenericNotify');
+
+            if (modal && icon && title && msg) {
+              // Custom message for Admin
+              if (data.user.role === 'admin') {
+                icon.textContent = '🛡️';
+                title.textContent = 'Welcome Admin';
+                msg.innerHTML = `Xin chào <b>${data.user.name}</b>!<br>Chào mừng quay trở lại hệ thống quản trị.`;
+              } else {
+                // Default message for Students
+                icon.textContent = '🎉';
+                title.textContent = 'Đăng nhập thành công';
+                msg.innerHTML = `Xin chào <b>${data.user.name}</b>!<br>Chúc bé có giờ học thật vui vẻ.`;
+              }
+              modal.hidden = false;
+
+              let count = 5;
+              const updateBtn = () => { if (btnOk) btnOk.textContent = `Đóng (${count}s)`; };
+              updateBtn();
+
+              const timer = setInterval(() => {
+                count--;
+                if (count <= 0) {
+                  clearInterval(timer);
+                  handleClose();
+                } else {
+                  updateBtn();
+                }
+              }, 1000);
+
+              const handleClose = () => {
+                clearInterval(timer); // Clean up
+                modal.hidden = true;
+                window.location.reload();
+              };
+
+              // Use once to avoid multiple reloads if clicked multiple times rapidly, though reload cancels scripts
+              if (btnClose) btnClose.onclick = handleClose;
+              if (btnOk) btnOk.onclick = handleClose;
+            } else {
+              // Fallback just in case
+              alert('✅ Xin chào ' + data.user.name + '! Đăng nhập thành công.');
+              window.location.reload();
+            }
           }
         } else {
-          alert('❌ Lỗi: ' + data.message);
+          showInfoModal('Lỗi: ' + data.message, 'Đăng nhập thất bại', '❌');
         }
       } catch (err) {
         console.error('❌ Lỗi kết nối:', err);
@@ -603,7 +650,7 @@
           `2. Backend đang chạy tại: http://localhost:3000\n` +
           `3. Frontend đang mở bằng http:// (không phải file://)\n` +
           `4. Kiểm tra Console (F12) để xem lỗi chi tiết`;
-        alert(errorMsg);
+        showInfoModal(errorMsg, 'Lỗi kết nối', '🔌');
       }
     });
   }
@@ -712,6 +759,73 @@
     }
   }, 100);
 
+  // Helper for Custom Confirmation Modal
+  function showConfirmModal(message, onConfirm, okText = 'Có', cancelText = 'Không') {
+    const modal = document.getElementById('confirmation-modal');
+    const msgEl = document.getElementById('confirm-message');
+    const btnOk = document.getElementById('btnOkConfirm');
+    const btnCancel = document.getElementById('btnCancelConfirm');
+    const btnClose = document.getElementById('btnCloseConfirm');
+
+    if (!modal || !msgEl || !btnOk) {
+      if (confirm(message)) onConfirm();
+      return;
+    }
+
+    msgEl.textContent = message;
+    if (okText) btnOk.textContent = okText;
+    if (cancelText) btnCancel.textContent = cancelText;
+
+    modal.hidden = false;
+
+    const closeCtx = () => { modal.hidden = true; };
+
+    // Clear old handlers & Assign new
+    const handleOk = () => { closeCtx(); onConfirm(); };
+    btnOk.onclick = handleOk;
+    btnCancel.onclick = closeCtx;
+    btnClose.onclick = closeCtx;
+
+    // Close on backdrop click (optional, if user clicks outside box)
+    modal.onclick = (e) => { if (e.target === modal) closeCtx(); };
+  }
+
+  // Helper for Generic Info Modal
+  function showInfoModal(message, title = 'Thông báo', icon = '🔔', onClose = null) {
+    const modal = document.getElementById('generic-notification-modal');
+    const iconEl = document.getElementById('generic-notify-icon');
+    const titleEl = document.getElementById('generic-notify-title');
+    const msgEl = document.getElementById('generic-notify-message');
+    const btnOk = document.getElementById('btnOkGenericNotify');
+    const btnClose = document.getElementById('btnCloseGenericNotify');
+
+    if (!modal) {
+      alert(title + '\n' + message);
+      if (onClose) onClose();
+      return;
+    }
+
+    if (iconEl) iconEl.textContent = icon;
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.innerHTML = message.replace(/\n/g, '<br>');
+    if (btnOk) btnOk.textContent = 'Đóng'; // Reset text just in case
+
+    modal.hidden = false;
+
+    const closeCtx = () => {
+      modal.hidden = true;
+      if (onClose) onClose();
+    };
+
+    if (btnOk) btnOk.onclick = closeCtx;
+    if (btnClose) btnClose.onclick = closeCtx;
+    modal.onclick = (e) => { if (e.target === modal) closeCtx(); };
+  }
+
+  // EXPOSE TO WINDOW FOR MODULES (Admin, etc.)
+  window.showConfirmModal = showConfirmModal;
+  window.showInfoModal = showInfoModal;
+
   // update hero and top UI based on auth state
   function updateAuthUI() {
     const hero = document.querySelector('.hero__copy');
@@ -747,7 +861,7 @@
           // Bind events
           document.getElementById('adminPanelBtn')?.addEventListener('click', () => { renderPanel('admin', 'Admin Dashboard'); });
           document.getElementById('quickLogoutBtn')?.addEventListener('click', () => {
-            if (confirm('Bạn có muốn đăng xuất không?')) { clearCurrentUser(); window.location.reload(); }
+            showConfirmModal('Bạn có muốn đăng xuất không?', () => { clearCurrentUser(); window.location.reload(); }, 'Đăng xuất', 'Huỷ');
           });
         }
 
@@ -778,9 +892,7 @@
 
             const activeUsers = document.getElementById('admActiveToday') ? document.getElementById('admActiveToday').textContent : (Math.floor(Math.random() * 5) + 1);
 
-            alert(
-              `🖥️ SYSTEM STATUS REPORT\n` +
-              `━━━━━━━━━━━━━━━━━━━━━━\n` +
+            showInfoModal(
               `✅ Server State  : ONLINE 🟢\n` +
               `📡 Latency       : ${ping}ms\n` +
               `💾 DB Connection : Stable\n` +
@@ -788,7 +900,9 @@
               `🛡️ Security      : Active\n` +
               `👥 Users Online  : ~${activeUsers}\n` +
               `━━━━━━━━━━━━━━━━━━━━━━\n` +
-              `Chào Admin, hệ thống đang vận hành rất trơn tru! 🚀`
+              `Chào Admin, hệ thống đang vận hành rất trơn tru! 🚀`,
+              'Báo cáo hệ thống',
+              '🖥️'
             );
           });
         }
@@ -812,10 +926,10 @@
           const btnLogout = document.getElementById('quickLogoutBtn');
           if (btnLogout) {
             btnLogout.addEventListener('click', () => {
-              if (confirm('Bé có muốn đăng xuất không?')) {
+              showConfirmModal('Bé có muốn đăng xuất không?', () => {
                 clearCurrentUser();
                 window.location.reload();
-              }
+              }, 'Đăng xuất', 'Huỷ');
             });
             btnLogout.addEventListener('mouseenter', () => btnLogout.style.background = 'rgba(255,255,255,0.4)');
             btnLogout.addEventListener('mouseleave', () => btnLogout.style.background = 'rgba(255,255,255,0.25)');
@@ -1149,10 +1263,10 @@
     menu.querySelector('[data-action="logout"]').addEventListener('click', (e) => {
       e.stopPropagation();
       menu.remove();
-      if (confirm('Bé có muốn đăng xuất không?')) {
+      showConfirmModal('Bé có muốn đăng xuất không?', () => {
         clearCurrentUser();
         window.location.reload();
-      }
+      }, 'Đăng xuất', 'Huỷ');
     });
 
     // Close menu when clicking outside
@@ -1180,13 +1294,13 @@
 
       // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
-        alert('File quá lớn! Vui lòng chọn file nhỏ hơn 2MB.');
+        showInfoModal('File quá lớn! Vui lòng chọn file nhỏ hơn 2MB.', 'Lỗi tải ảnh', '⚠️');
         return;
       }
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Vui lòng chọn file ảnh!');
+        showInfoModal('Vui lòng chọn file ảnh!', 'Định dạng sai', '🚫');
         return;
       }
 
@@ -1237,20 +1351,17 @@
     const currentUser = getCurrentUser();
     if (!currentUser) return;
 
-    if (!confirm('Bạn có chắc muốn xóa avatar và quay về avatar mặc định?')) {
-      return;
-    }
+    showConfirmModal('Bạn có chắc muốn xóa avatar và quay về avatar mặc định?', () => {
+      const userId = currentUser.id || currentUser.user_id;
+      localStorage.removeItem(`avatar_${userId}`);
 
-    const userId = currentUser.id || currentUser.user_id;
-    localStorage.removeItem(`avatar_${userId}`);
+      // Reset to default
+      resetAvatarDisplay(avatarBtn);
 
-    // Reset to default
-    resetAvatarDisplay(avatarBtn);
-
-    // Show success message
-    const msg = document.createElement('div');
-    msg.textContent = '✅ Đã xóa avatar!';
-    msg.style.cssText = `
+      // Show success message
+      const msg = document.createElement('div');
+      msg.textContent = '✅ Đã xóa avatar!';
+      msg.style.cssText = `
       position: fixed;
       top: 80px;
       right: 20px;
@@ -1263,8 +1374,9 @@
       font-size: 14px;
       font-weight: 600;
     `;
-    document.body.appendChild(msg);
-    setTimeout(() => msg.remove(), 3000);
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 3000);
+    }, 'Xóa Avatar', 'Giữ lại');
   }
 
   function updateAvatarDisplay(avatarBtn, base64Data) {
@@ -1749,6 +1861,10 @@
     if (key === 'home') {
       document.body.classList.remove('force-landscape');
       content.style.overflowY = 'hidden';
+    } else if (key === 'users' || key === 'about-us') {
+      // Allow portrait for these informational pages
+      document.body.classList.remove('force-landscape');
+      content.style.overflowY = 'auto';
     } else {
       document.body.classList.add('force-landscape');
       content.style.overflowY = 'auto';
@@ -2212,6 +2328,38 @@
     e.preventDefault();
 
     const key = el.getAttribute('data-page');
+
+    // --- MOBILE RESTRICTION (User Request) ---
+    if (isMobileLayout()) {
+      const allowedMobilePages = ['home', 'about-us', 'users'];
+      if (!allowedMobilePages.includes(key)) {
+        // Show custom modal instead of alert
+        const m = document.getElementById('mobile-restriction-modal');
+        if (m) m.hidden = false;
+        closeSidebar();
+        return;
+      }
+    }
+    // -----------------------------------------
+
+    // --- Init Mobile Modal Events (One-time) ---
+    if (!window._mobileModalInitialized) {
+      window._mobileModalInitialized = true;
+      const m = document.getElementById('mobile-restriction-modal');
+      const btnClose = document.getElementById('btnCloseMobileRest');
+      const btnOk = document.getElementById('btnOkMobileRest');
+
+      const closeFunc = () => {
+        if (m) m.hidden = true;
+        // User requested: return to Home when closing the popup
+        renderPanel('home', PAGE_TITLES['home']);
+      };
+
+      if (btnClose) btnClose.addEventListener('click', closeFunc);
+      if (btnOk) btnOk.addEventListener('click', closeFunc);
+      if (m) m.addEventListener('click', (e) => { if (e.target === m) closeFunc(); });
+    }
+    // -------------------------------------------
     const rawText = (el.textContent || key || '').trim();
     const title = PAGE_TITLES[key] || rawText || key;
 

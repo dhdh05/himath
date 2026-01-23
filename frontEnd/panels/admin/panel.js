@@ -147,8 +147,9 @@ export function mount(container) {
       if (data.success) {
         allUsers = data.users;
         renderTable(allUsers);
+        renderTable(allUsers);
       } else {
-        alert("Lỗi tải user: " + data.message);
+        window.showInfoModal("Lỗi tải user: " + data.message, 'Lỗi', '❌');
       }
     } catch (e) {
       console.error("Users Error", e);
@@ -264,7 +265,7 @@ export function mount(container) {
     } catch (e) {
       console.error(e);
       modal.remove();
-      alert("Lỗi kết nối User Details");
+      window.showInfoModal("Lỗi kết nối User Details", 'Lỗi', '🔌');
     }
   };
 
@@ -354,68 +355,69 @@ export function mount(container) {
     // Bind Send Report
     const btnReport = modal.querySelector('#btnSendReport');
     if (btnReport) {
-      btnReport.onclick = async () => {
-        if (!confirm(`Gửi thống kê tháng ${new Date().getMonth() + 1} tới email ${u.email}?`)) return;
+      btnReport.onclick = () => {
+        window.showConfirmModal(`Gửi thống kê tháng ${new Date().getMonth() + 1} tới email ${u.email}?`, async () => {
+          btnReport.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+          btnReport.disabled = true;
+          btnReport.style.opacity = 0.7;
 
-        btnReport.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
-        btnReport.disabled = true;
-        btnReport.style.opacity = 0.7;
+          try {
+            const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
+            const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
+              ? window.API_CONFIG.BASE_URL
+              : 'http://localhost:3000';
+            const res = await fetch(`${apiUrl}/api/admin/users/${u.user_id}/send-report`, {
+              method: 'POST',
+              headers: headers
+            });
+            const respData = await res.json();
 
-        try {
-          const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-          const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
-            ? window.API_CONFIG.BASE_URL
-            : 'http://localhost:3000';
-          const res = await fetch(`${apiUrl}/api/admin/users/${u.user_id}/send-report`, {
-            method: 'POST',
-            headers: headers
-          });
-          const respData = await res.json();
-
-          if (respData.success) {
-            alert("✅ " + respData.message);
-            btnReport.innerHTML = '<i class="fas fa-check"></i> Đã gửi';
-            btnReport.style.background = '#2ecc71';
-          } else {
-            alert("❌ Lỗi: " + respData.message);
+            if (respData.success) {
+              window.showInfoModal("✅ " + respData.message, 'Thành công', '📧');
+              btnReport.innerHTML = '<i class="fas fa-check"></i> Đã gửi';
+              btnReport.style.background = '#2ecc71';
+            } else {
+              window.showInfoModal("❌ Lỗi: " + respData.message, 'Thất bại', '⚠️');
+              btnReport.innerHTML = '<i class="fas fa-envelope"></i> Gửi lại';
+              btnReport.disabled = false;
+              btnReport.style.opacity = 1;
+            }
+          } catch (e) {
+            console.error(e);
+            window.showInfoModal("❌ Lỗi kết nối gửi mail!", 'Lỗi mạng', '🔌');
             btnReport.innerHTML = '<i class="fas fa-envelope"></i> Gửi lại';
             btnReport.disabled = false;
             btnReport.style.opacity = 1;
           }
-        } catch (e) {
-          console.error(e);
-          alert("❌ Lỗi kết nối gửi mail!");
-          btnReport.innerHTML = '<i class="fas fa-envelope"></i> Gửi lại';
-          btnReport.disabled = false;
-          btnReport.style.opacity = 1;
-        }
+        }, 'Gửi báo cáo', 'Huỷ');
       };
     }
   };
 
-  const toggleBlock = async (userId, isBlocked) => {
+  const toggleBlock = (userId, isBlocked) => {
     const action = isBlocked ? 'MỞ KHÓA' : 'KHÓA';
-    if (!confirm(`Bạn có chắc muốn ${action} tài khoản này không?`)) return;
 
-    try {
-      const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
-      const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
-        ? window.API_CONFIG.BASE_URL
-        : 'http://localhost:3000';
-      const res = await fetch(`${apiUrl}/api/admin/users/${userId}/block`, {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify({ is_blocked: !isBlocked })
-      });
-      const data = await res.json();
-      if (data.success) {
-        fetchUsers(); // Reload table
-      } else {
-        alert(data.message);
+    window.showConfirmModal(`Bạn có chắc muốn ${action} tài khoản này không?`, async () => {
+      try {
+        const headers = window.getAuthHeaders ? window.getAuthHeaders() : {};
+        const apiUrl = window.API_CONFIG && window.API_CONFIG.BASE_URL !== undefined
+          ? window.API_CONFIG.BASE_URL
+          : 'http://localhost:3000';
+        const res = await fetch(`${apiUrl}/api/admin/users/${userId}/block`, {
+          method: 'PUT',
+          headers: headers,
+          body: JSON.stringify({ is_blocked: !isBlocked })
+        });
+        const data = await res.json();
+        if (data.success) {
+          fetchUsers(); // Reload table
+        } else {
+          window.showInfoModal(data.message, 'Lỗi', '⚠️');
+        }
+      } catch (e) {
+        window.showInfoModal("Lỗi thực hiện", 'Lỗi hệ thống', '❌');
       }
-    } catch (e) {
-      alert("Lỗi thực hiện");
-    }
+    }, 'Đồng ý', 'Huỷ');
   };
 
   // Search
