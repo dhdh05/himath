@@ -332,6 +332,12 @@
   // hide / show sidebar completely (expand content to full width)
   const hideBtn = document.querySelector('[data-action="hide-sidebar"]');
   hideBtn?.addEventListener('click', () => {
+    // MOBILE FIX: Use drawer mode instead of sidebar-hidden class
+    if (isMobileLayout()) {
+      toggleSidebar();
+      return;
+    }
+
     const app = document.querySelector('.app');
     if (!app) return;
     app.classList.toggle('sidebar-hidden');
