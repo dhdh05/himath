@@ -53,7 +53,7 @@ export function mount(container) {
     let gameRunning = false;
     let score = 0;
     let lives = 5;
-    let gameSpeed = 5;
+    let gameSpeed = 2;
     let obstacles = [];
     let frameId;
     let frameCount = 0;
